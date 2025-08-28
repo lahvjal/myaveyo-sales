@@ -53,7 +53,7 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
 
   return (
     <section className={`px-[50px] py-0 ${className}`}>
-      <div className="bg-[#e6e6e6] rounded-[5px] pt-[60px] pb-10 px-[30px]">
+      <div className="bg-[#e6e6e6] rounded-[5px] py-[160px] px-[30px]">
         <div className="max-w-[1480px] mx-auto">
           {/* Header */}
           <div className="flex items-center justify-start pb-10 mb-[60px]">

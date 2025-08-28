@@ -6,6 +6,8 @@ interface ButtonProps {
   onClick?: () => void
   className?: string
   icon?: string
+  type?: 'button' | 'submit' | 'reset'
+  disabled?: boolean
 }
 
 const imgVector116 = "http://localhost:3845/assets/5fe2a32dc067120eb3a1b0499801e0069a379f4e.svg"
@@ -15,7 +17,9 @@ export default function Button({
   variant = 'primary', 
   onClick, 
   className = '',
-  icon
+  icon,
+  type = 'button',
+  disabled = false
 }: ButtonProps) {
   const baseStyles = "box-border content-stretch flex gap-2.5 items-center justify-center p-[20px] relative rounded-[3px] font-extrabold text-[14px] transition-colors cursor-pointer"
   
@@ -26,7 +30,9 @@ export default function Button({
 
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+      type={type}
+      disabled={disabled}
+      className={`${baseStyles} ${variantStyles[variant]} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       onClick={onClick}
       data-name="button"
     >
