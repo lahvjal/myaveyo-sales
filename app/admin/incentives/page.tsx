@@ -31,7 +31,7 @@ export default function AdminIncentivesPage() {
     fetchIncentives()
   }, [])
 
-  const handleCreate = async (data: CreateIncentiveData) => {
+  const handleCreate = async (data: CreateIncentiveData | UpdateIncentiveData) => {
     setFormLoading(true)
     try {
       const response = await fetch('/api/incentives', {
@@ -51,10 +51,10 @@ export default function AdminIncentivesPage() {
     }
   }
 
-  const handleUpdate = async (data: UpdateIncentiveData) => {
+  const handleUpdate = async (data: CreateIncentiveData | UpdateIncentiveData) => {
     setFormLoading(true)
     try {
-      const response = await fetch(`/api/incentives/${data.id}`, {
+      const response = await fetch(`/api/incentives/${(data as UpdateIncentiveData).id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
