@@ -68,7 +68,7 @@ export default function ExpandableBlock({
         className={`absolute inset-0 transition-opacity duration-300 ${
           showGreyBackground ? 'opacity-100' : 'opacity-0'
         }`}
-        style={{ backgroundColor: '#6C6C6D' }}
+        style={{ backgroundColor: '#0d0d0d' }}
       />
       
       <div className="flex flex-col items-center justify-between overflow-clip h-full relative z-10">

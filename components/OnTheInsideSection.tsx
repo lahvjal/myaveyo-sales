@@ -23,19 +23,19 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
       id: '002',
       title: 'The Training',
       description: 'From day one, you\'ll get hands-on training that actually works. No fluff, just real skills that help you close deals and build lasting relationships.',
-      backgroundImage: imgCard
+      backgroundImage: "/images/presentation.png"
     },
     {
       id: '003',
       title: 'The Lifestyle',
       description: 'Work hard, live well. Flexible schedules, remote options, and the freedom to design your career around the life you want to live.',
-      backgroundImage: imgCard
+      backgroundImage: "/images/WEBSITE PHOTO.png"
     },
     {
       id: '004',
       title: 'The Growth',
       description: 'Your potential is unlimited here. Clear advancement paths, mentorship programs, and opportunities to lead from day one.',
-      backgroundImage: imgCard
+      backgroundImage: "/images/growth.png"
     }
   ]
 
@@ -92,9 +92,9 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
                   backgroundImage={block.backgroundImage}
                   isExpanded={expandedBlock === block.id}
                   onToggle={handleToggle}
-                  className={`${expandedBlock === block.id ? 'h-[500px]' : 'h-[120px]'} relative before:absolute before:inset-0 before:bg-black before:opacity-20 before:z-10`}
+                  className={`${expandedBlock === block.id ? 'h-[500px]' : 'h-[120px]'} relative before:absolute before:inset-0 before:bg-black before:opacity-30 before:z-10`}
                 >
-                  {/* Filter buttons - only show in expanded state for "The Culture" */}
+                  {/* Filter buttons - only show in expanded state for "The Culture"
                   {block.id === '001' && expandedBlock === block.id && (
                     <div className="flex flex-wrap gap-2.5 items-center">
                       {filters.map((filter) => (
@@ -111,7 +111,7 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
                         </button>
                       ))}
                     </div>
-                  )}
+                  )} */}
                 </ExpandableBlock>
               </div>
             ))}
@@ -124,7 +124,7 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
               buttonAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <Button variant="primary" className="bg-[#0d0d0d] text-black">
+            <Button variant="primary" theme="dark">
               APPLY NOW
             </Button>
           </div>
