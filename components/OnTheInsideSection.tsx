@@ -17,7 +17,7 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
       id: '001',
       title: 'The Culture',
       description: 'We keep it real. We celebrate wins, push each other to be better, and never forget to have fun along the way.',
-      backgroundImage: imgCard
+      backgroundImage: "/images/unlmtd.png"
     },
     {
       id: '002',
@@ -92,7 +92,7 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
                   backgroundImage={block.backgroundImage}
                   isExpanded={expandedBlock === block.id}
                   onToggle={handleToggle}
-                  className={expandedBlock === block.id ? 'h-[500px]' : 'h-[120px]'}
+                  className={`${expandedBlock === block.id ? 'h-[500px]' : 'h-[120px]'} relative before:absolute before:inset-0 before:bg-black before:opacity-20 before:z-10`}
                 >
                   {/* Filter buttons - only show in expanded state for "The Culture" */}
                   {block.id === '001' && expandedBlock === block.id && (

@@ -18,7 +18,7 @@ export default function RotatingLogoBanner() {
             </div>
             <div className="h-[70px] w-[110px] flex-shrink-0">
               <img 
-                src="http://localhost:3845/assets/2f982368dcdf0c844c261719034ae8aa1f62e998.svg" 
+                src="/aveyosaleslogo.svg"
                 alt="Aveyo" 
                 className="w-full h-full object-contain"
               />

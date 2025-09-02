@@ -32,7 +32,7 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
         className="absolute h-[654.42px] top-[1847.7px] translate-x-[-50%] w-[969.02px] z-0"
         style={{ left: "calc(50% + 73.344px)" }}
       >
-        <img alt="" className="block max-w-none size-full" src={imgUnion} />
+        <img alt="" className="block max-w-none size-full opacity-20" src="/aveyosaleslogo.svg" />
       </div>
 
       <div className="max-w-[1480px] mx-auto pb-[30px] relative z-10">
@@ -63,7 +63,7 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
             <div className="flex-none rotate-[90deg]">
               <div className="flex gap-5 items-center justify-start opacity-40 pb-[30px]">
                 <div className="relative size-[49.586px]">
-                  <img alt="" className="block max-w-none size-full" src={imgUnion1} />
+                  <img alt="" className="block max-w-none size-full" src="/images/world-icon.svg" />
                 </div>
                 <div className="font-telegraf font-extrabold text-white text-[15px] uppercase text-nowrap">
                   © 2025 myaveyo
@@ -96,7 +96,7 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
             className={`row-span-2 bg-cover bg-center bg-no-repeat rounded-[3px] border-[0.5px] border-[#333537] relative transition-all duration-700 ${
               imageCardAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
-            style={{ backgroundImage: `url('${imgCard}')` }}
+            style={{ backgroundImage: `url('/images/donny-hammond.jpeg')` }}
           />
 
           {/* Text Block - middle column, first row */}
@@ -165,7 +165,7 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
             className={`row-span-2 col-span-3 bg-cover bg-center bg-no-repeat rounded-[3px] border-[0.5px] border-[#333537] relative transition-all duration-700 ${
               bottomImageAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
-            style={{ backgroundImage: `url('${imgCard1}')` }}
+            style={{ backgroundImage: `url('/images/Alpha Aveyo-4.jpeg')` }}
           />
         </div>
       </div>

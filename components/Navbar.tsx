@@ -5,7 +5,6 @@ interface NavbarProps {
 }
 
 const imgAMan = "http://localhost:3845/assets/c75767911e539a98cf3080c76af0df77e6a62117.png"
-const imgUnion = "http://localhost:3845/assets/2f982368dcdf0c844c261719034ae8aa1f62e998.svg"
 const imgUnion1 = "http://localhost:3845/assets/7dce532d62b76cfb27ce43354d83030e92ea9b74.svg"
 
 const navItems = [
@@ -24,7 +23,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
       <div className="flex items-center gap-10">
         {/* Logo */}
         <div className="w-[86px] h-[58px] relative">
-          <img alt="Aveyo Logo" className="block max-w-none size-full" src={imgUnion} />
+          <img alt="Aveyo Logo" className="block max-w-none size-full" src="/aveyoSalesLogo.svg" />
         </div>
         
         {/* Navigation Links */}

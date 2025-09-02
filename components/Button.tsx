@@ -45,7 +45,7 @@ export default function Button({
             <img 
               alt="Arrow" 
               className="block max-w-none size-full" 
-              src={icon || imgVector116} 
+              src="/images/arrow.svg"
             />
           </div>
         </div>
