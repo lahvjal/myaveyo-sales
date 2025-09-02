@@ -32,7 +32,7 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
         className="absolute h-[654.42px] top-[1847.7px] translate-x-[-50%] w-[969.02px] z-0"
         style={{ left: "calc(50% + 73.344px)" }}
       >
-        <img alt="" className="block max-w-none size-full opacity-20" src="/aveyosaleslogo.svg" />
+        <img alt="" className="block max-w-none size-full opacity-20" src="/aveyoSalesLogo.svg" />
       </div>
 
       <div className="max-w-[1480px] mx-auto pb-[30px] relative z-10">
