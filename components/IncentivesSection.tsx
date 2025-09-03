@@ -4,7 +4,8 @@ import { useScrollAnimation, useStaggeredScrollAnimation } from '@/hooks/useScro
 import { Incentive } from '@/lib/types/incentive'
 
 interface IncentiveCardProps {
-  backgroundImage: string
+  backgroundImage?: string
+  backgroundVideo?: string
   liveStatus: 'coming_up' | 'live' | 'done'
   category: string
   categoryColor: string
@@ -16,7 +17,7 @@ interface IncentivesSectionProps {
   className?: string
 }
 
-const IncentiveCard = ({ backgroundImage, liveStatus = 'live', category, categoryColor, startDate, endDate }: IncentiveCardProps) => {
+const IncentiveCard = ({ backgroundImage, backgroundVideo, liveStatus = 'live', category, categoryColor, startDate, endDate }: IncentiveCardProps) => {
   const imgEllipse7 = "http://localhost:3845/assets/8670986fdb518a6ffb1b050c901692ea0306a642.svg"
   const imgEllipse8 = "http://localhost:3845/assets/51eea4ffc43d9f3e0ee44581ac8639e95d47a693.svg"
 
@@ -42,8 +43,24 @@ const IncentiveCard = ({ backgroundImage, liveStatus = 'live', category, categor
     <div 
       className="rounded-[3px] border-[0.5px] border-[#333537] relative h-full min-h-[300px] overflow-hidden"
     >
-      {/* Background Image */}
-      {backgroundImage ? (
+      {/* Background Media */}
+      {backgroundVideo ? (
+        <video 
+          src={backgroundVideo}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          onError={(e) => {
+            console.error('Video failed to load:', backgroundVideo)
+            e.currentTarget.style.display = 'none'
+          }}
+          onLoadedData={() => {
+            console.log('Video loaded successfully:', backgroundVideo)
+          }}
+        />
+      ) : backgroundImage ? (
         <img 
           src={backgroundImage} 
           alt="Incentive background"
@@ -58,7 +75,7 @@ const IncentiveCard = ({ backgroundImage, liveStatus = 'live', category, categor
         />
       ) : (
         <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-          <span className="text-white text-sm">No Image</span>
+          <span className="text-white text-sm">No Media</span>
         </div>
       )}
       
@@ -105,7 +122,7 @@ export default function IncentivesSection({ className = '' }: IncentivesSectionP
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
-  const filters = ['All', 'Yearly', 'Summer', 'Monthly', 'Weekly', 'Live', 'Coming Up', 'Done']
+  const filters = ['All', 'Yearly', 'Summer', 'Monthly', 'Live', 'Coming Up', 'Done']
 
   // Fetch incentives from Supabase
   useEffect(() => {
@@ -172,8 +189,7 @@ export default function IncentivesSection({ className = '' }: IncentivesSectionP
             }`}
           >
             <p>
-              Every milestone comes with a payoff. From luxury trips and company cars to cash bonuses and exclusive 
-              gear—our incentives are designed to keep you winning in and out of the field.
+            Great commissions are nice, but incredible incentives can be even cooler. Check out what we have cooking.
             </p>
           </div>
         </div>
@@ -244,6 +260,7 @@ export default function IncentivesSection({ className = '' }: IncentivesSectionP
                   <div key={incentive.id} className={gridClass}>
                     <IncentiveCard
                       backgroundImage={incentive.background_image_url}
+                      backgroundVideo={incentive.background_video_url}
                       liveStatus={incentive.live_status}
                       category={incentive.category}
                       categoryColor={incentive.category_color}

@@ -3,6 +3,7 @@ export interface Incentive {
   title: string
   description?: string
   background_image_url: string
+  background_video_url?: string
   live_status: 'coming_up' | 'live' | 'done'
   category: string
   category_color: string
@@ -18,6 +19,7 @@ export interface CreateIncentiveData {
   title: string
   description?: string
   background_image_url: string
+  background_video_url?: string
   category: string
   category_color: string
   start_date: string

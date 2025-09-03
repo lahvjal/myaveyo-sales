@@ -26,14 +26,7 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
   const bottomImageAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
 
   return (
-    <section className={`px-[50px] py-0 relative ${className}`}>
-      {/* Background Union */}
-      <div
-        className="absolute h-[1000px] top-[1717px] translate-x-[-50%] w-[100vw] z-0"
-        style={{ left: "calc(50% + 73.344px)" }}
-      >
-        <img alt="" className="block max-w-none size-full opacity-5" src="/aveyoSalesLogo.svg" />
-      </div>
+    <section className={`px-[50px] py-0  relative flex flex-col items-center ${className}`}>
 
       <div className="max-w-[1480px] mx-auto pb-[30px] relative z-10">
         {/* Header */}
@@ -80,10 +73,10 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
             }`}
           >
             <span className="font-telegraf font-black">
-              Proven success. Unlimited potential.
+            UNLIMITED POTENTIAL. PROVEN METHODS. MASSIVE EARNINGS. REAL FREEDOM.
             </span>
             <span className="text-[rgba(255,255,255,0.6)]">
-              {' '}Real training. Real earnings. Real freedom. At Aveyo, your results speak for themselves—and your rewards prove it.
+              {' '}AND A CULTURE THAT CARES. HERE, YOUR HARD WORK SPEAKS FOR ITSELF.
             </span>
           </div>
         </div>
@@ -102,10 +95,11 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
           {/* Text Block - middle column, first row */}
           <div 
             ref={textBlockAnimation.ref}
-            className={`flex flex-col items-end justify-center px-[30px] py-0 transition-all duration-700 ${
+            className={`flex flex-col items-start justify-center px-[30px] py-0 transition-all duration-700 ${
               textBlockAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
+            <b className='mb-[40px]'>A COMPLETELY KITTED TOOL KIT.</b>
             <div className="font-telegraf text-white text-[16px] leading-[28px] w-full">
               No limits, just wins. From your first deal to your biggest bonus, we set you up with the tools, training, and support you need to crush goals and climb fast. When you win, the whole team wins—and we celebrate every step of the way.
             </div>
@@ -168,6 +162,12 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
             style={{ backgroundImage: `url('/images/Alpha Aveyo-4.jpeg')` }}
           />
         </div>
+      </div>
+      {/* Background Union */}
+      <div
+        className="absolute h-[500px] top-[1900px] w-[1200px] z-0 overflow-hidden"
+      >
+        <img alt="" className="block max-w-none size-full opacity-5 object-cover" src="/aveyoSalesLogo.svg" />
       </div>
     </section>
   )

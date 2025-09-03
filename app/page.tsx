@@ -72,23 +72,23 @@ export default function Home() {
               >
                 WELCOME
               </p>
-              <h1 
+              
+              <h2 
                 ref={headingAnimation.ref}
-                className={`text-white text-[40px] font-extrabold uppercase leading-[30px] mb-4 font-telegraf transition-all duration-700 ${
+                className={`text-white text-[100px] font-black uppercase leading-[84px] mb-5 font-telegraf transition-all duration-700 ${
                   headingAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
                 }`}
               >
-                Your Career, Your Pace
-              </h1>
-              <h2 
+                EPICENTER OF EVERYTHING AWESOME
+              </h2>
+              <h1 
                 ref={subheadingAnimation.ref}
-                className={`text-white text-[120px] font-black uppercase leading-[84px] mb-12 font-telegraf transition-all duration-700 ${
+                className={`text-white text-[40px] font-extrabold uppercase leading-[30px] mb-12 font-telegraf transition-all duration-700 ${
                   subheadingAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
                 }`}
               >
-                Your Aveyo.
-              </h2>
-              
+                EARNING. LIVING. GROWING.
+              </h1>
               {/* CTA Buttons */}
               <div 
                 ref={buttonsAnimation.ref}
@@ -116,7 +116,7 @@ export default function Home() {
               }`}
             >
               <p className="text-white text-xl leading-normal font-telegraf">
-                Join the fastest-growing sales team in the country. Earn more, travel more, live more.
+              Earn Better. Experience More. Live Brighter. A more fulfilling future is waiting for you.
               </p>
             </div>
 

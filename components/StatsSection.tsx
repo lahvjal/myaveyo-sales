@@ -70,14 +70,33 @@ export default function StatsSection({ className = '' }: StatsSectionProps) {
         <div className="flex items-end justify-between h-[63px] mb-20">
           <div 
             ref={headerAnimation.ref}
-            className={`flex items-start gap-2.5 text-white transition-all duration-700 ${
+            className={`flex flex-col items-start gap-2.5 text-white transition-all duration-700 ${
               headerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <span className="text-[16px] font-telegraf">(1)</span>
-            <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
-              Stats.
-            </h2>
+            <div 
+            ref={headerAnimation.ref}
+            className={`flex items-start gap-2.5 text-white transition-all duration-700 ${
+              headerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`}
+            >
+              <span className="text-[16px] font-telegraf">(1)</span>
+              <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
+                Stats.
+              </h2>
+            </div>
+            <div 
+            ref={yearAnimation.ref}
+            className={`text-white text-[16px] font-telegraf pl-[330px] transition-all duration-700 ${
+              yearAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`}
+          >
+            <p>
+              A real-time look into our company-wide sales metrics.
+              <br />
+              They'd be better if you worked here.
+            </p>
+          </div>
           </div>
           <div 
             ref={yearAnimation.ref}

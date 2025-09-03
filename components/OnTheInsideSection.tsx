@@ -16,7 +16,7 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
     {
       id: '001',
       title: 'The Culture',
-      description: 'We keep it real. We celebrate wins, push each other to be better, and never forget to have fun along the way.',
+      description: 'Our culture is built on a curated combination of our values and attitudes. We work hard, but have fun. We celebrate wins, but keep each other accountable. We’re cool. We’re energetic. And we’re always engaged.',
       backgroundImage: "/images/unlmtd.png"
     },
     {
@@ -65,8 +65,10 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
             >
               <span className="text-[16px] font-telegraf text-black">(4)</span>
               <div className="flex flex-col gap-5 items-end">
-                <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px] text-black">
-                  On the inside.
+                <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px] text-black text-right">
+                PULLING BACK
+                <br />
+                THE CURTAIN
                 </h2>
                 <div className="font-telegraf text-[16px] text-right text-black leading-[28px]">
                   What's working with Aveyo like?

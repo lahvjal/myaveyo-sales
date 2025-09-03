@@ -18,7 +18,7 @@ export default function LetsTalkCard({
   return (
     <div
       className={`bg-center bg-cover bg-no-repeat box-border content-stretch flex gap-2.5 items-end justify-center p-0 relative rounded-[3px] h-[151px] cursor-pointer ${className}`}
-      style={{ backgroundImage: `url('${backgroundImage}')` }}
+      style={{ backgroundImage: `url('/images/TomKarenHead.png')` }}
       onClick={onClick}
       data-name="CTA_small"
     >
