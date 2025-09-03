@@ -167,7 +167,7 @@ export default function IncentivesSection({ className = '' }: IncentivesSectionP
   const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1000 })
 
   return (
-    <section className={`px-[50px] pb-10 ${className}`}>
+    <section className={`px-[50px] py-[130px] ${className}`}>
       <div className="max-w-[1480px] mx-auto pb-[30px]">
         {/* Header */}
         <div className="flex items-center justify-between pb-10 mb-20">

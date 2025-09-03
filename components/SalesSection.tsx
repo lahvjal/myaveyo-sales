@@ -26,7 +26,7 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
   const bottomImageAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
 
   return (
-    <section className={`px-[50px] py-0  relative flex flex-col items-center ${className}`}>
+    <section className={`px-[50px] py-[130px] relative flex flex-col items-center ${className}`}>
 
       <div className="max-w-[1480px] mx-auto pb-[30px] relative z-10">
         {/* Header */}

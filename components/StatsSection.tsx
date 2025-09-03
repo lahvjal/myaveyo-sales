@@ -64,10 +64,10 @@ export default function StatsSection({ className = '' }: StatsSectionProps) {
   const cardAnimations = useStaggeredScrollAnimation<HTMLDivElement>(stats.length, 600, 150)
 
   return (
-    <section className={`px-[50px] py-0 ${className}`}>
+    <section className={`px-[50px] py-[130px] ${className}`}>
       <div className="max-w-[1480px] mx-auto pb-[30px]">
         {/* Header */}
-        <div className="flex items-end justify-between h-[63px] mb-20">
+        <div className="flex items-end justify-between mb-20">
           <div 
             ref={headerAnimation.ref}
             className={`flex flex-col items-start gap-2.5 text-white transition-all duration-700 ${

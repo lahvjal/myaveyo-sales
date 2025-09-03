@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import ExpandableBlock from './ExpandableBlock'
 import Button from './Button'
 import { useScrollAnimation, useStaggeredScrollAnimation } from '@/hooks/useScrollAnimation'
+import { motion, useScroll, useTransform } from 'framer-motion'
 
 interface OnTheInsideSectionProps {
   className?: string
@@ -9,6 +10,25 @@ interface OnTheInsideSectionProps {
 
 export default function OnTheInsideSection({ className = '' }: OnTheInsideSectionProps) {
   const [expandedBlock, setExpandedBlock] = useState<string>('001')
+  const sectionRef = useRef<HTMLElement>(null)
+  
+  // Framer Motion scroll animation
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "start start"]
+  })
+  
+  const containerWidth = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [1480, typeof window !== 'undefined' ? document.documentElement.clientWidth : 1920]
+  )
+  
+  const borderRadius = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [5, 0]
+  )
   
   const imgCard = "http://localhost:3845/assets/dc52173e611d9ad77837e8dfdd59a3cb14c1ad4a.png"
   
@@ -43,6 +63,7 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
     setExpandedBlock(expandedBlock === id ? '' : id)
   }
 
+
   const filters = ['All', 'Yearly', 'Summer', 'Live', 'Done']
   const [activeFilter, setActiveFilter] = useState('All')
 
@@ -52,8 +73,14 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
   const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200 })
 
   return (
-    <section className={`px-[50px] py-0 ${className}`}>
-      <div className="bg-[#e6e6e6] rounded-[5px] py-[160px] px-[30px]">
+    <motion.section ref={sectionRef} className={`flex flex-col items-center pt-[130px] ${className}`}>
+      <motion.div 
+        className="bg-[#e6e6e6] py-[160px] px-[30px] mx-auto overflow-visible"
+        style={{ 
+          width: containerWidth,
+          borderRadius: borderRadius
+        }}
+      >
         <div className="max-w-[1480px] mx-auto">
           {/* Header */}
           <div className="flex items-center justify-start pb-10 mb-[60px]">
@@ -131,7 +158,7 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
             </Button>
           </div>
         </div>
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   )
 }

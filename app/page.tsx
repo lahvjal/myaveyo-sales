@@ -10,6 +10,7 @@ import SalesSection from '@/components/SalesSection'
 import OnTheInsideSection from '@/components/OnTheInsideSection'
 import BuildCareers from '@/components/BuildCareers'
 import RotatingLogoBanner from '@/components/RotatingLogoBanner'
+import VideoCallToActionSection from '@/components/VideoCallToActionSection'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
 // Image constants from Figma
@@ -30,7 +31,7 @@ export default function Home() {
   const cardAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200 })
 
   return (
-    <div className="bg-[#0d0d0d] min-h-screen flex flex-col gap-[210px]">
+    <div className="bg-[#0d0d0d] min-h-screen flex flex-col">
       {/* Hero Section with Video Background */}
       <div className="min-h-screen relative overflow-hidden">
         {/* Video Background */}
@@ -163,8 +164,12 @@ export default function Home() {
       {/* On The Inside Section */}
       <OnTheInsideSection />
 
-      {/* Build Careers Section */}
-      <BuildCareers />
+      {/* Video Call to Action Section */}
+      <VideoCallToActionSection 
+        buttonText="JOIN THE TEAM"
+        onButtonClick={() => console.log('Join the team clicked')}
+      />
+
     </div>
   )
 }
