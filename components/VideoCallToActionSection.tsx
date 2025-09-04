@@ -38,11 +38,11 @@ export default function VideoCallToActionSection({
       <div className="absolute inset-0 bg-black/30" />
       
       {/* Content Container */}
-      <div className="relative z-10 h-full flex items-end justify-center pb-16">
+      <div className="relative z-10 h-full flex items-center justify-center pb-16">
         {/* Bottom Center Button */}
         <div 
           ref={buttonAnimation.ref}
-          className={`transition-all duration-700 ${
+          className={`transition-all duration-700 mt-[800px] ${
             buttonAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
           }`}
         >

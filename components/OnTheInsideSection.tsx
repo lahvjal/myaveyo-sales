@@ -70,6 +70,8 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
 
   // Animation hooks
   const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200, disabled: !pageReady })
+  const descriptionAnimation = useScrollAnimation<HTMLDivElement>({ delay: 600, disabled: !pageReady })
+  const videoAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
   const blockAnimations = useStaggeredScrollAnimation<HTMLDivElement>(blocks.length, 400, 200, !pageReady)
   const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200, disabled: !pageReady })
 
@@ -84,25 +86,58 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
       >
         <div className="max-w-[1480px] mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-start pb-10 mb-[60px]">
+          <div className="flex flex-row items-start justify-between w-[100%] pb-10 mb-[160px] h-[500px]">
+            <div className="flex flex-col items-start justify-between h-[100%] max-w-[680px]">
+              <div 
+                ref={headerAnimation.ref}
+                className={`flex items-start gap-2.5 transition-all duration-700 ${
+                  headerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+                }`}
+              >
+                <span className="text-[16px] font-telegraf text-black">(4)</span>
+                <div className="flex flex-col gap-5 items-end">
+                  <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px] text-black text-right">
+                  PULLING BACK
+                  <br />
+                  THE CURTAIN
+                  </h2>
+                  <div className="font-telegraf text-[16px] text-right text-black leading-[28px]">
+                    What's working with Aveyo like?
+                  </div>
+                </div>
+              </div>
+              <div 
+                ref={descriptionAnimation.ref}
+                className={`font-telegraf w-[100%] pl-[30%] text-black text-[16px] leading-[28px] transition-all duration-700 ${
+                  descriptionAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+                }`}
+              >
+                No limits, just wins. From your first deal to your biggest bonus, we set you up with the tools, training, and support you need to crush goals and climb fast. When you win, the whole team wins—and we celebrate every step of the way.
+              </div>
+            </div>
+            {/* Video thumbnail section */}
             <div 
-              ref={headerAnimation.ref}
-              className={`flex items-start gap-2.5 transition-all duration-700 ${
-                headerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+              ref={videoAnimation.ref}
+              className={`w-[40%] mb-[40px] h-[100%] transition-all duration-700 ${
+                videoAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
               }`}
             >
-              <span className="text-[16px] font-telegraf text-black">(4)</span>
-              <div className="flex flex-col gap-5 items-end">
-                <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px] text-black text-right">
-                PULLING BACK
-                <br />
-                THE CURTAIN
-                </h2>
-                <div className="font-telegraf text-[16px] text-right text-black leading-[28px]">
-                  What's working with Aveyo like?
+              <div className="relative h-[100%] bg-black rounded-[5px] overflow-hidden cursor-pointer group">
+                <img 
+                  src={imgCard}
+                  alt="Video thumbnail"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-all duration-300">
+                  <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <svg className="w-6 h-6 text-black ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
+
           </div>
 
           {/* Expandable Blocks Grid */}

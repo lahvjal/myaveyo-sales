@@ -8,13 +8,13 @@ const imgAMan = "http://localhost:3845/assets/c75767911e539a98cf3080c76af0df77e6
 const imgUnion1 = "http://localhost:3845/assets/7dce532d62b76cfb27ce43354d83030e92ea9b74.svg"
 
 const navItems = [
-  'About',
-  'Incentives', 
-  'Leaderboard',
-  'EDU',
-  'Store',
-  'Brand',
-  'Map'
+  { name: 'About', href: '#sales-section' },
+  { name: 'Incentives', href: '/incentives' }, 
+  { name: 'Leaderboard', href: '/leaderboard' },
+  { name: 'EDU', href: '/edu' },
+  { name: 'Store', href: 'https://aveyo.shop/' },
+  { name: 'Brand', href: '/brand' },
+  { name: 'Map', href: '/map' }
 ]
 
 export default function Navbar({ className = '' }: NavbarProps) {
@@ -30,11 +30,11 @@ export default function Navbar({ className = '' }: NavbarProps) {
         <div className="flex items-center gap-10">
           {navItems.map((item) => (
             <a 
-              key={item}
-              href="#" 
+              key={item.name}
+              href={item.href} 
               className="text-white text-xs font-bold uppercase tracking-wide hover:opacity-80 transition-opacity font-telegraf"
             >
-              {item}
+              {item.name}
             </a>
           ))}
         </div>

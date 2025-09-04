@@ -11,6 +11,7 @@ import OnTheInsideSection from '@/components/OnTheInsideSection'
 import BuildCareers from '@/components/BuildCareers'
 import RotatingLogoBanner from '@/components/RotatingLogoBanner'
 import VideoCallToActionSection from '@/components/VideoCallToActionSection'
+import VideoMaskSection from '@/components/VideoMaskSection'
 import PageLoader from '@/components/PageLoader'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
@@ -176,6 +177,9 @@ export default function Home() {
 
       {/* Sales Section */}
       <SalesSection pageReady={pageReady} />
+
+      {/* Video Mask Section */}
+      <VideoMaskSection pageReady={pageReady} />
 
       {/* On The Inside Section */}
       <OnTheInsideSection pageReady={pageReady} />

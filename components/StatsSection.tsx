@@ -83,12 +83,12 @@ export default function StatsSection({ className = '', pageReady = true }: Stats
             >
               <span className="text-[16px] font-telegraf">(1)</span>
               <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
-                Stats.
+                Sales Stats.
               </h2>
             </div>
             <div 
             ref={yearAnimation.ref}
-            className={`text-white text-[16px] font-telegraf pl-[330px] transition-all duration-700 ${
+            className={`text-white text-[16px] font-telegraf pl-[30px] pr-[330px] transition-all duration-700 ${
               yearAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
