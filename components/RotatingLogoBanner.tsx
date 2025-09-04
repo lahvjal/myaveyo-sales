@@ -18,9 +18,13 @@ export default function RotatingLogoBanner() {
             </div>
             <div className="h-[70px] w-[110px] flex-shrink-0">
               <img 
-                src="/aveyosaleslogo.svg"
+                src="/aveyoSalesLogo.svg?v=1"
                 alt="Aveyo" 
                 className="w-full h-full object-contain"
+                onError={(e) => {
+                  console.error('Failed to load aveyoSalesLogo.svg');
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             </div>
           </React.Fragment>
