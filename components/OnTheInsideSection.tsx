@@ -6,9 +6,10 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 
 interface OnTheInsideSectionProps {
   className?: string
+  pageReady?: boolean
 }
 
-export default function OnTheInsideSection({ className = '' }: OnTheInsideSectionProps) {
+export default function OnTheInsideSection({ className = '', pageReady = true }: OnTheInsideSectionProps) {
   const [expandedBlock, setExpandedBlock] = useState<string>('001')
   const sectionRef = useRef<HTMLElement>(null)
   
@@ -68,9 +69,9 @@ export default function OnTheInsideSection({ className = '' }: OnTheInsideSectio
   const [activeFilter, setActiveFilter] = useState('All')
 
   // Animation hooks
-  const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200 })
-  const blockAnimations = useStaggeredScrollAnimation<HTMLDivElement>(blocks.length, 400, 200)
-  const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200 })
+  const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200, disabled: !pageReady })
+  const blockAnimations = useStaggeredScrollAnimation<HTMLDivElement>(blocks.length, 400, 200, !pageReady)
+  const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200, disabled: !pageReady })
 
   return (
     <motion.section ref={sectionRef} className={`flex flex-col items-center pt-[130px] ${className}`}>

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Button from '@/components/Button'
 import LetsTalkCard from '@/components/LetsTalkCard'
 import Navbar from '@/components/Navbar'
@@ -11,6 +11,7 @@ import OnTheInsideSection from '@/components/OnTheInsideSection'
 import BuildCareers from '@/components/BuildCareers'
 import RotatingLogoBanner from '@/components/RotatingLogoBanner'
 import VideoCallToActionSection from '@/components/VideoCallToActionSection'
+import PageLoader from '@/components/PageLoader'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
 // Image constants from Figma
@@ -22,17 +23,32 @@ const imgVector116 = "http://localhost:3845/assets/5fe2a32dc067120eb3a1b0499801e
 const imgVector117 = "http://localhost:3845/assets/b74939b67987caa88b59e0e1a8a00f872135632d.svg"
 
 export default function Home() {
-  const welcomeAnimation = useScrollAnimation<HTMLParagraphElement>({ delay: 200 })
-  const headingAnimation = useScrollAnimation<HTMLHeadingElement>({ delay: 400 })
-  const subheadingAnimation = useScrollAnimation<HTMLHeadingElement>({ delay: 600 })
-  const buttonsAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
-  const descriptionAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1000 })
-  const copyrightAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1100 })
-  const cardAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200 })
+  const [showLoader, setShowLoader] = useState(true)
+  const [pageReady, setPageReady] = useState(false)
+
+  const handleLoaderComplete = () => {
+    setShowLoader(false)
+    // Small delay to ensure loader is fully gone before starting page animations
+    setTimeout(() => {
+      setPageReady(true)
+    }, 100)
+  }
+
+  const welcomeAnimation = useScrollAnimation<HTMLParagraphElement>({ delay: 200, disabled: !pageReady })
+  const headingAnimation = useScrollAnimation<HTMLHeadingElement>({ delay: 400, disabled: !pageReady })
+  const subheadingAnimation = useScrollAnimation<HTMLHeadingElement>({ delay: 600, disabled: !pageReady })
+  const buttonsAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
+  const descriptionAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1000, disabled: !pageReady })
+  const copyrightAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1100, disabled: !pageReady })
+  const cardAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200, disabled: !pageReady })
 
   return (
-    <div className="bg-[#0d0d0d] min-h-screen flex flex-col">
-      {/* Hero Section with Video Background */}
+    <>
+      {showLoader && (
+        <PageLoader onComplete={handleLoaderComplete} />
+      )}
+      <div className="bg-[#0d0d0d] min-h-screen flex flex-col">
+        {/* Hero Section with Video Background */}
       <div className="min-h-screen relative overflow-hidden">
         {/* Video Background */}
         <video 
@@ -150,26 +166,28 @@ export default function Home() {
       </div>
 
       {/* Stats Section */}
-      <StatsSection />
+      <StatsSection pageReady={pageReady} />
 
       {/* Rotating Logo Banner */}
       <RotatingLogoBanner />
 
       {/* Incentives Section */}
-      <IncentivesSection />
+      <IncentivesSection pageReady={pageReady} />
 
       {/* Sales Section */}
-      <SalesSection />
+      <SalesSection pageReady={pageReady} />
 
       {/* On The Inside Section */}
-      <OnTheInsideSection />
+      <OnTheInsideSection pageReady={pageReady} />
 
       {/* Video Call to Action Section */}
       <VideoCallToActionSection 
         buttonText="JOIN THE TEAM"
         onButtonClick={() => console.log('Join the team clicked')}
+        pageReady={pageReady}
       />
 
-    </div>
+      </div>
+    </>
   )
 }

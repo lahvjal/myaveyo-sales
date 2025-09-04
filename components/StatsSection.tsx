@@ -13,6 +13,7 @@ interface StatCardProps {
 
 interface StatsSectionProps {
   className?: string
+  pageReady?: boolean
 }
 
 const StatCard = ({ value, suffix, prefix, label, isVisible = false, delay = 0 }: StatCardProps) => {
@@ -26,7 +27,7 @@ const StatCard = ({ value, suffix, prefix, label, isVisible = false, delay = 0 }
   })
 
   return (
-    <div className="flex-1 bg-[#121212] h-[205px] rounded-[3px] border-[0.5px] border-[#303030] relative">
+    <div className="flex-1 bg-gradient-to-b from-[#171717] to-[#0d0d0d] h-[205px] rounded-[3px] relative">
       <div className="flex flex-col items-center justify-center h-full p-5">
         <div className="flex items-start justify-center gap-[7px] mb-[15px]">
           {prefix && (
@@ -51,7 +52,7 @@ const StatCard = ({ value, suffix, prefix, label, isVisible = false, delay = 0 }
   )
 }
 
-export default function StatsSection({ className = '' }: StatsSectionProps) {
+export default function StatsSection({ className = '', pageReady = true }: StatsSectionProps) {
   const stats = [
     { value: '10', suffix: '%', label: 'Increase' },
     { value: '45', label: 'Projects Sold' },
@@ -59,9 +60,9 @@ export default function StatsSection({ className = '' }: StatsSectionProps) {
     { value: '98', suffix: '%', label: 'Customer Satisfaction' }
   ]
 
-  const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200 })
-  const yearAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400 })
-  const cardAnimations = useStaggeredScrollAnimation<HTMLDivElement>(stats.length, 600, 150)
+  const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200, disabled: !pageReady })
+  const yearAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400, disabled: !pageReady })
+  const cardAnimations = useStaggeredScrollAnimation<HTMLDivElement>(stats.length, 600, 150, !pageReady)
 
   return (
     <section className={`px-[50px] py-[130px] ${className}`}>

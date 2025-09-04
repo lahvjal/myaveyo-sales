@@ -15,6 +15,7 @@ interface IncentiveCardProps {
 
 interface IncentivesSectionProps {
   className?: string
+  pageReady?: boolean
 }
 
 const IncentiveCard = ({ backgroundImage, backgroundVideo, liveStatus = 'live', category, categoryColor, startDate, endDate }: IncentiveCardProps) => {
@@ -41,7 +42,7 @@ const IncentiveCard = ({ backgroundImage, backgroundVideo, liveStatus = 'live', 
 
   return (
     <div 
-      className="rounded-[3px] border-[0.5px] border-[#333537] relative h-full min-h-[300px] overflow-hidden"
+      className="rounded-[3px] relative h-full min-h-[300px] overflow-hidden"
     >
       {/* Background Media */}
       {backgroundVideo ? (
@@ -116,7 +117,7 @@ const IncentiveCard = ({ backgroundImage, backgroundVideo, liveStatus = 'live', 
   )
 }
 
-export default function IncentivesSection({ className = '' }: IncentivesSectionProps) {
+export default function IncentivesSection({ className = '', pageReady = true }: IncentivesSectionProps) {
   const [activeFilter, setActiveFilter] = useState('All')
   const [incentives, setIncentives] = useState<Incentive[]>([])
   const [loading, setLoading] = useState(true)
@@ -160,11 +161,14 @@ export default function IncentivesSection({ className = '' }: IncentivesSectionP
   const filteredIncentives = getFilteredIncentives()
 
   // Animation hooks
-  const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200 })
-  const descriptionAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400 })
-  const filtersAnimation = useScrollAnimation<HTMLDivElement>({ delay: 600 })
-  const gridAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
-  const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1000 })
+  const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200, disabled: !pageReady })
+  const descriptionAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400, disabled: !pageReady })
+  const filtersAnimation = useScrollAnimation<HTMLDivElement>({ delay: 600, disabled: !pageReady })
+  const gridContainerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
+  const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1000, disabled: !pageReady })
+  
+  // Create staggered animations for grid items (up to 12 items in a 3x4 grid)
+  const gridItemAnimations = useStaggeredScrollAnimation<HTMLDivElement>(12, 900, 100, !pageReady)
 
   return (
     <section className={`px-[50px] py-[130px] ${className}`}>
@@ -209,7 +213,7 @@ export default function IncentivesSection({ className = '' }: IncentivesSectionP
                 className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
                   activeFilter === filter
                     ? 'bg-white text-black'
-                    : 'border border-white text-white hover:bg-white hover:text-black'
+                    : 'bg-gradient-to-b from-[#232323] to-[#171717]'
                 }`}
               >
                 {filter}
@@ -235,8 +239,10 @@ export default function IncentivesSection({ className = '' }: IncentivesSectionP
           {/* Incentives Grid */}
           {!loading && !error && (
             <div 
-              ref={gridAnimation.ref}
-              className={`grid grid-cols-3 gap-5 min-h-[1380px] transition-all duration-700 opacity-100 translate-y-0`}
+              ref={gridContainerAnimation.ref}
+              className={`grid grid-cols-3 gap-5 min-h-[1380px] transition-all duration-700 ${
+                gridContainerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+              }`}
               style={{ gridTemplateRows: 'repeat(4, 1fr)' }}
             >
               {filteredIncentives
@@ -256,8 +262,17 @@ export default function IncentivesSection({ className = '' }: IncentivesSectionP
                 // Define grid positioning based on index
                 let gridClass = 'row-span-2'
                 
+                // Get the animation for this specific grid item
+                const itemAnimation = gridItemAnimations[index] || gridItemAnimations[gridItemAnimations.length - 1]
+                
                 return (
-                  <div key={incentive.id} className={gridClass}>
+                  <div 
+                    key={incentive.id} 
+                    ref={itemAnimation.ref}
+                    className={`${gridClass} transition-all duration-700 ${
+                      itemAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                    }`}
+                  >
                     <IncentiveCard
                       backgroundImage={incentive.background_image_url}
                       backgroundVideo={incentive.background_video_url}

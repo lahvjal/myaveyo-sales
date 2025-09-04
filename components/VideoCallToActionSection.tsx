@@ -5,19 +5,21 @@ import Button from './Button'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
 interface VideoCallToActionSectionProps {
+  buttonText: string
+  onButtonClick: () => void
   className?: string
-  buttonText?: string
+  pageReady?: boolean
   buttonVariant?: 'primary' | 'secondary'
-  onButtonClick?: () => void
 }
 
 export default function VideoCallToActionSection({ 
-  className = '',
-  buttonText = 'GET STARTED',
-  buttonVariant = 'primary',
-  onButtonClick
+  buttonText, 
+  onButtonClick, 
+  className = '', 
+  pageReady = true, 
+  buttonVariant = 'primary'
 }: VideoCallToActionSectionProps) {
-  const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400 })
+  const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400, disabled: !pageReady })
 
   return (
     <section className={`px-[50px] relative w-full h-screen overflow-hidden ${className}`}>

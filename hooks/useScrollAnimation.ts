@@ -6,17 +6,24 @@ interface UseScrollAnimationOptions {
   threshold?: number
   delay?: number
   rootMargin?: string
+  disabled?: boolean
 }
 
 export function useScrollAnimation<T extends HTMLElement = HTMLElement>({
   threshold = 0.1,
   delay = 0,
-  rootMargin = '0px 0px -50px 0px'
+  rootMargin = '0px 0px -50px 0px',
+  disabled = false
 }: UseScrollAnimationOptions = {}) {
   const [isVisible, setIsVisible] = useState(false)
   const ref = useRef<T>(null)
 
   useEffect(() => {
+    if (disabled) {
+      setIsVisible(false)
+      return
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -41,7 +48,7 @@ export function useScrollAnimation<T extends HTMLElement = HTMLElement>({
         observer.unobserve(currentRef)
       }
     }
-  }, [threshold, delay, rootMargin])
+  }, [threshold, delay, rootMargin, disabled])
 
   return { ref, isVisible }
 }
@@ -49,10 +56,11 @@ export function useScrollAnimation<T extends HTMLElement = HTMLElement>({
 export function useStaggeredScrollAnimation<T extends HTMLElement = HTMLDivElement>(
   count: number,
   baseDelay: number = 0,
-  staggerDelay: number = 100
+  staggerDelay: number = 100,
+  disabled: boolean = false
 ) {
   const animations = Array.from({ length: count }, (_, index) =>
-    useScrollAnimation<T>({ delay: baseDelay + index * staggerDelay })
+    useScrollAnimation<T>({ delay: baseDelay + index * staggerDelay, disabled })
   )
 
   return animations

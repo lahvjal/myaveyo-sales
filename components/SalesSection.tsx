@@ -2,12 +2,14 @@ import React from 'react'
 import Button from './Button'
 import StatCard2 from './StatCard2'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
+import { motion } from 'framer-motion'
 
 interface SalesSectionProps {
   className?: string
+  pageReady?: boolean
 }
 
-export default function SalesSection({ className = '' }: SalesSectionProps) {
+export default function SalesSection({ className = '', pageReady = true }: SalesSectionProps) {
   const imgCard = "http://localhost:3845/assets/aefbcf1e801101e6f975e071036c708ab99584f1.png"
   const imgCard1 = "http://localhost:3845/assets/2cc6b99064c5dec2895c25489e864578ff6e43dd.png"
   const imgUnion = "http://localhost:3845/assets/80c219426186feb64d676f8cfead76d4e8dbbae5.svg"
@@ -15,15 +17,15 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
   const imgVector116 = "http://localhost:3845/assets/b74939b67987caa88b59e0e1a8a00f872135632d.svg"
 
   // Animation hooks
-  const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200 })
-  const copyrightAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400 })
-  const descriptionAnimation = useScrollAnimation<HTMLDivElement>({ delay: 600 })
-  const imageCardAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
-  const textBlockAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
-  const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
-  const statCard1Animation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
-  const statCard2Animation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
-  const bottomImageAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800 })
+  const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200, disabled: !pageReady })
+  const copyrightAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400, disabled: !pageReady })
+  const descriptionAnimation = useScrollAnimation<HTMLDivElement>({ delay: 600, disabled: !pageReady })
+  const imageCardAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
+  const textBlockAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
+  const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
+  const statCard1Animation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
+  const statCard2Animation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
+  const bottomImageAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
 
   return (
     <section className={`px-[50px] py-[130px] relative flex flex-col items-center ${className}`}>
@@ -82,15 +84,48 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
         </div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-3 grid-rows-4 gap-5 h-[1386px] w-full">
+        <motion.div 
+          className="grid grid-cols-3 grid-rows-4 gap-5 h-[1386px] w-full"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.3
+              }
+            }
+          }}
+        >
           {/* Large Image Card - spans 2 rows, 1 column */}
           <div 
-            ref={imageCardAnimation.ref}
-            className={`row-span-2 bg-cover bg-center bg-no-repeat rounded-[3px] border-[0.5px] border-[#333537] relative transition-all duration-700 ${
-              imageCardAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
-            }`}
+            className="row-span-2 bg-cover bg-center bg-no-repeat rounded-[3px] relative overflow-hidden"
             style={{ backgroundImage: `url('/images/donny-hammond.jpeg')` }}
-          />
+            ref={imageCardAnimation.ref}
+          >
+            <div className="flex flex-row h-full w-full">
+              <motion.div 
+                className="flex-1 bg-[#0d0d0d]"
+                initial={{ y: 0 }}
+                animate={imageCardAnimation.isVisible ? { y: "-100%" } : { y: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 0.2,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+              />
+              <motion.div 
+                className="flex-1 bg-[#0d0d0d]"
+                initial={{ y: 0 }}
+                animate={imageCardAnimation.isVisible ? { y: "-100%" } : { y: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 0.4,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+              />
+            </div>
+          </div>
 
           {/* Text Block - middle column, first row */}
           <div 
@@ -155,13 +190,74 @@ export default function SalesSection({ className = '' }: SalesSectionProps) {
 
           {/* Large Bottom Image - spans 2 rows, 3 columns */}
           <div 
-            ref={bottomImageAnimation.ref}
-            className={`row-span-2 col-span-3 bg-cover bg-center bg-no-repeat rounded-[3px] border-[0.5px] border-[#333537] relative transition-all duration-700 ${
-              bottomImageAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
-            }`}
+            className="row-span-2 col-span-3 bg-cover bg-center bg-no-repeat rounded-[3px] relative overflow-hidden"
             style={{ backgroundImage: `url('/images/Alpha Aveyo-4.jpeg')` }}
-          />
-        </div>
+            ref={bottomImageAnimation.ref}
+          >
+            <div className="flex flex-row h-full w-full">
+              <motion.div 
+                className="flex-1 bg-[#0d0d0d]"
+                initial={{ y: 0 }}
+                animate={bottomImageAnimation.isVisible ? { y: "-100%" } : { y: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 0.2,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+              />
+              <motion.div 
+                className="flex-1 bg-[#0d0d0d]"
+                initial={{ y: 0 }}
+                animate={bottomImageAnimation.isVisible ? { y: "-100%" } : { y: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 0.3,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+              />
+              <motion.div 
+                className="flex-1 bg-[#0d0d0d]"
+                initial={{ y: 0 }}
+                animate={bottomImageAnimation.isVisible ? { y: "-100%" } : { y: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 0.4,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+              />
+              <motion.div 
+                className="flex-1 bg-[#0d0d0d]"
+                initial={{ y: 0 }}
+                animate={bottomImageAnimation.isVisible ? { y: "-100%" } : { y: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 0.5,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+              />
+              <motion.div 
+                className="flex-1 bg-[#0d0d0d]"
+                initial={{ y: 0 }}
+                animate={bottomImageAnimation.isVisible ? { y: "-100%" } : { y: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 0.6,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+              />
+              <motion.div 
+                className="flex-1 bg-[#0d0d0d]"
+                initial={{ y: 0 }}
+                animate={bottomImageAnimation.isVisible ? { y: "-100%" } : { y: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: 0.7,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+              />
+            </div>
+          </div>
+        </motion.div>
       </div>
       {/* Background Union */}
       <div

@@ -32,7 +32,7 @@ export default function StatCard2({
   })
 
   return (
-    <div className={`bg-[rgba(26,27,28,0.4)] rounded-[3px] border-[0.5px] border-[#303030] relative ${className}`}>
+    <div className={`bg-gradient-to-b from-[#1a1a1a] to-[#0f0f0f] rounded-[3px] relative ${className}`}>
       <div className="flex flex-col items-center justify-center p-[20px] h-full">
         <div className="flex flex-col gap-[30px] items-center justify-center text-white w-full">
           {/* Value with prefix/suffix */}
