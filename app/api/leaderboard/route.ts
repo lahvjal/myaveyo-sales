@@ -11,11 +11,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const orderBy = searchParams.get('order_by') || 'completed_projects DESC'
     const limit = parseInt(searchParams.get('limit') || '50')
+    const year = searchParams.get('year') // 'current' for 2025, null/undefined for all time
 
     console.log('Environment check:', {
       hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
       hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-      url: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...'
+      url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      yearFilter: year
     })
 
     // Since RLS is disabled, we can use direct queries
@@ -26,11 +28,22 @@ export async function GET(request: NextRequest) {
 
     if (repsError) throw repsError
 
-    const { data: projects, error: projectsError } = await supabase
+    // Build projects query with optional year filter
+    let projectsQuery = supabase
       .from('podio_data')
-      .select('rep_id, status, project_id')
+      .select('rep_id, status, project_id, contract_signed_date')
+
+    // Apply year filter if specified - handle the actual date format in database
+    if (year === 'current') {
+      // Since dates are in "12 Jun 2025" format, we need to filter using LIKE pattern
+      projectsQuery = projectsQuery.like('contract_signed_date', '%2025')
+    }
+
+    const { data: projects, error: projectsError } = await projectsQuery
 
     if (projectsError) throw projectsError
+
+    console.log('Found projects:', projects?.length, 'with year filter:', year)
 
     // Process data in JavaScript
     const leaderboardData = salesReps.map(rep => {

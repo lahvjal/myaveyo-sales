@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Button from '@/components/Button'
 import LetsTalkCard from '@/components/LetsTalkCard'
 import Navbar from '@/components/Navbar'
@@ -42,6 +42,21 @@ export default function Home() {
   const descriptionAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1000, disabled: !pageReady })
   const copyrightAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1100, disabled: !pageReady })
   const cardAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200, disabled: !pageReady })
+
+  // Load AI chatbot script
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://ava-ai-chatbot.vercel.app/embed.js'
+    script.async = true
+    document.body.appendChild(script)
+
+    return () => {
+      // Cleanup script on unmount
+      if (document.body.contains(script)) {
+        document.body.removeChild(script)
+      }
+    }
+  }, [])
 
   return (
     <>
@@ -146,21 +161,20 @@ export default function Home() {
               }`}
             >
               <p className="text-[rgba(255,255,255,0.4)] text-[15px] uppercase font-telegraf">
-                © 2025 MYAVEYO
+                2025 MYAVEYO
               </p>
             </div>
 
-            {/* Right - Let's Talk Card */}
+            {/* Right - AI Chatbot */}
             <div 
               ref={cardAnimation.ref}
               className={`transition-all duration-700 ${
                 cardAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
               }`}
             >
-              <LetsTalkCard 
-                backgroundImage={imgFrame157}
-                onClick={() => console.log('Let\'s talk clicked')}
-              />
+              <div id="ava-chatbot-container" className="w-full h-full min-h-[200px]">
+                {/* AI Chatbot will be embedded here */}
+              </div>
             </div>
           </div>
         </div>
@@ -177,7 +191,7 @@ export default function Home() {
 
       {/* Video Mask Section */}
       <VideoMaskSection pageReady={pageReady} />
-      
+
       {/* Sales Section */}
       <SalesSection pageReady={pageReady} />
 

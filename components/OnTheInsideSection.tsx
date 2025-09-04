@@ -11,7 +11,9 @@ interface OnTheInsideSectionProps {
 
 export default function OnTheInsideSection({ className = '', pageReady = true }: OnTheInsideSectionProps) {
   const [expandedBlock, setExpandedBlock] = useState<string>('001')
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   
   // Framer Motion scroll animation
   const { scrollYProgress } = useScroll({
@@ -63,6 +65,37 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
   const handleToggle = (id: string) => {
     setExpandedBlock(expandedBlock === id ? '' : id)
   }
+
+  const openVideoModal = () => {
+    setIsVideoModalOpen(true)
+  }
+
+  const closeVideoModal = () => {
+    setIsVideoModalOpen(false)
+    if (videoRef.current) {
+      videoRef.current.pause()
+      videoRef.current.currentTime = 0
+    }
+  }
+
+  // Close modal on escape key
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeVideoModal()
+      }
+    }
+    
+    if (isVideoModalOpen) {
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
+    }
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isVideoModalOpen])
 
 
   const filters = ['All', 'Yearly', 'Summer', 'Live', 'Done']
@@ -122,9 +155,12 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
                 videoAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
               }`}
             >
-              <div className="relative h-[100%] bg-black rounded-[5px] overflow-hidden cursor-pointer group">
+              <div 
+                className="relative h-[100%] bg-black rounded-[5px] overflow-hidden cursor-pointer group"
+                onClick={openVideoModal}
+              >
                 <img 
-                  src="/images/consumer photos-29.jpeg"
+                  src="/images/rep-review-thumbnail.png"
                   alt="Video thumbnail"
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
@@ -191,6 +227,43 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
           </div>
         </div>
       </motion.div>
+
+      {/* Video Modal */}
+      {isVideoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
+          <div className="relative w-full max-w-4xl mx-4">
+            {/* Close button */}
+            <button
+              onClick={closeVideoModal}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors z-10"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Video player */}
+            <div className="relative bg-black rounded-lg overflow-hidden">
+              <video
+                ref={videoRef}
+                className="w-full h-auto"
+                controls
+                autoPlay
+                preload="metadata"
+              >
+                <source src="/videos/rep-review.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+          
+          {/* Click outside to close */}
+          <div 
+            className="absolute inset-0 -z-10"
+            onClick={closeVideoModal}
+          />
+        </div>
+      )}
     </motion.section>
   )
 }

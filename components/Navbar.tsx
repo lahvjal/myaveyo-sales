@@ -9,12 +9,15 @@ const imgUnion1 = "http://localhost:3845/assets/7dce532d62b76cfb27ce43354d83030e
 
 const navItems = [
   { name: 'About', href: '/#sales-section' },
-  { name: 'Incentives', href: '/incentives' }, 
+  { name: 'Reviews', href: '/reviews' },
+  { name: 'Stats', href: '/stats' },
   { name: 'Leaderboard', href: '/leaderboard' },
+  { name: 'Incentives', href: '/incentives' }, 
   { name: 'EDU', href: '/edu' },
   { name: 'Store', href: 'https://aveyo.shop/' },
   { name: 'Brand', href: '/brand' },
-  { name: 'Map', href: '/map' }
+  { name: 'Wiki', href: 'https://aveyo-wiki.bullet.site/' },
+  { name: 'Map', href: '/map' },
 ]
 
 export default function Navbar({ className = '' }: NavbarProps) {

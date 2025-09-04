@@ -15,9 +15,10 @@ interface LeaderboardEntry {
 }
 
 export default function LeaderboardPage() {
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'completed' | 'total' | 'rate'>('completed')
+  const [yearFilter, setYearFilter] = useState<'all' | 'current'>('all')
   const [mounted, setMounted] = useState(false)
   
 
@@ -30,18 +31,19 @@ export default function LeaderboardPage() {
                      viewMode === 'total' ? 'total_projects DESC' : 
                      'completion_rate DESC'
       
-      const response = await fetch(`/api/leaderboard?order_by=${encodeURIComponent(orderBy)}`)
+      const yearParam = yearFilter === 'current' ? '&year=current' : ''
+      const response = await fetch(`/api/leaderboard?order_by=${encodeURIComponent(orderBy)}${yearParam}`)
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       
       const data = await response.json()
-      setLeaderboard(data || [])
+      setLeaderboardData(data || [])
     } catch (error) {
-      console.error('Error fetching leaderboard:', error)
+      console.error('Error fetching leaderboardData:', error)
       // Use mock data as fallback
-      setLeaderboard([
+      setLeaderboardData([
         {
           rep_name: "AUSTIN TOWNSEND",
           rep_email: "austin.townsend@myaveyo.com",
@@ -95,8 +97,13 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     setMounted(true)
-    fetchLeaderboard()
-  }, [viewMode])
+  }, [])
+
+  useEffect(() => {
+    if (mounted) {
+      fetchLeaderboard()
+    }
+  }, [viewMode, yearFilter, mounted])
 
   if (!mounted) {
     return (
@@ -152,14 +159,41 @@ export default function LeaderboardPage() {
       {/* View Mode Toggle */}
       <div className="px-6 py-8">
         <div className="max-w-6xl mx-auto">
+          {/* Year Filter */}
+          <div className="flex justify-center mb-4">
+            <div className="flex bg-gray-800 rounded-lg p-1 gap-1">
+              <button
+                onClick={() => setYearFilter('all')}
+                className={`px-4 py-2 rounded-md font-medium transition-all ${
+                  yearFilter === 'all'
+                    ? 'bg-green-600 text-white shadow-lg'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                }`}
+              >
+                All Time
+              </button>
+              <button
+                onClick={() => setYearFilter('current')}
+                className={`px-4 py-2 rounded-md font-medium transition-all ${
+                  yearFilter === 'current'
+                    ? 'bg-green-600 text-white shadow-lg'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                }`}
+              >
+                2025 Only
+              </button>
+            </div>
+          </div>
+
+          {/* Filter Buttons */}
           <div className="flex justify-center mb-8">
-            <div className="bg-gray-800 rounded-lg p-1 flex">
+            <div className="flex bg-gray-800 rounded-lg p-1 gap-1">
               <button
                 onClick={() => setViewMode('completed')}
                 className={`px-6 py-3 rounded-md font-medium transition-all ${
-                  viewMode === 'completed' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'text-gray-400 hover:text-white'
+                  viewMode === 'completed'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
                 }`}
               >
                 Completed Projects
@@ -167,9 +201,9 @@ export default function LeaderboardPage() {
               <button
                 onClick={() => setViewMode('total')}
                 className={`px-6 py-3 rounded-md font-medium transition-all ${
-                  viewMode === 'total' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'text-gray-400 hover:text-white'
+                  viewMode === 'total'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
                 }`}
               >
                 Total Projects
@@ -177,9 +211,9 @@ export default function LeaderboardPage() {
               <button
                 onClick={() => setViewMode('rate')}
                 className={`px-6 py-3 rounded-md font-medium transition-all ${
-                  viewMode === 'rate' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'text-gray-400 hover:text-white'
+                  viewMode === 'rate'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
                 }`}
               >
                 Completion Rate
@@ -191,13 +225,13 @@ export default function LeaderboardPage() {
           {loading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="mt-4 text-gray-400">Loading leaderboard...</p>
+              <p className="mt-4 text-gray-400">Loading leaderboardData...</p>
             </div>
           ) : (
             <div className="grid gap-4">
               {/* Top 3 Podium */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {leaderboard.slice(0, 3).map((entry, index) => (
+                {leaderboardData.slice(0, 3).map((entry: LeaderboardEntry, index: number) => (
                   <div
                     key={entry.rep_id}
                     className={`relative p-6 rounded-xl border-2 ${
@@ -242,7 +276,7 @@ export default function LeaderboardPage() {
                   <div className="col-span-1 text-center">Rate</div>
                 </div>
                 
-                {leaderboard.slice(3).map((entry, index) => (
+                {leaderboardData.slice(3).map((entry: LeaderboardEntry, index: number) => (
                   <div
                     key={entry.rep_id}
                     className="grid grid-cols-12 gap-4 p-4 border-b border-gray-800 hover:bg-gray-800/50 transition-colors"
@@ -281,25 +315,25 @@ export default function LeaderboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="p-6 bg-gray-800 rounded-xl">
               <div className="text-3xl font-bold text-blue-400 mb-2">
-                {leaderboard.length}
+                {leaderboardData.length}
               </div>
               <div className="text-gray-300">Active Reps</div>
             </div>
             <div className="p-6 bg-gray-800 rounded-xl">
               <div className="text-3xl font-bold text-green-400 mb-2">
-                {leaderboard.reduce((sum, entry) => sum + entry.completed_projects, 0)}
+                {leaderboardData.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.completed_projects, 0)}
               </div>
               <div className="text-gray-300">Total Completed</div>
             </div>
             <div className="p-6 bg-gray-800 rounded-xl">
               <div className="text-3xl font-bold text-yellow-400 mb-2">
-                {leaderboard.reduce((sum, entry) => sum + entry.active_projects, 0)}
+                {leaderboardData.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.active_projects, 0)}
               </div>
               <div className="text-gray-300">Active Projects</div>
             </div>
             <div className="p-6 bg-gray-800 rounded-xl">
               <div className="text-3xl font-bold text-purple-400 mb-2">
-                {Math.round(leaderboard.reduce((sum, entry) => sum + entry.completion_rate, 0) / leaderboard.length)}%
+                {Math.round(leaderboardData.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.completion_rate, 0) / leaderboardData.length)}%
               </div>
               <div className="text-gray-300">Avg Completion Rate</div>
             </div>
