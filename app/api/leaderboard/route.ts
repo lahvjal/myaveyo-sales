@@ -12,6 +12,12 @@ export async function GET(request: NextRequest) {
     const orderBy = searchParams.get('order_by') || 'completed_projects DESC'
     const limit = parseInt(searchParams.get('limit') || '50')
 
+    console.log('Environment check:', {
+      hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      url: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...'
+    })
+
     // Since RLS is disabled, we can use direct queries
     const { data: salesReps, error: repsError } = await supabase
       .from('sales_reps')
@@ -58,6 +64,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data || [])
   } catch (error) {
     console.error('API Error:', error)
+    console.error('Error details:', JSON.stringify(error, null, 2))
     
     // Return mock data as fallback
     const mockData = [
