@@ -261,9 +261,9 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
       </div>
       {/* Background Union */}
       <div
-        className="absolute h-[500px] top-[1900px] w-[1200px] z-0 overflow-hidden"
+        className="absolute h-[auto] bottom-[-1070px] w-[110%] z-0"
       >
-        <img alt="" className="block max-w-none size-full opacity-5 object-cover" src="/aveyoSalesLogo.svg" />
+        <img alt="" className="block max-w-none size-full opacity-[3%] object-cover" src="/aveyoSalesLogo.svg" />
       </div>
     </section>
   )

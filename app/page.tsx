@@ -175,11 +175,12 @@ export default function Home() {
       {/* Incentives Section */}
       <IncentivesSection pageReady={pageReady} />
 
+      {/* Video Mask Section */}
+      <VideoMaskSection pageReady={pageReady} />
+      
       {/* Sales Section */}
       <SalesSection pageReady={pageReady} />
 
-      {/* Video Mask Section */}
-      <VideoMaskSection pageReady={pageReady} />
 
       {/* On The Inside Section */}
       <OnTheInsideSection pageReady={pageReady} />

@@ -8,7 +8,7 @@ const imgAMan = "http://localhost:3845/assets/c75767911e539a98cf3080c76af0df77e6
 const imgUnion1 = "http://localhost:3845/assets/7dce532d62b76cfb27ce43354d83030e92ea9b74.svg"
 
 const navItems = [
-  { name: 'About', href: '#sales-section' },
+  { name: 'About', href: '/#sales-section' },
   { name: 'Incentives', href: '/incentives' }, 
   { name: 'Leaderboard', href: '/leaderboard' },
   { name: 'EDU', href: '/edu' },
@@ -22,9 +22,9 @@ export default function Navbar({ className = '' }: NavbarProps) {
     <nav className={`flex items-center justify-center gap-10 px-12 py-5 relative z-10 ${className}`}>
       <div className="flex items-center gap-10">
         {/* Logo */}
-        <div className="w-[86px] h-[58px] relative">
+        <a href="/" className="w-[86px] h-[58px] relative">
           <img alt="Aveyo Logo" className="block max-w-none size-full" src="/aveyoSalesLogo.svg" />
-        </div>
+        </a>
         
         {/* Navigation Links */}
         <div className="flex items-center gap-10">

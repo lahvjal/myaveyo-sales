@@ -1,6 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
-import { CreateIncentiveData, calculateIncentiveStatus } from '@/lib/types/incentive'
+import { createClient } from '@supabase/supabase-js'
+
+// Simple types for incentives
+interface CreateIncentiveData {
+  title: string
+  description?: string
+  category: string
+  category_color: string
+  background_image_url: string
+  background_video_url?: string
+  start_date: string
+  end_date: string
+  sort_order?: number
+  is_published?: boolean
+}
+
+const calculateIncentiveStatus = (startDate: string, endDate: string) => {
+  const now = new Date()
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+  
+  if (now < start) return 'coming_up'
+  if (now > end) return 'done'
+  return 'live'
+}
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function GET() {
   try {
