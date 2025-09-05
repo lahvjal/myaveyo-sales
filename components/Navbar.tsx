@@ -45,11 +45,14 @@ export default function Navbar({ className = '' }: NavbarProps) {
       
       {/* Right side icons */}
       <div className="flex items-center gap-8">
-        <div className="w-9 h-full flex items-center justify-center">
+        {/* <div className="w-9 h-full flex items-center justify-center">
           <img alt="Search" className="w-[15px] h-[19px]" src={imgUnion1} />
-        </div>
-        <div className="w-[30px] h-[30px] rounded-full overflow-hidden">
-          <img alt="Profile" className="w-full h-full object-cover" src={imgAMan} />
+        </div> */}
+        <div 
+          className="w-[40px] h-[40px] rounded-full overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => window.location.href = '/admin'}
+        >
+          <img alt="Profile" className="w-full h-full object-cover" src="/images/TomKarenHead.png" />
         </div>
       </div>
     </nav>

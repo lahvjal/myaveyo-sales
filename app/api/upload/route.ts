@@ -5,6 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
+    const folder = formData.get('folder') as string || 'incentives' // Default to incentives for backward compatibility
     
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
@@ -13,11 +14,11 @@ export async function POST(request: NextRequest) {
     // Generate unique filename
     const fileExt = file.name.split('.').pop()
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-    const filePath = `incentives/${fileName}`
+    const filePath = `${folder}/${fileName}`
 
     // Upload to Supabase Storage using admin client (bypasses RLS)
     const { data, error } = await supabaseAdmin.storage
-      .from('incentive-images')
+      .from('media-assets')
       .upload(filePath, file, {
         cacheControl: '3600',
         upsert: false
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     // Get public URL
     const { data: { publicUrl } } = supabaseAdmin.storage
-      .from('incentive-images')
+      .from('media-assets')
       .getPublicUrl(filePath)
 
     return NextResponse.json({ 
