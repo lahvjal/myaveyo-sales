@@ -139,45 +139,45 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Navbar */}
+    <div className="bg-[#0d0d0d] min-h-screen">
       <Navbar />
       
-      {/* Header */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20" />
-        <div className="relative z-10 px-6 py-16 text-center">
-          <h1 className="text-5xl font-bold mb-4 font-telegraf">
-            Sales Leaderboard
-          </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Track top performers and see where you rank among the Aveyo sales team
-          </p>
-        </div>
-      </div>
+      <div className="px-[50px] py-[130px]">
+        <div className="max-w-[1480px] mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-10 mb-20">
+            <div className="flex items-start gap-2.5 text-white opacity-100 translate-y-0">
+              <span className="text-[16px] font-telegraf">(L)</span>
+              <h1 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
+                Leaderboard.
+              </h1>
+            </div>
+            <div className="text-white text-[16px] font-telegraf max-w-[400px] opacity-100 translate-y-0">
+              <p>
+                Track top performers and see where you rank among the Aveyo sales team.
+              </p>
+            </div>
+          </div>
 
-      {/* View Mode Toggle */}
-      <div className="px-6 py-8">
-        <div className="max-w-6xl mx-auto">
           {/* Year Filter */}
           <div className="flex justify-center mb-4">
-            <div className="flex bg-gray-800 rounded-lg p-1 gap-1">
+            <div className="flex bg-gradient-to-b from-[#232323] to-[#171717] rounded-[60px] p-1 gap-1">
               <button
                 onClick={() => setYearFilter('all')}
-                className={`px-4 py-2 rounded-md font-medium transition-all ${
+                className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
                   yearFilter === 'all'
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                    ? 'bg-white text-black'
+                    : 'bg-transparent text-white hover:bg-white/10'
                 }`}
               >
                 All Time
               </button>
               <button
                 onClick={() => setYearFilter('current')}
-                className={`px-4 py-2 rounded-md font-medium transition-all ${
+                className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
                   yearFilter === 'current'
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                    ? 'bg-white text-black'
+                    : 'bg-transparent text-white hover:bg-white/10'
                 }`}
               >
                 2025 Only
@@ -186,34 +186,34 @@ export default function LeaderboardPage() {
           </div>
 
           {/* Filter Buttons */}
-          <div className="flex justify-center mb-8">
-            <div className="flex bg-gray-800 rounded-lg p-1 gap-1">
+          <div className="flex justify-center mb-12">
+            <div className="flex bg-gradient-to-b from-[#232323] to-[#171717] rounded-[60px] p-1 gap-1">
               <button
                 onClick={() => setViewMode('completed')}
-                className={`px-6 py-3 rounded-md font-medium transition-all ${
+                className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
                   viewMode === 'completed'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                    ? 'bg-white text-black'
+                    : 'bg-transparent text-white hover:bg-white/10'
                 }`}
               >
                 Completed Projects
               </button>
               <button
                 onClick={() => setViewMode('total')}
-                className={`px-6 py-3 rounded-md font-medium transition-all ${
+                className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
                   viewMode === 'total'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                    ? 'bg-white text-black'
+                    : 'bg-transparent text-white hover:bg-white/10'
                 }`}
               >
                 Total Projects
               </button>
               <button
                 onClick={() => setViewMode('rate')}
-                className={`px-6 py-3 rounded-md font-medium transition-all ${
+                className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
                   viewMode === 'rate'
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                    ? 'bg-white text-black'
+                    : 'bg-transparent text-white hover:bg-white/10'
                 }`}
               >
                 Completion Rate
@@ -223,41 +223,40 @@ export default function LeaderboardPage() {
 
           {/* Leaderboard */}
           {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="mt-4 text-gray-400">Loading leaderboardData...</p>
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
             </div>
           ) : (
-            <div className="grid gap-4">
+            <div className="grid gap-6">
               {/* Top 3 Podium */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 {leaderboardData.slice(0, 3).map((entry: LeaderboardEntry, index: number) => (
                   <div
                     key={entry.rep_id}
-                    className={`relative p-6 rounded-xl border-2 ${
+                    className={`relative p-6 bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px] border ${
                       index === 0 
-                        ? 'border-yellow-500 bg-gradient-to-br from-yellow-500/10 to-yellow-600/5' 
+                        ? 'border-yellow-500/30' 
                         : index === 1
-                        ? 'border-gray-400 bg-gradient-to-br from-gray-400/10 to-gray-500/5'
-                        : 'border-amber-600 bg-gradient-to-br from-amber-600/10 to-amber-700/5'
+                        ? 'border-gray-400/30'
+                        : 'border-amber-600/30'
                     }`}
                   >
                     <div className="text-center">
                       <div className="text-4xl mb-2">{getRankIcon(index)}</div>
-                      <h3 className="text-xl font-bold mb-1">{entry.rep_name}</h3>
-                      <p className="text-gray-400 text-sm mb-4">{entry.rep_email}</p>
-                      <div className="text-3xl font-bold text-blue-400 mb-2">
+                      <h3 className="text-xl font-telegraf font-bold mb-1 text-white">{entry.rep_name}</h3>
+                      <p className="text-[rgba(255,255,255,0.6)] text-sm mb-4 font-telegraf">{entry.rep_email}</p>
+                      <div className="text-3xl font-telegraf font-bold text-white mb-2">
                         {getStatValue(entry)}
                       </div>
-                      <p className="text-sm text-gray-300">{getStatLabel()}</p>
+                      <p className="text-sm text-[rgba(255,255,255,0.6)] font-telegraf">{getStatLabel()}</p>
                       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <div className="text-gray-400">Total</div>
-                          <div className="font-semibold">{entry.total_projects}</div>
+                          <div className="text-[rgba(255,255,255,0.6)] font-telegraf">Total</div>
+                          <div className="font-telegraf font-semibold text-white">{entry.total_projects}</div>
                         </div>
                         <div>
-                          <div className="text-gray-400">Active</div>
-                          <div className="font-semibold">{entry.active_projects}</div>
+                          <div className="text-[rgba(255,255,255,0.6)] font-telegraf">Active</div>
+                          <div className="font-telegraf font-semibold text-white">{entry.active_projects}</div>
                         </div>
                       </div>
                     </div>
@@ -266,8 +265,8 @@ export default function LeaderboardPage() {
               </div>
 
               {/* Rest of Leaderboard */}
-              <div className="bg-gray-900 rounded-xl overflow-hidden">
-                <div className="grid grid-cols-12 gap-4 p-4 bg-gray-800 font-semibold text-sm">
+              <div className="bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px] overflow-hidden">
+                <div className="grid grid-cols-12 gap-4 p-4 bg-gradient-to-b from-[#232323] to-[#171717] font-telegraf font-semibold text-sm text-white">
                   <div className="col-span-1">Rank</div>
                   <div className="col-span-4">Sales Rep</div>
                   <div className="col-span-2 text-center">{getStatLabel()}</div>
@@ -279,25 +278,25 @@ export default function LeaderboardPage() {
                 {leaderboardData.slice(3).map((entry: LeaderboardEntry, index: number) => (
                   <div
                     key={entry.rep_id}
-                    className="grid grid-cols-12 gap-4 p-4 border-b border-gray-800 hover:bg-gray-800/50 transition-colors"
+                    className="grid grid-cols-12 gap-4 p-4 border-b border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.05)] transition-colors"
                   >
-                    <div className="col-span-1 font-bold text-gray-400">
+                    <div className="col-span-1 font-telegraf font-bold text-[rgba(255,255,255,0.6)]">
                       #{index + 4}
                     </div>
                     <div className="col-span-4">
-                      <div className="font-semibold">{entry.rep_name}</div>
-                      <div className="text-sm text-gray-400">{entry.rep_email}</div>
+                      <div className="font-telegraf font-semibold text-white">{entry.rep_name}</div>
+                      <div className="text-sm text-[rgba(255,255,255,0.6)] font-telegraf">{entry.rep_email}</div>
                     </div>
-                    <div className="col-span-2 text-center font-bold text-blue-400">
+                    <div className="col-span-2 text-center font-telegraf font-bold text-white">
                       {getStatValue(entry)}
                     </div>
-                    <div className="col-span-2 text-center">
+                    <div className="col-span-2 text-center font-telegraf text-white">
                       {entry.total_projects}
                     </div>
-                    <div className="col-span-2 text-center">
+                    <div className="col-span-2 text-center font-telegraf text-white">
                       {entry.active_projects}
                     </div>
-                    <div className="col-span-1 text-center text-sm">
+                    <div className="col-span-1 text-center text-sm font-telegraf text-white">
                       {entry.completion_rate}%
                     </div>
                   </div>
@@ -305,37 +304,35 @@ export default function LeaderboardPage() {
               </div>
             </div>
           )}
-        </div>
-      </div>
 
-      {/* Stats Summary */}
-      <div className="px-6 py-12 bg-gray-900">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-8">Team Performance</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="p-6 bg-gray-800 rounded-xl">
-              <div className="text-3xl font-bold text-blue-400 mb-2">
-                {leaderboardData.length}
+          {/* Stats Summary */}
+          <div className="mt-12 text-center">
+            <h2 className="text-2xl font-telegraf font-bold mb-8 text-white">Team Performance</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="p-6 bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px]">
+                <div className="text-3xl font-telegraf font-bold text-white mb-2">
+                  {leaderboardData.length}
+                </div>
+                <div className="text-[rgba(255,255,255,0.6)] font-telegraf">Active Reps</div>
               </div>
-              <div className="text-gray-300">Active Reps</div>
-            </div>
-            <div className="p-6 bg-gray-800 rounded-xl">
-              <div className="text-3xl font-bold text-green-400 mb-2">
-                {leaderboardData.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.completed_projects, 0)}
+              <div className="p-6 bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px]">
+                <div className="text-3xl font-telegraf font-bold text-white mb-2">
+                  {leaderboardData.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.completed_projects, 0)}
+                </div>
+                <div className="text-[rgba(255,255,255,0.6)] font-telegraf">Total Completed</div>
               </div>
-              <div className="text-gray-300">Total Completed</div>
-            </div>
-            <div className="p-6 bg-gray-800 rounded-xl">
-              <div className="text-3xl font-bold text-yellow-400 mb-2">
-                {leaderboardData.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.active_projects, 0)}
+              <div className="p-6 bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px]">
+                <div className="text-3xl font-telegraf font-bold text-white mb-2">
+                  {leaderboardData.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.active_projects, 0)}
+                </div>
+                <div className="text-[rgba(255,255,255,0.6)] font-telegraf">Active Projects</div>
               </div>
-              <div className="text-gray-300">Active Projects</div>
-            </div>
-            <div className="p-6 bg-gray-800 rounded-xl">
-              <div className="text-3xl font-bold text-purple-400 mb-2">
-                {Math.round(leaderboardData.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.completion_rate, 0) / leaderboardData.length)}%
+              <div className="p-6 bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px]">
+                <div className="text-3xl font-telegraf font-bold text-white mb-2">
+                  {Math.round(leaderboardData.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.completion_rate, 0) / leaderboardData.length)}%
+                </div>
+                <div className="text-[rgba(255,255,255,0.6)] font-telegraf">Avg Completion Rate</div>
               </div>
-              <div className="text-gray-300">Avg Completion Rate</div>
             </div>
           </div>
         </div>

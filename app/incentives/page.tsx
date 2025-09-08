@@ -123,33 +123,37 @@ export default function IncentivesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Navbar */}
+    <div className="bg-[#0d0d0d] min-h-screen">
       <Navbar />
       
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-green-600/20" />
-        <div className="relative z-10 px-6 py-20 text-center">
-          <h1 className="text-6xl font-bold mb-6 font-telegraf">
-            Sales Incentives
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            Unlock your earning potential with our exclusive incentive programs. 
-            From monthly sprints to yearly challenges, there's always a way to boost your rewards.
-          </p>
-          
+      <div className="px-[50px] py-[130px]">
+        <div className="max-w-[1480px] mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-10 mb-20">
+            <div className="flex items-start gap-2.5 text-white opacity-100 translate-y-0">
+              <span className="text-[16px] font-telegraf">(I)</span>
+              <h1 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
+                Incentives.
+              </h1>
+            </div>
+            <div className="text-white text-[16px] font-telegraf max-w-[400px] opacity-100 translate-y-0">
+              <p>
+                Unlock your earning potential with our exclusive incentive programs. From monthly sprints to yearly challenges.
+              </p>
+            </div>
+          </div>
+
           {/* Filter Buttons */}
-          <div className="flex justify-center mb-8">
-            <div className="bg-gray-800 rounded-lg p-1 flex">
+          <div className="flex justify-center mb-12">
+            <div className="flex bg-gradient-to-b from-[#232323] to-[#171717] rounded-[60px] p-1 gap-1">
               {['all', 'live', 'coming_up', 'done'].map((filterOption) => (
                 <button
                   key={filterOption}
                   onClick={() => setFilter(filterOption as any)}
-                  className={`px-6 py-3 rounded-md font-medium transition-all capitalize ${
+                  className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors capitalize ${
                     filter === filterOption 
-                      ? 'bg-blue-600 text-white' 
-                      : 'text-gray-400 hover:text-white'
+                      ? 'bg-white text-black' 
+                      : 'bg-transparent text-white hover:bg-white/10'
                   }`}
                 >
                   {filterOption === 'coming_up' ? 'Coming Soon' : filterOption}
@@ -157,26 +161,21 @@ export default function IncentivesPage() {
               ))}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Incentives Grid */}
-      <div className="px-6 py-12">
-        <div className="max-w-7xl mx-auto">
+          {/* Incentives Grid */}
           {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="mt-4 text-gray-400">Loading incentives...</p>
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredIncentives.map((incentive) => {
                 const statusBadge = getStatusBadge(incentive.live_status)
                 
                 return (
                   <div
                     key={incentive.id}
-                    className="group relative bg-gray-900 rounded-2xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300"
+                    className="group relative bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px] overflow-hidden hover:scale-105 transition-all duration-300"
                   >
                     {/* Background Image/Video */}
                     <div className="relative h-64 overflow-hidden">
@@ -222,28 +221,28 @@ export default function IncentivesPage() {
 
                     {/* Content */}
                     <div className="p-6">
-                      <h3 className="text-2xl font-bold mb-3 group-hover:text-blue-400 transition-colors">
+                      <h3 className="text-2xl font-telegraf font-bold mb-3 text-white group-hover:text-white/80 transition-colors">
                         {incentive.title}
                       </h3>
                       
-                      <p className="text-gray-300 mb-4 line-clamp-3">
+                      <p className="text-[rgba(255,255,255,0.6)] font-telegraf mb-4 line-clamp-3">
                         {incentive.description}
                       </p>
 
                       {/* Dates */}
-                      <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
+                      <div className="flex justify-between items-center text-sm text-[rgba(255,255,255,0.6)] font-telegraf mb-4">
                         <span>Start: {formatDate(incentive.start_date)}</span>
                         <span>End: {formatDate(incentive.end_date)}</span>
                       </div>
 
                       {/* Action Button */}
                       <button 
-                        className={`w-full py-3 rounded-lg font-semibold transition-all ${
+                        className={`w-full py-3 rounded-[3px] font-telegraf font-semibold transition-all ${
                           incentive.live_status === 'live'
-                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                            ? 'bg-white text-black hover:bg-white/90'
                             : incentive.live_status === 'coming_up'
-                            ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                            : 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                            ? 'bg-gradient-to-b from-[#232323] to-[#171717] text-white hover:from-[#2a2a2a] hover:to-[#1e1e1e]'
+                            : 'bg-gradient-to-b from-[#232323] to-[#171717] text-[rgba(255,255,255,0.6)] cursor-not-allowed'
                         }`}
                         disabled={incentive.live_status === 'done'}
                       >
@@ -260,33 +259,31 @@ export default function IncentivesPage() {
 
           {filteredIncentives.length === 0 && !loading && (
             <div className="text-center py-12">
-              <p className="text-gray-400 text-lg">No incentives found for the selected filter.</p>
+              <p className="text-[rgba(255,255,255,0.6)] font-telegraf text-lg">No incentives found for the selected filter.</p>
             </div>
           )}
-        </div>
-      </div>
 
-      {/* CTA Section */}
-      <div className="px-6 py-16 bg-gradient-to-r from-blue-600/10 to-purple-600/10">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Maximize Your Earnings?</h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Join our top performers and start earning more with every sale. 
-            Check the leaderboard to see where you stand.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="/leaderboard"
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
-            >
-              View Leaderboard
-            </a>
-            <a 
-              href="/dashboard"
-              className="px-8 py-4 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition-colors"
-            >
-              My Dashboard
-            </a>
+          {/* CTA Section */}
+          <div className="mt-12 text-center">
+            <h2 className="text-4xl font-telegraf font-bold mb-6 text-white">Ready to Maximize Your Earnings?</h2>
+            <p className="text-xl text-[rgba(255,255,255,0.6)] font-telegraf mb-8">
+              Join our top performers and start earning more with every sale. 
+              Check the leaderboard to see where you stand.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="/leaderboard"
+                className="px-8 py-4 bg-white text-black hover:bg-white/90 rounded-[3px] font-telegraf font-semibold transition-colors"
+              >
+                View Leaderboard
+              </a>
+              <a 
+                href="/dashboard"
+                className="px-8 py-4 bg-gradient-to-b from-[#232323] to-[#171717] text-white hover:from-[#2a2a2a] hover:to-[#1e1e1e] rounded-[3px] font-telegraf font-semibold transition-colors"
+              >
+                My Dashboard
+              </a>
+            </div>
           </div>
         </div>
       </div>

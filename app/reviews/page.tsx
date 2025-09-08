@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Navbar from '../../components/Navbar'
+import Navbar from '@/components/Navbar'
+import VideoCard from '@/components/VideoCard'
+import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
 interface Review {
   id: string
@@ -25,9 +27,16 @@ export default function ReviewsPage() {
   const [filter, setFilter] = useState<'all' | 'customer' | 'rep'>('all')
   const [featuredOnly, setFeaturedOnly] = useState(false)
   const [selectedVideo, setSelectedVideo] = useState<Review | null>(null)
+  const [pageReady, setPageReady] = useState(false)
+
+  const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200, disabled: false })
+  const descriptionAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400, disabled: false })
+  const filtersAnimation = useScrollAnimation<HTMLDivElement>({ delay: 600, disabled: false })
+  const gridAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: false })
 
   useEffect(() => {
     fetchReviews()
+    setPageReady(true)
   }, [])
 
   useEffect(() => {
@@ -82,191 +91,150 @@ export default function ReviewsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+    <div className="bg-[#0d0d0d] min-h-screen">
       <Navbar />
       
-      <div className="container mx-auto px-6 py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">
-            Customer & Rep Reviews
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Hear from our satisfied customers and successful sales representatives about their experiences with Aveyo
-          </p>
-        </div>
+      <div className="px-[50px] py-[130px]">
+        <div className="max-w-[1480px] mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-10 mb-20">
+            <div 
+              ref={headerAnimation.ref}
+              className="flex items-start gap-2.5 text-white opacity-100 translate-y-0"
+            >
+              <span className="text-[16px] font-telegraf">(R)</span>
+              <h1 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
+                Reviews.
+              </h1>
+            </div>
+            <div 
+              ref={descriptionAnimation.ref}
+              className="text-white text-[16px] font-telegraf max-w-[400px] opacity-100 translate-y-0"
+            >
+              <p>
+                Hear from our satisfied customers and successful sales representatives about their experiences with Aveyo.
+              </p>
+            </div>
+          </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <div className="flex gap-2">
+          {/* Filters */}
+          <div 
+            ref={filtersAnimation.ref}
+            className="flex items-center justify-center gap-2.5 mb-12 opacity-100 translate-y-0"
+          >
             <button
               onClick={() => setFilter('all')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
                 filter === 'all'
-                  ? 'bg-blue-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-white text-black'
+                  : 'bg-gradient-to-b from-[#232323] to-[#171717] text-white'
               }`}
             >
               All Reviews
             </button>
             <button
               onClick={() => setFilter('customer')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
                 filter === 'customer'
-                  ? 'bg-green-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-white text-black'
+                  : 'bg-gradient-to-b from-[#232323] to-[#171717] text-white'
               }`}
             >
               Customers
             </button>
             <button
               onClick={() => setFilter('rep')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
                 filter === 'rep'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-white text-black'
+                  : 'bg-gradient-to-b from-[#232323] to-[#171717] text-white'
               }`}
             >
               Reps
             </button>
+            <button
+              onClick={() => setFeaturedOnly(!featuredOnly)}
+              className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
+                featuredOnly
+                  ? 'bg-white text-black'
+                  : 'bg-gradient-to-b from-[#232323] to-[#171717] text-white'
+              }`}
+            >
+              ⭐ Featured Only
+            </button>
           </div>
-          
-          <button
-            onClick={() => setFeaturedOnly(!featuredOnly)}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              featuredOnly
-                ? 'bg-yellow-600 text-white shadow-lg'
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-            }`}
-          >
-            ⭐ Featured Only
-          </button>
-        </div>
 
-        {/* Results Count */}
-        <div className="text-center mb-8">
-          <p className="text-gray-400">
-            Showing {filteredReviews.length} review{filteredReviews.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-
-        {/* Loading State */}
-        {loading && (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          </div>
-        )}
-
-        {/* Video Grid */}
-        {!loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredReviews.map((review) => (
-              <div
-                key={review.id}
-                className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer"
-                onClick={() => openVideoModal(review)}
-              >
-                {/* Video Thumbnail */}
-                <div className="relative aspect-video bg-gray-700">
-                  {review.thumbnail_url ? (
-                    <img
-                      src={review.thumbnail_url}
-                      alt={review.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M8 5v10l8-5-8-5z"/>
-                        </svg>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Featured Badge */}
-                  {review.featured && (
-                    <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 rounded-full text-xs font-bold">
-                      ⭐ Featured
-                    </div>
-                  )}
-                  
-                  {/* Type Badge */}
-                  <div className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-bold ${
-                    review.type === 'customer' 
-                      ? 'bg-green-500 text-white' 
-                      : 'bg-purple-500 text-white'
-                  }`}>
-                    {review.type === 'customer' ? 'Customer' : 'Rep'}
-                  </div>
-                  
-                  {/* Play Button Overlay */}
-                  <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    <div className="w-12 h-12 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                      <svg className="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M8 5v10l8-5-8-5z"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  <h3 className="text-white font-semibold text-lg mb-2 line-clamp-2">
-                    {review.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-3 line-clamp-2">
-                    {review.description}
-                  </p>
-                  
-                  <div className="space-y-1 text-xs text-gray-500">
-                    {review.customer_name && (
-                      <p>👤 {review.customer_name}</p>
-                    )}
-                    {review.rep_name && (
-                      <p>🏆 {review.rep_name}</p>
-                    )}
-                    <p>📍 {review.location}</p>
-                    <p>📅 {formatDate(review.date_recorded)}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && filteredReviews.length === 0 && (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🎥</div>
-            <h3 className="text-2xl font-semibold text-white mb-2">No Reviews Found</h3>
-            <p className="text-gray-400">
-              {filter === 'all' 
-                ? 'No reviews available at the moment.' 
-                : `No ${filter} reviews match your current filters.`}
+          {/* Results Count */}
+          <div className="text-center mb-12">
+            <p className="text-[rgba(255,255,255,0.6)] text-[14px] font-telegraf">
+              Showing {filteredReviews.length} review{filteredReviews.length !== 1 ? 's' : ''}
             </p>
           </div>
-        )}
+
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+            </div>
+          )}
+
+          {/* Video Grid */}
+          {!loading && (
+            <div 
+              ref={gridAnimation.ref}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 opacity-100 translate-y-0"
+            >
+              {filteredReviews.map((review) => (
+                <VideoCard
+                  key={review.id}
+                  thumbnailUrl={review.thumbnail_url}
+                  title={review.title}
+                  description={review.description}
+                  customerName={review.customer_name}
+                  repName={review.rep_name}
+                  location={review.location}
+                  dateRecorded={review.date_recorded}
+                  type={review.type}
+                  featured={review.featured}
+                  onClick={() => openVideoModal(review)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && filteredReviews.length === 0 && (
+            <div className="text-center py-20">
+              <div className="text-6xl mb-4">🎥</div>
+              <h3 className="text-[24px] font-telegraf font-bold text-white mb-4">No Reviews Found</h3>
+              <p className="text-[rgba(255,255,255,0.6)] text-[16px] font-telegraf">
+                {filter === 'all' 
+                  ? 'No reviews available at the moment.' 
+                  : `No ${filter} reviews match your current filters.`}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Video Modal */}
       {selectedVideo && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px] max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-700">
+            <div className="flex justify-between items-center p-6 border-b border-[rgba(255,255,255,0.1)]">
               <div>
-                <h2 className="text-2xl font-bold text-white">{selectedVideo.title}</h2>
-                <div className="flex items-center gap-4 mt-2">
-                  <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                <h2 className="text-[24px] font-telegraf font-bold text-white">{selectedVideo.title}</h2>
+                <div className="flex items-center gap-4 mt-3">
+                  <span className={`px-3 py-1 rounded-full text-[12px] font-telegraf font-bold ${
                     selectedVideo.type === 'customer' 
                       ? 'bg-green-500 text-white' 
-                      : 'bg-purple-500 text-white'
+                      : 'bg-blue-500 text-white'
                   }`}>
                     {selectedVideo.type === 'customer' ? 'Customer Review' : 'Rep Review'}
                   </span>
                   {selectedVideo.featured && (
-                    <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold">
+                    <span className="bg-yellow-500 text-black px-3 py-1 rounded-full text-[12px] font-telegraf font-bold">
                       ⭐ Featured
                     </span>
                   )}
@@ -274,7 +242,7 @@ export default function ReviewsPage() {
               </div>
               <button
                 onClick={closeVideoModal}
-                className="text-gray-400 hover:text-white text-3xl font-bold"
+                className="text-[rgba(255,255,255,0.6)] hover:text-white text-3xl font-telegraf font-bold"
               >
                 ×
               </button>
@@ -282,11 +250,11 @@ export default function ReviewsPage() {
 
             {/* Video Player */}
             <div className="p-6">
-              <div className="aspect-video bg-black rounded-lg mb-4">
+              <div className="aspect-video bg-black rounded-[3px] mb-6">
                 <video
                   controls
                   autoPlay
-                  className="w-full h-full rounded-lg"
+                  className="w-full h-full rounded-[3px]"
                   src={selectedVideo.video_url}
                 >
                   Your browser does not support the video tag.
@@ -294,27 +262,27 @@ export default function ReviewsPage() {
               </div>
 
               {/* Video Details */}
-              <div className="space-y-4">
-                <p className="text-gray-300">{selectedVideo.description}</p>
+              <div className="space-y-6">
+                <p className="text-[rgba(255,255,255,0.8)] text-[16px] font-telegraf">{selectedVideo.description}</p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[14px] font-telegraf">
                   {selectedVideo.customer_name && (
-                    <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex items-center gap-2 text-[rgba(255,255,255,0.6)]">
                       <span>👤</span>
                       <span>Customer: {selectedVideo.customer_name}</span>
                     </div>
                   )}
                   {selectedVideo.rep_name && (
-                    <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex items-center gap-2 text-[rgba(255,255,255,0.6)]">
                       <span>🏆</span>
                       <span>Rep: {selectedVideo.rep_name}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2 text-gray-400">
+                  <div className="flex items-center gap-2 text-[rgba(255,255,255,0.6)]">
                     <span>📍</span>
                     <span>Location: {selectedVideo.location}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-400">
+                  <div className="flex items-center gap-2 text-[rgba(255,255,255,0.6)]">
                     <span>📅</span>
                     <span>Recorded: {formatDate(selectedVideo.date_recorded)}</span>
                   </div>
