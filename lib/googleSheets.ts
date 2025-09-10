@@ -177,7 +177,7 @@ class GoogleSheetsService {
           name: repName,
           tss,
           tsi,
-          role: roleFilter
+          role: 'all' // All entries are from the combined leaderboard, role filter affects TSS/TSI values only
         }
       })
 
