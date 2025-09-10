@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { googleSheetsService } from '@/lib/googleSheets'
 
 export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url)
+  const limit = parseInt(searchParams.get('limit') || '50')
+  const roleFilter = (searchParams.get('role') as 'all' | 'closer' | 'setter') || 'all'
+  const timeFilter = (searchParams.get('time') as 'ytd' | 'mtd') || 'ytd'
+  
   try {
-    const { searchParams } = new URL(request.url)
-    const limit = parseInt(searchParams.get('limit') || '50')
-    const roleFilter = (searchParams.get('role') as 'all' | 'closer' | 'setter') || 'all'
-    const timeFilter = (searchParams.get('time') as 'ytd' | 'mtd') || 'ytd'
-    
     // Google Sheets configuration
     const SPREADSHEET_ID = process.env.GOOGLE_SHEETS_LEADERBOARD_ID
     const SHEET_GID = process.env.GOOGLE_SHEETS_GID
@@ -87,8 +87,8 @@ export async function GET(request: NextRequest) {
       const fallbackData = await googleSheetsService.getLeaderboardData(
         process.env.GOOGLE_SHEETS_LEADERBOARD_ID!,
         'SL',
-        'all',
-        'ytd'
+        roleFilter,
+        timeFilter
       )
       
       console.log('Fallback call succeeded!', {
