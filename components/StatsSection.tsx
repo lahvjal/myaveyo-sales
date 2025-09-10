@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useScrollAnimation, useStaggeredScrollAnimation } from '@/hooks/useScrollAnimation'
 import { useCountingAnimation } from '@/hooks/useCountingAnimation'
 
@@ -53,12 +53,35 @@ const StatCard = ({ value, suffix, prefix, label, isVisible = false, delay = 0 }
 }
 
 export default function StatsSection({ className = '', pageReady = true }: StatsSectionProps) {
-  const stats = [
+  const [stats, setStats] = useState([
     { value: '10', suffix: '%', label: 'Increase' },
     { value: '45', label: 'Projects Sold' },
     { value: '850', prefix: '$', suffix: 'K', label: 'Revenue Generated' },
     { value: '98', suffix: '%', label: 'Customer Satisfaction' }
-  ]
+  ])
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/home-stats')
+        if (response.ok) {
+          const data = await response.json()
+          const formattedStats = data.map((stat: any) => ({
+            value: stat.value,
+            prefix: stat.prefix || undefined,
+            suffix: stat.suffix || undefined,
+            label: stat.title
+          }))
+          setStats(formattedStats)
+        }
+      } catch (error) {
+        console.error('Failed to fetch home stats:', error)
+        // Keep default stats on error
+      }
+    }
+
+    fetchStats()
+  }, [])
 
   const headerAnimation = useScrollAnimation<HTMLDivElement>({ delay: 200, disabled: !pageReady })
   const yearAnimation = useScrollAnimation<HTMLDivElement>({ delay: 400, disabled: !pageReady })

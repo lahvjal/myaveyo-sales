@@ -168,7 +168,7 @@ export default function IncentivesPage() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredIncentives.map((incentive) => {
                 const statusBadge = getStatusBadge(incentive.live_status)
                 
@@ -178,7 +178,7 @@ export default function IncentivesPage() {
                     className="group relative bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px] overflow-hidden hover:scale-105 transition-all duration-300"
                   >
                     {/* Background Image/Video */}
-                    <div className="relative h-64 overflow-hidden">
+                    <div className="relative h-80 overflow-hidden">
                       {incentive.background_video_url ? (
                         <video 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -220,19 +220,21 @@ export default function IncentivesPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="p-6">
-                      <h3 className="text-2xl font-telegraf font-bold mb-3 text-white group-hover:text-white/80 transition-colors">
-                        {incentive.title}
-                      </h3>
-                      
-                      <p className="text-[rgba(255,255,255,0.6)] font-telegraf mb-4 line-clamp-3">
-                        {incentive.description}
-                      </p>
+                    <div className="p-6 h-64 flex flex-col justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-telegraf font-bold mb-3 text-white group-hover:text-white/80 transition-colors">
+                          {incentive.title}
+                        </h3>
+                        
+                        <p className="text-[rgba(255,255,255,0.6)] font-telegraf mb-4 line-clamp-4 text-sm">
+                          {incentive.description}
+                        </p>
 
-                      {/* Dates */}
-                      <div className="flex justify-between items-center text-sm text-[rgba(255,255,255,0.6)] font-telegraf mb-4">
-                        <span>Start: {formatDate(incentive.start_date)}</span>
-                        <span>End: {formatDate(incentive.end_date)}</span>
+                        {/* Dates */}
+                        <div className="flex flex-col gap-1 text-xs text-[rgba(255,255,255,0.6)] font-telegraf mb-4">
+                          <span>Start: {formatDate(incentive.start_date)}</span>
+                          <span>End: {formatDate(incentive.end_date)}</span>
+                        </div>
                       </div>
 
                       {/* Action Button */}

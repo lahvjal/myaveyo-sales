@@ -37,8 +37,8 @@ const PAGE_TABS: PageTab[] = [
       {
         id: 'stats',
         title: 'Stats Section',
-        description: 'Update statistics and metrics',
-        href: '/admin/stats',
+        description: 'Update homepage statistics and metrics',
+        href: '/admin/home-stats',
         icon: '📊',
         status: 'active'
       },
@@ -48,7 +48,7 @@ const PAGE_TABS: PageTab[] = [
         description: 'Manage sales content and images',
         href: '/admin/sales',
         icon: '💼',
-        status: 'coming_soon'
+        status: 'active'
       },
       {
         id: 'inside',

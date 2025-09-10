@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Button from './Button'
 import StatCard2 from './StatCard2'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
@@ -9,7 +9,104 @@ interface SalesSectionProps {
   pageReady?: boolean
 }
 
+interface SalesContent {
+  section_number: string
+  section_title: string
+  main_heading: string
+  description: string
+  copyright: string
+  background_logo: string
+  grid: {
+    large_image: {
+      url: string
+      alt: string
+    }
+    text_block: {
+      title: string
+      content: string
+    }
+    button: {
+      text: string
+      variant: string
+    }
+    stat_card_1: {
+      value: string
+      prefix?: string
+      suffix?: string
+      title: string
+      description: string
+    }
+    stat_card_2: {
+      value: string
+      prefix?: string
+      suffix?: string
+      title: string
+      description: string
+    }
+    bottom_image: {
+      url: string
+      alt: string
+    }
+  }
+}
+
 export default function SalesSection({ className = '', pageReady = true }: SalesSectionProps) {
+  const [content, setContent] = useState<SalesContent>({
+    section_number: '(3)',
+    section_title: 'Sales.',
+    main_heading: 'Not Your Average Sales Gig.',
+    description: 'UNLIMITED POTENTIAL. PROVEN METHODS. MASSIVE EARNINGS. REAL FREEDOM. AND A CULTURE THAT CARES. HERE, YOUR HARD WORK SPEAKS FOR ITSELF.',
+    copyright: '© 2025 myaveyo',
+    background_logo: '/aveyoSalesLogo.svg',
+    grid: {
+      large_image: {
+        url: '/images/donny-hammond.jpeg',
+        alt: 'Sales representative'
+      },
+      text_block: {
+        title: 'A COMPLETELY KITTED TOOL KIT.',
+        content: 'No limits, just wins. From your first deal to your biggest bonus, we set you up with the tools, training, and support you need to crush goals and climb fast. When you win, the whole team wins—and we celebrate every step of the way.'
+      },
+      button: {
+        text: 'JOIN THE TEAM',
+        variant: 'primary'
+      },
+      stat_card_1: {
+        value: '540',
+        title: 'Milestones Achieved',
+        description: 'Career milestones achieved by Aveyo reps last year'
+      },
+      stat_card_2: {
+        value: '850',
+        prefix: '$',
+        suffix: 'K',
+        title: 'Total Earned',
+        description: 'By our reps in commissions and bonuses'
+      },
+      bottom_image: {
+        url: '/images/Alpha Aveyo-4.jpeg',
+        alt: 'Team photo'
+      }
+    }
+  })
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const response = await fetch('/api/sales')
+        if (response.ok) {
+          const data = await response.json()
+          setContent(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch sales content:', error)
+        // Keep default content on error
+      }
+    }
+
+    fetchContent()
+  }, [])
+
   const imgCard = "http://localhost:3845/assets/aefbcf1e801101e6f975e071036c708ab99584f1.png"
   const imgCard1 = "http://localhost:3845/assets/2cc6b99064c5dec2895c25489e864578ff6e43dd.png"
   const imgUnion = "http://localhost:3845/assets/80c219426186feb64d676f8cfead76d4e8dbbae5.svg"
@@ -39,9 +136,9 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
               headerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <span className="text-[16px] font-telegraf">(3)</span>
+            <span className="text-[16px] font-telegraf">{content.section_number}</span>
             <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px] w-[623.886px]">
-              Not Your Average Sales Gig.
+              {content.main_heading}
             </h2>
           </div>
         </div>
@@ -61,7 +158,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
                   <img alt="" className="block max-w-none size-full" src="/images/world-icon.svg" />
                 </div>
                 <div className="font-telegraf font-extrabold text-white text-[15px] uppercase text-nowrap">
-                  © 2025 myaveyo
+                  {content.copyright}
                 </div>
               </div>
             </div>
@@ -75,10 +172,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
             }`}
           >
             <span className="font-telegraf font-black">
-            UNLIMITED POTENTIAL. PROVEN METHODS. MASSIVE EARNINGS. REAL FREEDOM.
-            </span>
-            <span className="text-[rgba(255,255,255,0.6)]">
-              {' '}AND A CULTURE THAT CARES. HERE, YOUR HARD WORK SPEAKS FOR ITSELF.
+              {content.description}
             </span>
           </div>
         </div>
@@ -100,7 +194,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
           {/* Large Image Card - spans 2 rows, 1 column */}
           <div 
             className="row-span-2 bg-cover bg-center bg-no-repeat rounded-[3px] relative overflow-hidden"
-            style={{ backgroundImage: `url('/images/donny-hammond.jpeg')` }}
+            style={{ backgroundImage: `url('${content.grid.large_image.url}')` }}
             ref={imageCardAnimation.ref}
           >
             <div className="flex flex-row h-full w-full">
@@ -134,9 +228,9 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
               textBlockAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <b className='mb-[40px]'>A COMPLETELY KITTED TOOL KIT.</b>
+            <b className='mb-[40px]'>{content.grid.text_block.title}</b>
             <div className="font-telegraf text-white text-[16px] leading-[28px] w-full">
-              No limits, just wins. From your first deal to your biggest bonus, we set you up with the tools, training, and support you need to crush goals and climb fast. When you win, the whole team wins—and we celebrate every step of the way.
+              {content.grid.text_block.content}
             </div>
           </div>
 
@@ -147,8 +241,8 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
               buttonAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <Button variant="primary" className="w-full">
-              JOIN THE TEAM
+            <Button variant={content.grid.button.variant as any} className="w-full">
+              {content.grid.button.text}
             </Button>
           </div>
 
@@ -160,9 +254,11 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
             }`}
           >
             <StatCard2
-              value="540"
-              title="Milestones Achieved"
-              description="Career milestones achieved by Aveyo reps last year"
+              value={content.grid.stat_card_1.value}
+              prefix={content.grid.stat_card_1.prefix}
+              suffix={content.grid.stat_card_1.suffix}
+              title={content.grid.stat_card_1.title}
+              description={content.grid.stat_card_1.description}
               className='h-full'
               isVisible={statCard1Animation.isVisible}
               delay={200}
@@ -177,11 +273,11 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
             }`}
           >
             <StatCard2
-              value="850"
-              prefix="$"
-              suffix="K"
-              title="Total Earned"
-              description="By our reps in commissions and bonuses"
+              value={content.grid.stat_card_2.value}
+              prefix={content.grid.stat_card_2.prefix}
+              suffix={content.grid.stat_card_2.suffix}
+              title={content.grid.stat_card_2.title}
+              description={content.grid.stat_card_2.description}
               className='h-full'
               isVisible={statCard2Animation.isVisible}
               delay={400}
@@ -191,7 +287,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
           {/* Large Bottom Image - spans 2 rows, 3 columns */}
           <div 
             className="row-span-2 col-span-3 bg-cover bg-center bg-no-repeat rounded-[3px] relative overflow-hidden"
-            style={{ backgroundImage: `url('/images/Alpha Aveyo-4.jpeg')` }}
+            style={{ backgroundImage: `url('${content.grid.bottom_image.url}')` }}
             ref={bottomImageAnimation.ref}
           >
             <div className="flex flex-row h-full w-full">

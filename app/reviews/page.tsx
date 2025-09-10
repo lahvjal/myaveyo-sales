@@ -97,22 +97,24 @@ export default function ReviewsPage() {
       <div className="px-[50px] py-[130px]">
         <div className="max-w-[1480px] mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between pb-10 mb-20">
-            <div 
-              ref={headerAnimation.ref}
-              className="flex items-start gap-2.5 text-white opacity-100 translate-y-0"
-            >
-              <span className="text-[16px] font-telegraf">(R)</span>
-              <h1 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
-                Reviews.
-              </h1>
-            </div>
-            <div 
-              ref={descriptionAnimation.ref}
-              className="text-white text-[16px] font-telegraf max-w-[400px] opacity-100 translate-y-0"
-            >
-              <p>
-                Hear from our satisfied customers and successful sales representatives about their experiences with Aveyo.
+          <div className="flex flex-col items-center pb-10">
+            {/* <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-green-500/20 border border-white/10 rounded-full px-6 py-2 mb-8">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-white/80 font-telegraf text-sm font-semibold">COMING SOON</span>
+            </div> */}
+
+            {/* Title */}
+            <div className='flex flex-col items-center justify-center'>
+              <div className="flex items-start justify-center gap-3 mb-8">
+                <span className="text-white/60 text-[16px] font-telegraf mt-4">(E)</span>
+                <h1 className="text-[60px] sm:text-[80px] md:text-[120px] font-telegraf font-extrabold uppercase leading-[0.8] text-white text-center">
+                  Reviews
+                </h1>
+              </div>
+
+              {/* Subtitle */}
+              <p className="text-[20px] sm:text-[24px] md:text-[32px] max-w-[700px] font-telegraf text-white/80 mb-6 leading-relaxed text-center">
+              Hear from our satisfied customers and successful sales representatives about their experiences with Aveyo.
               </p>
             </div>
           </div>

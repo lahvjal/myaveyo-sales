@@ -56,8 +56,85 @@ INSERT INTO cms_content (section_key, content) VALUES
 ('sales', '{
   "section_number": "(3)",
   "section_title": "Sales.",
-  "description": "We are not just another sales company. We are a community of driven individuals who believe in the power of authentic relationships and genuine value.",
-  "background_logo": "/aveyoSalesLogo.svg"
+  "main_heading": "Not Your Average Sales Gig.",
+  "description": "UNLIMITED POTENTIAL. PROVEN METHODS. MASSIVE EARNINGS. REAL FREEDOM. AND A CULTURE THAT CARES. HERE, YOUR HARD WORK SPEAKS FOR ITSELF.",
+  "copyright": "© 2025 myaveyo",
+  "background_logo": "/aveyoSalesLogo.svg",
+  "grid": {
+    "large_image": {
+      "url": "/images/donny-hammond.jpeg",
+      "alt": "Sales representative"
+    },
+    "text_block": {
+      "title": "A COMPLETELY KITTED TOOL KIT.",
+      "content": "No limits, just wins. From your first deal to your biggest bonus, we set you up with the tools, training, and support you need to crush goals and climb fast. When you win, the whole team wins—and we celebrate every step of the way."
+    },
+    "button": {
+      "text": "JOIN THE TEAM",
+      "variant": "primary"
+    },
+    "stat_card_1": {
+      "value": "540",
+      "title": "Milestones Achieved",
+      "description": "Career milestones achieved by Aveyo reps last year"
+    },
+    "stat_card_2": {
+      "value": "850",
+      "prefix": "$",
+      "suffix": "K",
+      "title": "Total Earned",
+      "description": "By our reps in commissions and bonuses"
+    },
+    "bottom_image": {
+      "url": "/images/Alpha Aveyo-4.jpeg",
+      "alt": "Team photo"
+    }
+  }
+}'),
+
+('home_stats', '{
+  "stats": [
+    {
+      "id": "1",
+      "title": "Increase",
+      "value": "10",
+      "prefix": "",
+      "suffix": "%",
+      "description": "Monthly growth in sales performance",
+      "icon": "📈",
+      "order": 1
+    },
+    {
+      "id": "2",
+      "title": "Projects Sold",
+      "value": "45",
+      "prefix": "",
+      "suffix": "",
+      "description": "Successful projects completed this month",
+      "icon": "🏠",
+      "order": 2
+    },
+    {
+      "id": "3",
+      "title": "Revenue Generated",
+      "value": "850",
+      "prefix": "$",
+      "suffix": "K",
+      "description": "Total revenue generated this quarter",
+      "icon": "💰",
+      "order": 3
+    },
+    {
+      "id": "4",
+      "title": "Customer Satisfaction",
+      "value": "98",
+      "prefix": "",
+      "suffix": "%",
+      "description": "Based on customer reviews and feedback",
+      "icon": "⭐",
+      "order": 4
+    }
+  ]
 }');
 
 -- Create indexes for better performance
