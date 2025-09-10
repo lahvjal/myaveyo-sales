@@ -16,13 +16,15 @@ export async function GET(request: NextRequest) {
       throw new Error('Google Sheets ID not configured')
     }
 
+    console.log('=== LEADERBOARD API START ===')
     console.log('Fetching leaderboard data from Google Sheets:', {
       spreadsheetId: SPREADSHEET_ID,
       sheetName: 'SL',
       roleFilter,
       timeFilter,
       limit,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      url: request.url
     })
 
     // Fetch data from Google Sheets using sheet name 'SL'
@@ -76,55 +78,89 @@ export async function GET(request: NextRequest) {
       privateKeyStartsWith: process.env.GOOGLE_PRIVATE_KEY?.substring(0, 30) || 'N/A'
     })
     
-    // Return mock data as fallback with correct structure
-    const mockData = [
-      {
-        rank: 1,
-        name: "AUSTIN TOWNSEND",
-        tss: 128,
-        tsi: 95,
-        role: 'all' as const
-      },
-      {
-        rank: 2,
-        name: "SAWYER KIEFFER", 
-        tss: 93,
-        tsi: 78,
-        role: 'all' as const
-      },
-      {
-        rank: 3,
-        name: "FARIS GRAHOVIC",
-        tss: 64,
-        tsi: 52,
-        role: 'all' as const
-      },
-      {
-        rank: 4,
-        name: "REED EVANS",
-        tss: 59,
-        tsi: 48,
-        role: 'all' as const
-      },
-      {
-        rank: 5,
-        name: "SCOTT BURGESS",
-        tss: 53,
-        tsi: 41,
-        role: 'all' as const
+    console.log('=== FALLING BACK TO MOCK DATA ===')
+    console.log('This should NOT happen if Google Sheets is working')
+    
+    // Instead of returning mock data, let's try the same call that works in debug endpoint
+    try {
+      console.log('Attempting fallback call to Google Sheets...')
+      const fallbackData = await googleSheetsService.getLeaderboardData(
+        process.env.GOOGLE_SHEETS_LEADERBOARD_ID!,
+        'SL',
+        'all',
+        'ytd'
+      )
+      
+      console.log('Fallback call succeeded!', {
+        totalRows: fallbackData.length,
+        firstThree: fallbackData.slice(0, 3)
+      })
+      
+      const fallbackResponse = {
+        leaderboard: fallbackData.slice(0, 50),
+        totalStats: {
+          totalReps: fallbackData.length,
+          totalTSS: fallbackData.reduce((sum, entry) => sum + entry.tss, 0),
+          totalTSI: fallbackData.reduce((sum, entry) => sum + entry.tsi, 0),
+          avgTSS: Math.round(fallbackData.reduce((sum, entry) => sum + entry.tss, 0) / fallbackData.length) || 0
+        }
       }
-    ]
+      
+      return NextResponse.json(fallbackResponse)
+      
+    } catch (fallbackError) {
+      console.error('Fallback also failed:', fallbackError)
+      
+      // Return mock data as last resort
+      const mockData = [
+        {
+          rank: 1,
+          name: "AUSTIN TOWNSEND",
+          tss: 128,
+          tsi: 95,
+          role: 'all' as const
+        },
+        {
+          rank: 2,
+          name: "SAWYER KIEFFER", 
+          tss: 93,
+          tsi: 78,
+          role: 'all' as const
+        },
+        {
+          rank: 3,
+          name: "FARIS GRAHOVIC",
+          tss: 64,
+          tsi: 52,
+          role: 'all' as const
+        },
+        {
+          rank: 4,
+          name: "REED EVANS",
+          tss: 59,
+          tsi: 48,
+          role: 'all' as const
+        },
+        {
+          rank: 5,
+          name: "SCOTT BURGESS",
+          tss: 53,
+          tsi: 41,
+          role: 'all' as const
+        }
+      ]
 
-    const mockResponse = {
-      leaderboard: mockData,
-      totalStats: {
-        totalReps: mockData.length,
-        totalTSS: mockData.reduce((sum, entry) => sum + entry.tss, 0),
-        totalTSI: mockData.reduce((sum, entry) => sum + entry.tsi, 0),
-        avgTSS: Math.round(mockData.reduce((sum, entry) => sum + entry.tss, 0) / mockData.length) || 0
+      const mockResponse = {
+        leaderboard: mockData,
+        totalStats: {
+          totalReps: mockData.length,
+          totalTSS: mockData.reduce((sum, entry) => sum + entry.tss, 0),
+          totalTSI: mockData.reduce((sum, entry) => sum + entry.tsi, 0),
+          avgTSS: Math.round(mockData.reduce((sum, entry) => sum + entry.tss, 0) / mockData.length) || 0
+        }
       }
+
+      return NextResponse.json(mockResponse)
     }
-
-    return NextResponse.json(mockResponse)
   }
 }
