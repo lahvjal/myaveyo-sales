@@ -50,7 +50,15 @@ class GoogleSheetsService {
       this.sheets = google.sheets({ version: 'v4', auth: this.auth })
     } catch (error) {
       console.error('Failed to initialize Google Sheets auth:', error)
-      throw new Error('Google Sheets authentication failed')
+      console.error('Auth error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+        privateKeyPresent: !!process.env.GOOGLE_PRIVATE_KEY,
+        privateKeyLength: process.env.GOOGLE_PRIVATE_KEY?.length || 0,
+        clientEmail: process.env.GOOGLE_CLIENT_EMAIL,
+        projectId: process.env.GOOGLE_PROJECT_ID
+      })
+      throw new Error(`Google Sheets authentication failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
@@ -180,7 +188,16 @@ class GoogleSheetsService {
       return leaderboardData
     } catch (error) {
       console.error('Error fetching Google Sheets data:', error)
-      throw new Error('Failed to fetch leaderboard data from Google Sheets')
+      console.error('Fetch error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+        spreadsheetId,
+        gid,
+        code: (error as any)?.code,
+        status: (error as any)?.status,
+        statusText: (error as any)?.statusText
+      })
+      throw new Error(`Failed to fetch leaderboard data from Google Sheets: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
