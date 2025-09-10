@@ -25,12 +25,22 @@ class GoogleSheetsService {
   private async initializeAuth() {
     try {
       // Initialize Google Auth with service account credentials
+      let privateKey = process.env.GOOGLE_PRIVATE_KEY
+      
+      // Handle different private key formats from Vercel
+      if (privateKey) {
+        // Remove extra quotes if present
+        privateKey = privateKey.replace(/^"(.*)"$/, '$1')
+        // Replace escaped newlines with actual newlines
+        privateKey = privateKey.replace(/\\n/g, '\n')
+      }
+
       this.auth = new GoogleAuth({
         credentials: {
           type: 'service_account',
           project_id: process.env.GOOGLE_PROJECT_ID,
           private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
-          private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+          private_key: privateKey,
           client_email: process.env.GOOGLE_CLIENT_EMAIL,
           client_id: process.env.GOOGLE_CLIENT_ID
         } as any,
