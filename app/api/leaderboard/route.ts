@@ -52,10 +52,16 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error) {
+    console.error('=== LEADERBOARD API ERROR ===')
     console.error('API Error:', error)
     console.error('Error message:', error instanceof Error ? error.message : 'Unknown error')
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     console.error('Error details:', JSON.stringify(error, null, 2))
+    console.error('Request details:', {
+      spreadsheetId: process.env.GOOGLE_SHEETS_LEADERBOARD_ID,
+      sheetName: 'SL',
+      timestamp: new Date().toISOString()
+    })
     
     // Log environment variable status for debugging
     console.error('Environment check:', {
