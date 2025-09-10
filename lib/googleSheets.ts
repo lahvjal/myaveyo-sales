@@ -64,7 +64,7 @@ class GoogleSheetsService {
 
   async getLeaderboardData(
     spreadsheetId: string, 
-    gid?: string,
+    sheetName?: string,
     roleFilter: 'all' | 'closer' | 'setter' = 'all',
     timeFilter: 'ytd' | 'mtd' = 'ytd'
   ): Promise<LeaderboardEntry[]> {
@@ -74,14 +74,9 @@ class GoogleSheetsService {
 
     try {
       // Determine the range to fetch - ensure we get all columns up to X
-      let range = 'A:X' // Fetch columns A through X to include all TSS/TSI data
-      if (gid) {
-        // First get sheet info to find the sheet name by GID
-        const sheetInfo = await this.getSheetInfo(spreadsheetId)
-        const sheet = sheetInfo.sheets?.find(s => s.sheetId?.toString() === gid)
-        if (sheet?.title) {
-          range = `${sheet.title}!A:X`
-        }
+      let range = 'A:X' // Default range for first sheet
+      if (sheetName) {
+        range = `${sheetName}!A:X` // Use specific sheet name
       }
 
       const response = await this.sheets!.spreadsheets.values.get({
@@ -192,7 +187,7 @@ class GoogleSheetsService {
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : 'No stack trace',
         spreadsheetId,
-        gid,
+        sheetName,
         code: (error as any)?.code,
         status: (error as any)?.status,
         statusText: (error as any)?.statusText
