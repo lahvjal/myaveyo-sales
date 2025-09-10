@@ -38,25 +38,49 @@ export async function GET() {
         sheets: sheetInfo.sheets
       }
 
-      // Test 3: Test data fetch
+      // Test 3: Test data fetch from SL sheet specifically
       try {
-        const gid = process.env.GOOGLE_SHEETS_GID
         const leaderboardData = await googleSheetsService.getLeaderboardData(
           spreadsheetId,
-          gid,
+          'SL', // Test SL sheet specifically
           'all',
           'ytd'
         )
-        results.tests.dataFetch = {
+        results.tests.dataFetchSL = {
           success: true,
           rowCount: leaderboardData.length,
-          sampleData: leaderboardData.slice(0, 3)
+          sampleData: leaderboardData.slice(0, 3),
+          sheetUsed: 'SL'
         }
       } catch (fetchError) {
-        results.tests.dataFetch = {
+        results.tests.dataFetchSL = {
           success: false,
           error: fetchError instanceof Error ? fetchError.message : 'Unknown fetch error',
-          stack: fetchError instanceof Error ? fetchError.stack : 'No stack trace'
+          stack: fetchError instanceof Error ? fetchError.stack : 'No stack trace',
+          sheetUsed: 'SL'
+        }
+      }
+
+      // Test 4: Test data fetch from default sheet for comparison
+      try {
+        const leaderboardData = await googleSheetsService.getLeaderboardData(
+          spreadsheetId,
+          undefined, // Default sheet
+          'all',
+          'ytd'
+        )
+        results.tests.dataFetchDefault = {
+          success: true,
+          rowCount: leaderboardData.length,
+          sampleData: leaderboardData.slice(0, 3),
+          sheetUsed: 'default'
+        }
+      } catch (fetchError) {
+        results.tests.dataFetchDefault = {
+          success: false,
+          error: fetchError instanceof Error ? fetchError.message : 'Unknown fetch error',
+          stack: fetchError instanceof Error ? fetchError.stack : 'No stack trace',
+          sheetUsed: 'default'
         }
       }
 
