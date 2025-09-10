@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     // Fetch data from Google Sheets using GID with filters
     const leaderboardData = await googleSheetsService.getLeaderboardData(
       SPREADSHEET_ID,
-      SHEET_GID,
+      undefined, // Don't use GID, use default sheet approach that works
       roleFilter,
       timeFilter
     )
