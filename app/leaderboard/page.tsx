@@ -201,7 +201,7 @@ export default function LeaderboardPage() {
                 </button>
               </div>
             </div>
-            
+
           </div>
           {/* Leaderboard */}
           {loading ? (
@@ -211,34 +211,56 @@ export default function LeaderboardPage() {
           ) : (
             <div className="grid gap-6 mb-[100px]">
               {/* Top 3 Podium */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-2">
                 {leaderboardData.slice(0, 3).map((entry: LeaderboardEntry, index: number) => (
                   <div
                     key={entry.name}
-                    className={`relative p-6 bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px] border ${
-                      index === 0 
-                        ? 'border-yellow-500/30' 
-                        : index === 1
-                        ? 'border-gray-400/30'
-                        : 'border-amber-600/30'
-                    }`}
+                    className="bg-gradient-to-t flex from-[#0d0d0d] items-start justify-between overflow-clip relative rounded-[3px] h-[180px] to-[#171717]"
                   >
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">{getRankIcon(index)}</div>
-                      <h3 className="text-xl font-telegraf font-bold mb-1 text-white">{entry.name}</h3>
-                      <p className="text-[rgba(255,255,255,0.6)] text-sm mb-4 font-telegraf"></p>
-                      <div className="mt-4 grid grid-cols-2 gap-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-telegraf font-bold text-white mb-1">
-                            {getTSSValue(entry)}
-                          </div>
-                          <div className="text-sm text-[rgba(255,255,255,0.6)] font-telegraf">TSS</div>
+                    {/* Left sidebar with rank */}
+                    <div className={`bg-gradient-to-b flex flex-col gap-[15px] h-full items-center justify-center relative shrink-0 w-[59px] ${
+                      index === 0 
+                        ? 'from-[#514629] to-[#342e22]' 
+                        : index === 1
+                        ? 'from-[#4a4a4a] to-[#2a2a2a]'
+                        : 'from-[#5d4037] to-[#3e2723]'
+                    }`}>
+                      {/* Crown/Medal Icon */}
+                      <div className="h-[25.783px] relative shrink-0 w-5">
+                        <div className="text-2xl">
+                          {index === 0 ? "👑" : index === 1 ? "🥈" : "🥉"}
                         </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-telegraf font-bold text-white mb-1">
-                            {getTSIValue(entry)}
-                          </div>
-                          <div className="text-sm text-[rgba(255,255,255,0.6)] font-telegraf">TSI</div>
+                      </div>
+                      {/* Rank Number */}
+                      <div className="font-telegraf font-black leading-[0] not-italic relative shrink-0 text-[14px] text-center text-nowrap text-white">
+                        #{index + 1}
+                      </div>
+                    </div>
+                    
+                    {/* Main content area */}
+                    <div className="basis-0 flex flex-col gap-[15px] grow h-full items-center justify-center min-h-px min-w-px relative shrink-0">
+                      {/* Player Name */}
+                      <div className="font-telegraf font-black leading-[0] not-italic relative shrink-0 text-[25px] text-nowrap text-white text-center px-2 mb-[15px]">
+                        {entry.name}
+                      </div>
+                      
+                      {/* TSI Score */}
+                      <div className="flex gap-[15px] items-center justify-center leading-[0] not-italic relative shrink-0 text-[17px] text-nowrap mb-[10px]">
+                        <div className="font-telegraf font-black relative shrink-0 text-white">
+                          {getTSIValue(entry)}
+                        </div>
+                        <div className="font-telegraf font-light relative shrink-0 text-[rgba(255,255,255,0.5)]">
+                          TSI
+                        </div>
+                      </div>
+                      
+                      {/* TSS Score */}
+                      <div className="flex font-telegraf font-light gap-[15px] items-center justify-center leading-[0] not-italic relative shrink-0 text-[17px] text-[rgba(255,255,255,0.5)] text-nowrap mb-[10px]">
+                        <div className="relative shrink-0">
+                          {getTSSValue(entry)}
+                        </div>
+                        <div className="relative shrink-0">
+                          TSS
                         </div>
                       </div>
                     </div>
@@ -252,8 +274,9 @@ export default function LeaderboardPage() {
                 <div className="grid gap-4 p-6 bg-gradient-to-b from-[#232323] to-[#171717] border-b border-[#333]" style={{gridTemplateColumns: '80px 1fr 1fr 1fr'}}>
                   <div className="text-white/60 text-[14px] font-inter font-semibold">Rank</div>
                   <div className="text-white/60 text-[14px] font-inter font-semibold">Sales Rep</div>
-                  <div className="text-white/60 text-[14px] font-inter font-semibold">TSS</div>
-                  <div className="text-white/60 text-[14px] font-inter font-semibold">TSI</div>
+                  <div className="text-white/60 text-[14px] font-inter font-semibold flex justify-center">TSI</div>
+                  <div className="text-white/60 text-[14px] font-inter font-semibold flex justify-center">TSS</div>
+                  
                 </div>
 
                 {/* Leaderboard Entries */}
@@ -276,17 +299,17 @@ export default function LeaderboardPage() {
                       </span>
                     </div>
 
-                    {/* TSS Value */}
-                    <div className="flex items-center">
+                    {/* TSI Value */}
+                    <div className="flex items-center justify-center">
                       <span className="text-white text-[18px] font-inter font-bold">
-                        {getTSSValue(entry)}
+                        {getTSIValue(entry)}
                       </span>
                     </div>
 
-                    {/* TSI Value */}
-                    <div className="flex items-center">
-                      <span className="text-white text-[18px] font-inter font-bold">
-                        {getTSIValue(entry)}
+                    {/* TSS Value */}
+                    <div className="flex items-center justify-center">
+                      <span className="text-[18px] font-inter font-light text-[rgba(255,255,255,0.5)]">
+                        {getTSSValue(entry)}
                       </span>
                     </div>
                   </div>
