@@ -85,18 +85,30 @@ class GoogleSheetsService {
       })
 
       const rows = response.data.values
+      console.log('Raw spreadsheet data fetched:', {
+        range,
+        totalRows: rows?.length || 0,
+        firstFiveRows: rows?.slice(0, 5) || [],
+        headers: rows?.[0] || []
+      })
+
       if (!rows || rows.length === 0) {
         console.log('No rows found in spreadsheet')
         return []
       }
 
-      console.log('Raw spreadsheet data:')
-      console.log('Total rows:', rows.length)
-      console.log('First row (headers):', rows[0])
-      console.log('Second row (first data):', rows[1])
-      console.log('Row length:', rows[1]?.length)
 
       // Expected columns: A=Rep Name, N=Total TSS, P=Closer TSS, R=Setter TSS, T=Total TSI, V=Closer TSI, X=Setter TSI
+      console.log('Processing rows into leaderboard data:', {
+        totalDataRows: rows.length - 1,
+        sampleRawRow: rows[1] || [],
+        columnMappings: {
+          'A (Name)': rows[1]?.[0],
+          'N (Total TSS)': rows[1]?.[13],
+          'T (Total TSI)': rows[1]?.[19]
+        }
+      })
+
       const leaderboardData: LeaderboardEntry[] = rows.slice(1).map((row, index) => {
         const repName = row[0] || 'Unknown' // Column A
         
@@ -178,6 +190,17 @@ class GoogleSheetsService {
       // Update ranks after sorting
       leaderboardData.forEach((entry, index) => {
         entry.rank = index + 1
+      })
+
+      console.log(`Final processed leaderboard data (${roleFilter}, ${timeFilter}):`, {
+        totalEntries: leaderboardData.length,
+        topThree: leaderboardData.slice(0, 3),
+        sampleEntry: leaderboardData[0] ? {
+          name: leaderboardData[0].name,
+          tss: leaderboardData[0].tss,
+          tsi: leaderboardData[0].tsi,
+          rank: leaderboardData[0].rank
+        } : null
       })
 
       return leaderboardData
