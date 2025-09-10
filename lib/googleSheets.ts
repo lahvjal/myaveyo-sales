@@ -181,10 +181,10 @@ class GoogleSheetsService {
         }
       })
 
-      // Sort by TSS (Total Solar Sold) descending, then by TSI as tiebreaker
+      // Sort by TSI (Total Solar Installed) descending, then by TSS as tiebreaker
       leaderboardData.sort((a, b) => {
-        if (b.tss !== a.tss) return b.tss - a.tss
-        return b.tsi - a.tsi
+        if (b.tsi !== a.tsi) return b.tsi - a.tsi
+        return b.tss - a.tss
       })
       
       // Update ranks after sorting
