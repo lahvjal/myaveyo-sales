@@ -18,10 +18,11 @@ export async function GET(request: NextRequest) {
 
     console.log('Fetching leaderboard data from Google Sheets:', {
       spreadsheetId: SPREADSHEET_ID,
-      sheetGid: SHEET_GID,
+      sheetName: 'SL',
       roleFilter,
       timeFilter,
-      limit
+      limit,
+      timestamp: new Date().toISOString()
     })
 
     // Fetch data from Google Sheets using sheet name 'SL'
@@ -31,6 +32,12 @@ export async function GET(request: NextRequest) {
       roleFilter,
       timeFilter
     )
+
+    console.log('Successfully fetched leaderboard data:', {
+      totalRows: leaderboardData.length,
+      firstThreeEntries: leaderboardData.slice(0, 3),
+      sheetUsed: 'SL'
+    })
 
     // Return both limited data for display and full data for stats
     const response = {
