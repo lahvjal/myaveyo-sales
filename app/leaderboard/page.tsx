@@ -269,13 +269,13 @@ export default function LeaderboardPage() {
               </div>
 
               {/* Rest of Leaderboard */}
-              <div className="bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px] overflow-hidden">
+              <div className="overflow-hidden flex flex-col gap-[5px]">
                 {/* Header Row */}
-                <div className="grid gap-4 p-6 bg-gradient-to-b from-[#232323] to-[#171717] border-b border-[#333]" style={{gridTemplateColumns: '80px 1fr 1fr 1fr'}}>
-                  <div className="text-white/60 text-[14px] font-inter font-semibold">Rank</div>
-                  <div className="text-white/60 text-[14px] font-inter font-semibold">Sales Rep</div>
-                  <div className="text-white/60 text-[14px] font-inter font-semibold flex justify-center">TSI</div>
-                  <div className="text-white/60 text-[14px] font-inter font-semibold flex justify-center">TSS</div>
+                <div className="grid gap-4 p-6 rounded-[3px]" style={{gridTemplateColumns: '80px 1fr 1fr 1fr'}}>
+                  <div className="text-[18px] font-telegraf font-light text-[rgba(255,255,255,0.5)]">Rank</div>
+                  <div className="text-[18px] font-telegraf font-light text-[rgba(255,255,255,0.5)]">Sales Rep</div>
+                  <div className="text-[18px] font-telegraf font-light text-[rgba(255,255,255,0.5)] flex justify-center">TSI</div>
+                  <div className="text-[18px] font-telegraf font-light text-[rgba(255,255,255,0.5)] flex justify-center">TSS</div>
                   
                 </div>
 
@@ -283,32 +283,32 @@ export default function LeaderboardPage() {
                 {leaderboardData.slice(3).map((entry, index) => (
                   <div 
                     key={`${entry.name}-${index}`} 
-                    className="grid gap-4 p-6 border-b border-[#333] hover:bg-white/5 transition-colors"
+                    className="grid gap-4 p-6 hover:bg-white/5 transition-colors bg-[rgb(16,16,16)] rounded-[3px]"
                     style={{gridTemplateColumns: '80px 1fr 1fr 1fr'}}
                   >
                     {/* Rank */}
                     <div className="flex items-center">
-                      <span className="text-white text-[18px] font-inter font-bold">
+                      <span className="text-white text-[18px] font-telegraf font-bold">
                         {getRankIcon(index + 3)}
                       </span>
                     </div>
                     {/* Sales Rep */}
                     <div className="flex flex-col">
-                      <span className="text-white text-[16px] font-inter font-semibold">
+                      <span className="text-white text-[16px] font-telegraf font-semibold">
                         {entry.name}
                       </span>
                     </div>
 
                     {/* TSI Value */}
                     <div className="flex items-center justify-center">
-                      <span className="text-white text-[18px] font-inter font-bold">
+                      <span className="text-white text-[18px] font-telegraf font-bold">
                         {getTSIValue(entry)}
                       </span>
                     </div>
 
                     {/* TSS Value */}
                     <div className="flex items-center justify-center">
-                      <span className="text-[18px] font-inter font-light text-[rgba(255,255,255,0.5)]">
+                      <span className="text-[18px] font-telegraf font-light text-[rgba(255,255,255,0.5)]">
                         {getTSSValue(entry)}
                       </span>
                     </div>

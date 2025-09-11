@@ -10,6 +10,44 @@ export default function StatsPage() {
   const [statsContent, setStatsContent] = useState<StatsContent[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Animation state for sections
+  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
+
+  // Intersection Observer for animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const sectionId = entry.target.id
+          if (entry.isIntersecting) {
+            setVisibleSections(prev => new Set(Array.from(prev).concat(sectionId)))
+          }
+        })
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      }
+    )
+
+    // Observe all sections with IDs
+    const sections = [
+      'stats-header',
+      'stats-comparison', 
+      'stats-growth-path',
+      'stats-sale-impact'
+    ]
+
+    sections.forEach(id => {
+      const element = document.getElementById(id)
+      if (element) {
+        observer.observe(element)
+      }
+    })
+
+    return () => observer.disconnect()
+  }, [loading]) // Re-run when loading changes to ensure elements exist
+
   useEffect(() => {
     fetchStatsContent()
   }, [])
@@ -67,28 +105,29 @@ export default function StatsPage() {
     { name: 'Veteran', earnings: 200 }
   ]
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0d0d0d] text-white">
-        <Navbar />
-        <div className="flex items-center justify-center min-h-[50vh]">
+  return (
+    <div className="min-h-screen bg-black text-white">
+      <Navbar />
+      
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
             <p className="text-gray-400">Loading stats...</p>
           </div>
         </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="min-h-screen bg-black text-white">
-      <Navbar />
+      )}
       
       <div className="box-border content-stretch flex flex-col items-center justify-start px-[50px] py-[100px] relative size-full">
         <div className="box-border content-stretch flex flex-col gap-[90px] items-start justify-start max-w-[1480px] pb-[30px] pt-0 px-0 relative w-full">
           {/* Header Section */}
-          <div className="content-stretch flex items-end justify-between leading-[0] not-italic relative shrink-0 w-full">
+          <div 
+            id="stats-header"
+            className={`flex items-end justify-between leading-[0] not-italic relative shrink-0 w-full transition-all duration-700 ${
+              visibleSections.has('stats-header') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`}
+          >
             <div className="content-stretch flex gap-2.5 items-start justify-start relative text-white">
               <div className="font-telegraf relative shrink-0 text-[16px] text-nowrap">
                 <p className="leading-[normal] whitespace-pre">(1)</p>
@@ -108,7 +147,12 @@ export default function StatsPage() {
           </div>
 
           {/* The Big Comparison Section */}
-          <div className="content-stretch flex flex-col gap-5 items-start justify-start relative shrink-0 w-full">
+          <div 
+            id="stats-comparison"
+            className={`content-stretch flex flex-col gap-5 items-start justify-start relative shrink-0 w-full transition-all duration-700 ${
+              visibleSections.has('stats-comparison') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`}
+          >
             <div className="box-border content-stretch flex gap-2.5 items-center justify-center pb-[30px] pt-0 px-0 relative shrink-0">
               <div className="font-telegraf font-black leading-[0] not-italic relative shrink-0 text-[30px] text-white uppercase w-[721.026px]">
                 <p className="leading-[normal]">{comparisonContent?.title || "The big comparison"}</p>
@@ -242,7 +286,12 @@ export default function StatsPage() {
           </div>
 
           {/* Growth Path Section */}
-          <div className="content-stretch flex flex-col gap-5 items-start justify-start relative shrink-0 w-full">
+          <div 
+            id="stats-growth-path"
+            className={`content-stretch flex flex-col gap-5 items-start justify-start relative shrink-0 w-full transition-all duration-700 ${
+              visibleSections.has('stats-growth-path') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`}
+          >
             <div className="box-border content-stretch flex gap-2.5 items-center justify-center pb-[30px] pt-0 px-0 relative shrink-0">
               <div className="font-telegraf font-black leading-[0] not-italic relative shrink-0 text-[30px] text-white uppercase w-[721.026px]">
                 <p className="leading-[normal]">{growthPathContent?.title || "Your Growth Path with Aveyo"}</p>
@@ -387,10 +436,13 @@ export default function StatsPage() {
             </div>
           </div>
 
-          
-
           {/* What One Sale Means Section */}
-          <div className="content-stretch flex flex-col gap-5 items-start justify-start relative shrink-0 w-full">
+          <div 
+            id="stats-sale-impact"
+            className={`content-stretch flex flex-col gap-5 items-start justify-start relative shrink-0 w-full transition-all duration-700 ${
+              visibleSections.has('stats-sale-impact') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
+            }`}
+          >
             <div className="box-border content-stretch flex gap-2.5 items-center justify-center pb-[30px] pt-0 px-0 relative shrink-0">
               <div className="font-telegraf font-black leading-[0] not-italic relative shrink-0 text-[30px] text-nowrap text-white uppercase">
                 <p className="leading-[normal] whitespace-pre">{saleImpactContent?.title || "What one sale means"}</p>

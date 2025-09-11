@@ -41,6 +41,20 @@ export function useScrollAnimation<T extends HTMLElement = HTMLElement>({
     const currentRef = ref.current
     if (currentRef) {
       observer.observe(currentRef)
+      
+      // Check if element is already in viewport after a small delay to ensure DOM is ready
+      setTimeout(() => {
+        if (currentRef) {
+          const rect = currentRef.getBoundingClientRect()
+          const isInViewport = rect.top < window.innerHeight && rect.bottom > 0
+          
+          if (isInViewport) {
+            setTimeout(() => {
+              setIsVisible(true)
+            }, delay)
+          }
+        }
+      }, 100)
     }
 
     return () => {
