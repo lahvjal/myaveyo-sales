@@ -212,7 +212,10 @@ export default function VideoUpload({
         body: videoFormData
       })
 
-      if (!videoResponse.ok) throw new Error('Video upload failed')
+      if (!videoResponse.ok) {
+        const errorData = await videoResponse.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errorData.error || `Video upload failed (${videoResponse.status})`)
+      }
       const videoResult = await videoResponse.json()
 
       // Upload thumbnail
@@ -226,7 +229,10 @@ export default function VideoUpload({
         body: thumbnailFormData
       })
 
-      if (!thumbnailResponse.ok) throw new Error('Thumbnail upload failed')
+      if (!thumbnailResponse.ok) {
+        const errorData = await thumbnailResponse.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errorData.error || `Thumbnail upload failed (${thumbnailResponse.status})`)
+      }
       const thumbnailResult = await thumbnailResponse.json()
 
       setProgress(100)

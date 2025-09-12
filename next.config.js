@@ -23,6 +23,13 @@ const nextConfig = {
   images: {
     domains: ['localhost'],
   },
+  // Configure for better Vercel deployment
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+    responseLimit: false,
+  },
 }
 
 module.exports = nextConfig
