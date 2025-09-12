@@ -73,10 +73,10 @@ class GoogleSheetsService {
     }
 
     try {
-      // Determine the range to fetch - ensure we get all columns up to X
-      let range = 'A:X' // Default range for first sheet
+      // Determine the range to fetch - ensure we get all columns up to AH
+      let range = 'A:AH' // Default range for first sheet
       if (sheetName) {
-        range = `${sheetName}!A:X` // Use specific sheet name
+        range = `${sheetName}!A:AH` // Use specific sheet name
       }
 
       const response = await this.sheets!.spreadsheets.values.get({
@@ -98,7 +98,7 @@ class GoogleSheetsService {
       }
 
 
-      // Expected columns: A=Rep Name, N=Total TSS, P=Closer TSS, R=Setter TSS, T=Total TSI, V=Closer TSI, X=Setter TSI
+      // Expected columns: A=Rep Name, N=Total TSS, P=Closer TSS, R=Setter TSS, T=Total TSI, V=Closer TSI, X=Setter TSI, AH=MTD TSI
       console.log('Processing rows into leaderboard data:', {
         totalDataRows: rows.length - 1,
         sampleRawRow: rows[1] || [],
@@ -116,14 +116,14 @@ class GoogleSheetsService {
         let totalTSS, closerTSS, setterTSS, totalTSI, closerTSI, setterTSI
         
         if (timeFilter === 'mtd') {
-          // MTD columns - H, J, L (all TSS data)
+          // MTD columns - H, J, L (TSS data) and AH (TSI data)
           totalTSS = parseFloat(row[7]) || 0    // Column H (index 7) - Total TSS MTD
           closerTSS = parseFloat(row[9]) || 0   // Column J (index 9) - Closer TSS MTD
           setterTSS = parseFloat(row[11]) || 0  // Column L (index 11) - Setter TSS MTD
-          // MTD only has TSS data, no TSI data available
-          totalTSI = 0
-          closerTSI = 0
-          setterTSI = 0
+          // MTD TSI data from column AH
+          totalTSI = parseFloat(row[33]) || 0   // Column AH (index 33) - Total TSI MTD
+          closerTSI = 0  // No separate closer TSI for MTD
+          setterTSI = 0  // No separate setter TSI for MTD
         } else {
           // YTD columns (default) - N, P, R, T, V, X
           totalTSS = parseFloat(row[13]) || 0   // Column N (index 13)
@@ -143,7 +143,8 @@ class GoogleSheetsService {
             console.log('  Column H (index 7):', row[7], '-> Total TSS MTD:', totalTSS)
             console.log('  Column J (index 9):', row[9], '-> Closer TSS MTD:', closerTSS)
             console.log('  Column L (index 11):', row[11], '-> Setter TSS MTD:', setterTSS)
-            console.log('  TSI values (MTD has no TSI data):', totalTSI, closerTSI, setterTSI)
+            console.log('  Column AH (index 33):', row[33], '-> Total TSI MTD:', totalTSI)
+            console.log('  TSI values (MTD):', totalTSI, closerTSI, setterTSI)
           } else {
             console.log('  Column N (index 13):', row[13], '-> Total TSS:', totalTSS)
             console.log('  Column T (index 19):', row[19], '-> Total TSI:', totalTSI)
