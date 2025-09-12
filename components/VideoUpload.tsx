@@ -51,11 +51,21 @@ export default function VideoUpload({
         canvas.width = width
         canvas.height = height
         
-        // Create MediaRecorder for compression
+        // Create MediaRecorder for compression - adjust bitrate based on target size
         const stream = canvas.captureStream(30) // 30 FPS
+        
+        // Calculate appropriate bitrate based on target size and video duration
+        // Rough formula: (targetSizeMB * 8 * 1024 * 1024) / (duration * 1.2) for bits per second
+        const estimatedBitrate = Math.min(
+          (targetSizeMB * 8 * 1024 * 1024) / (video.duration * 1.2),
+          2000000 // Cap at 2Mbps max
+        )
+        
+        console.log(`Target size: ${targetSizeMB}MB, Duration: ${video.duration}s, Calculated bitrate: ${Math.round(estimatedBitrate/1000)}kbps`)
+        
         const mediaRecorder = new MediaRecorder(stream, {
           mimeType: 'video/webm;codecs=vp9',
-          videoBitsPerSecond: 1000000 // Start with 1Mbps, will adjust if needed
+          videoBitsPerSecond: Math.max(estimatedBitrate, 200000) // Minimum 200kbps
         })
         
         const chunks: BlobPart[] = []
@@ -175,9 +185,13 @@ export default function VideoUpload({
       let videoFile = file
       let targetSize = 25 // Default target size in MB
       
-      // Determine target size based on original file size
-      if (originalSizeMB > 100) {
-        targetSize = 45 // Large files get compressed to 45MB
+      // Determine target size based on original file size - more aggressive for very large files
+      if (originalSizeMB > 400) {
+        targetSize = 35 // Very large files (400MB+) get compressed to 35MB max
+      } else if (originalSizeMB > 200) {
+        targetSize = 40 // Large files (200-400MB) get compressed to 40MB
+      } else if (originalSizeMB > 100) {
+        targetSize = 45 // Medium-large files (100-200MB) get compressed to 45MB
       } else if (originalSizeMB > 50) {
         targetSize = 35 // Medium files get compressed to 35MB
       } else if (originalSizeMB > 25) {

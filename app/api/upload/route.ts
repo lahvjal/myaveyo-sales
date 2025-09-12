@@ -24,10 +24,10 @@ export async function POST(request: NextRequest) {
     const contentLength = request.headers.get('content-length')
     console.log('Content-Length header:', contentLength)
     
-    if (contentLength && parseInt(contentLength) > 50 * 1024 * 1024) { // 50MB limit
+    if (contentLength && parseInt(contentLength) > 100 * 1024 * 1024) { // 100MB limit for Pro plan
       console.log('Request too large:', contentLength)
       return NextResponse.json({ 
-        error: 'File too large. Maximum size is 50MB.' 
+        error: 'File too large. Maximum size is 100MB.' 
       }, { status: 413 })
     }
 
@@ -55,10 +55,10 @@ export async function POST(request: NextRequest) {
 
     // Validate file size (client-side compression should handle this, but double-check)
     const fileSizeMB = file.size / (1024 * 1024)
-    if (fileSizeMB > 50) {
+    if (fileSizeMB > 100) {
       console.log('File size validation failed:', fileSizeMB)
       return NextResponse.json({ 
-        error: `File size (${fileSizeMB.toFixed(2)}MB) exceeds 50MB limit` 
+        error: `File size (${fileSizeMB.toFixed(2)}MB) exceeds 100MB limit` 
       }, { status: 413 })
     }
 
