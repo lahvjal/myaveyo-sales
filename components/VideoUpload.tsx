@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import { supabase } from '@/lib/supabase'
 
 interface VideoUploadProps {
   onUploadComplete: (videoUrl: string, thumbnailUrl: string) => void
@@ -131,6 +132,29 @@ export default function VideoUpload({
     })
   }
 
+  const uploadDirectToSupabase = async (file: File, folder: string): Promise<string> => {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+    const filePath = `${folder}/${fileName}`
+
+    const { data, error } = await supabase.storage
+      .from('media-assets')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    if (error) {
+      throw new Error(`Direct upload failed: ${error.message}`)
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('media-assets')
+      .getPublicUrl(filePath)
+
+    return publicUrl
+  }
+
   const generateThumbnail = async (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
       const video = document.createElement('video')
@@ -215,22 +239,10 @@ export default function VideoUpload({
       setProgress(75)
       const thumbnailFile = await generateThumbnail(videoFile)
 
-      // Upload video
+      // Upload video directly to Supabase (bypass Vercel limits)
       setProgress(85)
-      const videoFormData = new FormData()
-      videoFormData.append('file', videoFile)
-      videoFormData.append('folder', `${folder}/videos`)
-
-      const videoResponse = await fetch('/api/upload', {
-        method: 'POST',
-        body: videoFormData
-      })
-
-      if (!videoResponse.ok) {
-        const errorData = await videoResponse.json().catch(() => ({ error: 'Unknown error' }))
-        throw new Error(errorData.error || `Video upload failed (${videoResponse.status})`)
-      }
-      const videoResult = await videoResponse.json()
+      const videoUrl = await uploadDirectToSupabase(videoFile, `${folder}/videos`)
+      const videoResult = { url: videoUrl }
 
       // Upload thumbnail
       setProgress(95)
