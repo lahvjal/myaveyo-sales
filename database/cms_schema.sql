@@ -147,3 +147,41 @@ ALTER TABLE cms_content ENABLE ROW LEVEL SECURITY;
 -- Create policy for authenticated users (adjust as needed)
 CREATE POLICY "Enable all operations for authenticated users" ON cms_content
   FOR ALL USING (true);
+
+-- Reviews Table for Video Reviews Management
+CREATE TABLE reviews (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  description TEXT,
+  video_url TEXT NOT NULL,
+  thumbnail_url TEXT,
+  type TEXT CHECK (type IN ('customer', 'rep')) NOT NULL DEFAULT 'customer',
+  featured BOOLEAN DEFAULT false,
+  customer_name TEXT,
+  rep_name TEXT,
+  location TEXT NOT NULL,
+  date_recorded DATE NOT NULL DEFAULT CURRENT_DATE,
+  status TEXT CHECK (status IN ('active', 'inactive', 'pending')) NOT NULL DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Create indexes for reviews table
+CREATE INDEX idx_reviews_type ON reviews(type);
+CREATE INDEX idx_reviews_status ON reviews(status);
+CREATE INDEX idx_reviews_featured ON reviews(featured);
+CREATE INDEX idx_reviews_date ON reviews(date_recorded);
+
+-- Enable Row Level Security for reviews
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+
+-- Create policy for reviews (allow all operations for now)
+CREATE POLICY "Enable all operations for authenticated users on reviews" ON reviews
+  FOR ALL USING (true);
+
+-- Insert sample reviews data
+INSERT INTO reviews (title, description, video_url, thumbnail_url, type, featured, customer_name, rep_name, location, date_recorded, status) VALUES 
+('Amazing Solar Installation Experience', 'Customer shares their positive experience with Aveyo solar installation', '/videos/customer-review-1.mp4', '/images/customer-review-1-thumb.jpg', 'customer', true, 'John Smith', null, 'Austin, TX', '2024-12-15', 'active'),
+('Top Rep Performance Review', 'Sales rep discusses their success strategies', '/videos/rep-review-1.mp4', '/images/rep-review-1-thumb.jpg', 'rep', true, null, 'Austin Townsend', 'Dallas, TX', '2024-12-10', 'active'),
+('Family Loves Their Solar System', 'Happy family testimonial about their solar savings', '/videos/customer-review-2.mp4', '/images/customer-review-2-thumb.jpg', 'customer', false, 'Sarah Johnson', null, 'Houston, TX', '2024-12-08', 'active'),
+('Rep Training Success Story', 'New rep shares their training experience', '/videos/rep-review-2.mp4', '/images/rep-review-2-thumb.jpg', 'rep', false, null, 'Sawyer Kieffer', 'San Antonio, TX', '2024-12-05', 'active');

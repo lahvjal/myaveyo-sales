@@ -133,26 +133,32 @@ export default function VideoUpload({
   }
 
   const uploadDirectToSupabase = async (file: File, folder: string): Promise<string> => {
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-    const filePath = `${folder}/${fileName}`
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      const filePath = `${folder}/${fileName}`
 
-    const { data, error } = await supabase.storage
-      .from('media-assets')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      })
+      const { data, error } = await supabase.storage
+        .from('media-assets')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
 
-    if (error) {
-      throw new Error(`Direct upload failed: ${error.message}`)
+      if (error) {
+        console.error('Supabase upload error:', error)
+        throw new Error(`Direct upload failed: ${error.message}`)
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('media-assets')
+        .getPublicUrl(filePath)
+
+      return publicUrl
+    } catch (error) {
+      console.error('Upload to Supabase failed:', error)
+      throw error
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('media-assets')
-      .getPublicUrl(filePath)
-
-    return publicUrl
   }
 
   const generateThumbnail = async (file: File): Promise<File> => {
