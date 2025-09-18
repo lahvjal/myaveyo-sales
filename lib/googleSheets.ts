@@ -73,10 +73,10 @@ class GoogleSheetsService {
     }
 
     try {
-      // Determine the range to fetch - ensure we get all columns up to AH
-      let range = 'A:AH' // Default range for first sheet
+      // Determine the range to fetch - ensure we get all columns up to AD
+      let range = 'A:AD' // Default range for first sheet
       if (sheetName) {
-        range = `${sheetName}!A:AH` // Use specific sheet name
+        range = `${sheetName}!A:AD` // Use specific sheet name
       }
 
       const response = await this.sheets!.spreadsheets.values.get({
@@ -98,14 +98,18 @@ class GoogleSheetsService {
       }
 
 
-      // Expected columns: A=Rep Name, N=Total TSS, P=Closer TSS, R=Setter TSS, T=Total TSI, V=Closer TSI, X=Setter TSI, AH=MTD TSI
+      // Updated column mappings:
+      // YTD: N=All TSS, P=Closer TSS, R=Setter TSS, Z=All TSI, AB=Closer TSI, AD=Setter TSI
+      // MTD: H=All TSS, J=Closer TSS, L=Setter TSS, T=All TSI, V=Closer TSI, X=Setter TSI
       console.log('Processing rows into leaderboard data:', {
         totalDataRows: rows.length - 1,
         sampleRawRow: rows[1] || [],
         columnMappings: {
           'A (Name)': rows[1]?.[0],
-          'N (Total TSS)': rows[1]?.[13],
-          'T (Total TSI)': rows[1]?.[19]
+          'N (YTD All TSS)': rows[1]?.[13],
+          'Z (YTD All TSI)': rows[1]?.[25],
+          'H (MTD All TSS)': rows[1]?.[7],
+          'T (MTD All TSI)': rows[1]?.[19]
         }
       })
 
@@ -116,23 +120,23 @@ class GoogleSheetsService {
         let totalTSS, closerTSS, setterTSS, totalTSI, closerTSI, setterTSI
         
         if (timeFilter === 'mtd') {
-          // MTD columns - H, J, L (TSS data) and AH (TSI data)
-          totalTSS = parseFloat(row[7]) || 0    // Column H (index 7) - Total TSS MTD
-          closerTSS = parseFloat(row[9]) || 0   // Column J (index 9) - Closer TSS MTD
-          setterTSS = parseFloat(row[11]) || 0  // Column L (index 11) - Setter TSS MTD
-          // MTD TSI data from column AH
-          totalTSI = parseFloat(row[33]) || 0   // Column AH (index 33) - Total TSI MTD
-          closerTSI = 0  // No separate closer TSI for MTD
-          setterTSI = 0  // No separate setter TSI for MTD
-        } else {
-          // YTD columns (default) - N, P, R, T, V, X
-          totalTSS = parseFloat(row[13]) || 0   // Column N (index 13)
-          closerTSS = parseFloat(row[15]) || 0  // Column P (index 15)
-          setterTSS = parseFloat(row[17]) || 0  // Column R (index 17)
+          // MTD columns: H=All TSS, J=Closer TSS, L=Setter TSS, T=All TSI, V=Closer TSI, X=Setter TSI
+          totalTSS = parseFloat(row[7]) || 0    // Column H (index 7) - All MTD TSS
+          closerTSS = parseFloat(row[9]) || 0   // Column J (index 9) - Closer MTD TSS
+          setterTSS = parseFloat(row[11]) || 0  // Column L (index 11) - Setter MTD TSS
           
-          totalTSI = parseFloat(row[19]) || 0   // Column T (index 19)
-          closerTSI = parseFloat(row[21]) || 0  // Column V (index 21)
-          setterTSI = parseFloat(row[23]) || 0  // Column X (index 23)
+          totalTSI = parseFloat(row[19]) || 0   // Column T (index 19) - All MTD TSI
+          closerTSI = parseFloat(row[21]) || 0  // Column V (index 21) - Closer MTD TSI
+          setterTSI = parseFloat(row[23]) || 0  // Column X (index 23) - Setter MTD TSI
+        } else {
+          // YTD columns: N=All TSS, P=Closer TSS, R=Setter TSS, Z=All TSI, AB=Closer TSI, AD=Setter TSI
+          totalTSS = parseFloat(row[13]) || 0   // Column N (index 13) - All YTD TSS
+          closerTSS = parseFloat(row[15]) || 0  // Column P (index 15) - Closer YTD TSS
+          setterTSS = parseFloat(row[17]) || 0  // Column R (index 17) - Setter YTD TSS
+          
+          totalTSI = parseFloat(row[25]) || 0   // Column Z (index 25) - All YTD TSI
+          closerTSI = parseFloat(row[27]) || 0  // Column AB (index 27) - Closer YTD TSI
+          setterTSI = parseFloat(row[29]) || 0  // Column AD (index 29) - Setter YTD TSI
         }
 
         // Debug logging for first few rows
@@ -140,16 +144,19 @@ class GoogleSheetsService {
           console.log(`Row ${index + 1} (${repName}) - ${timeFilter.toUpperCase()} filter:`)
           console.log('  Raw row data:', row)
           if (timeFilter === 'mtd') {
-            console.log('  Column H (index 7):', row[7], '-> Total TSS MTD:', totalTSS)
+            console.log('  Column H (index 7):', row[7], '-> All TSS MTD:', totalTSS)
             console.log('  Column J (index 9):', row[9], '-> Closer TSS MTD:', closerTSS)
             console.log('  Column L (index 11):', row[11], '-> Setter TSS MTD:', setterTSS)
-            console.log('  Column AH (index 33):', row[33], '-> Total TSI MTD:', totalTSI)
-            console.log('  TSI values (MTD):', totalTSI, closerTSI, setterTSI)
+            console.log('  Column T (index 19):', row[19], '-> All TSI MTD:', totalTSI)
+            console.log('  Column V (index 21):', row[21], '-> Closer TSI MTD:', closerTSI)
+            console.log('  Column X (index 23):', row[23], '-> Setter TSI MTD:', setterTSI)
           } else {
-            console.log('  Column N (index 13):', row[13], '-> Total TSS:', totalTSS)
-            console.log('  Column T (index 19):', row[19], '-> Total TSI:', totalTSI)
-            console.log('  Column P (index 15):', row[15], '-> Closer TSS:', closerTSS)
-            console.log('  Column V (index 21):', row[21], '-> Closer TSI:', closerTSI)
+            console.log('  Column N (index 13):', row[13], '-> All TSS YTD:', totalTSS)
+            console.log('  Column P (index 15):', row[15], '-> Closer TSS YTD:', closerTSS)
+            console.log('  Column R (index 17):', row[17], '-> Setter TSS YTD:', setterTSS)
+            console.log('  Column Z (index 25):', row[25], '-> All TSI YTD:', totalTSI)
+            console.log('  Column AB (index 27):', row[27], '-> Closer TSI YTD:', closerTSI)
+            console.log('  Column AD (index 29):', row[29], '-> Setter TSI YTD:', setterTSI)
           }
         }
 
