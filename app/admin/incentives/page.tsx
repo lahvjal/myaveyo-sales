@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Incentive, CreateIncentiveData, UpdateIncentiveData } from '@/lib/types/incentive'
 import IncentiveForm from '@/components/admin/IncentiveForm'
 import Button from '@/components/Button'
+import AdminLayout from '@/components/admin/AdminLayout'
 
 export default function AdminIncentivesPage() {
   const [incentives, setIncentives] = useState<Incentive[]>([])
@@ -11,6 +12,7 @@ export default function AdminIncentivesPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingIncentive, setEditingIncentive] = useState<Incentive | null>(null)
   const [formLoading, setFormLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('manage')
 
   // Fetch all incentives (including unpublished for admin view)
   const fetchIncentives = async () => {
@@ -106,28 +108,33 @@ export default function AdminIncentivesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] px-8 py-12">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-white text-4xl font-telegraf font-bold">
-              Incentives CMS
-            </h1>
-            <p className="text-gray-400 mt-2">
-              Manage incentives displayed on the public sales page
-            </p>
+    <AdminLayout
+      pageKey="incentives"
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      <div className="min-h-screen bg-[#0d0d0d] px-8 py-12">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-white text-4xl font-telegraf font-bold">
+                Incentives Management
+              </h1>
+              <p className="text-gray-400 mt-2">
+                Manage incentives displayed on the public sales page
+              </p>
+            </div>
+            
+            {!showForm && !editingIncentive && (
+              <Button
+                variant="primary"
+                onClick={() => setShowForm(true)}
+              >
+                Add New Incentive
+              </Button>
+            )}
           </div>
-          
-          {!showForm && !editingIncentive && (
-            <Button
-              variant="primary"
-              onClick={() => setShowForm(true)}
-            >
-              Add New Incentive
-            </Button>
-          )}
-        </div>
 
         {/* Form */}
         {(showForm || editingIncentive) && (
@@ -234,7 +241,8 @@ export default function AdminIncentivesPage() {
             </Button>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   )
 }

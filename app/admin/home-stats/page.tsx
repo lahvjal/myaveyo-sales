@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import AdminLayout from '@/components/admin/AdminLayout'
+import EditModal from '@/components/admin/EditModal'
 
 interface HomeStat {
   id: string
@@ -16,6 +18,16 @@ interface HomeStat {
 
 export default function HomeStatsAdmin() {
   const [stats, setStats] = useState<HomeStat[]>([])
+  const [activeTab, setActiveTab] = useState('stats')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingType, setEditingType] = useState<'stat' | 'section'>('stat')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState<HomeStat | null>(null)
+  
+  const breadcrumbs = [
+    { name: 'Home Page', href: '/admin/cms/home' },
+    { name: 'Stats Section' }
+  ]
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -72,12 +84,17 @@ export default function HomeStatsAdmin() {
     fetchStats()
   }, [])
 
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editForm, setEditForm] = useState<HomeStat | null>(null)
-
   const handleEdit = (stat: HomeStat) => {
+    setEditingType('stat')
     setEditingId(stat.id)
     setEditForm({ ...stat })
+    setIsModalOpen(true)
+  }
+
+  const handleEditSection = (sectionType: string) => {
+    setEditingType('section')
+    setEditingId(sectionType)
+    setIsModalOpen(true)
   }
 
   const handleSave = async () => {
@@ -111,208 +128,224 @@ export default function HomeStatsAdmin() {
   const handleCancel = () => {
     setEditingId(null)
     setEditForm(null)
+    setIsModalOpen(false)
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white">
-      {/* Header */}
-      <div className="border-b border-[#333] bg-[#1a1a1a]">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-telegraf font-bold">Homepage Stats Section</h1>
-              <p className="text-gray-400 text-sm">Manage statistics displayed on the homepage</p>
-            </div>
-            <Link 
-              href="/admin"
-              className="px-4 py-2 bg-[#333] hover:bg-[#444] rounded-lg transition-colors text-sm"
-            >
-              ← Back to Admin
-            </Link>
+    <AdminLayout
+      pageKey="home-stats"
+      topBarTitle="CMS"
+      topBarIcon="/images/16d82f801100a4d0fca41534110993bbb8ff7a62.svg"
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      breadcrumbs={breadcrumbs}
+    >
+      <div className="min-h-screen bg-[#0d0d0d] text-white">
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-8 py-12">
+          {/* Page Title */}
+          <div className="mb-12">
+            <h1 className="text-4xl font-telegraf font-bold text-white mb-2">Stats Section</h1>
           </div>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h2 className="text-xl font-telegraf font-semibold mb-2">Statistics Management</h2>
-          <p className="text-gray-400">
-            Edit the statistics that appear in the stats section of the homepage. These numbers help showcase Aveyo's growth and success.
-          </p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {stats.sort((a, b) => a.order - b.order).map((stat) => (
-            <div
-              key={stat.id}
-              className="bg-[#1a1a1a] border border-[#333] rounded-lg p-6"
-            >
-              {editingId === stat.id ? (
-                // Edit Form
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Icon (Emoji)</label>
-                    <input
-                      type="text"
-                      value={editForm?.icon || ''}
-                      onChange={(e) => setEditForm(prev => prev ? { ...prev, icon: e.target.value } : null)}
-                      className="w-full px-3 py-2 bg-[#0d0d0d] border border-[#333] rounded-lg text-white"
-                      placeholder="📊"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-[#888d95] text-sm mb-2">Title</label>
-                    <input
-                      type="text"
-                      value={editForm?.title}
-                      onChange={(e) => setEditForm(prev => prev ? { ...prev, title: e.target.value } : null)}
-                      className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-4 py-2 text-white"
-                    />
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 mb-4">
-                    <div>
-                      <label className="block text-[#888d95] text-sm mb-2">Prefix (e.g. $)</label>
-                      <input
-                        type="text"
-                        value={editForm?.prefix || ''}
-                        onChange={(e) => setEditForm(prev => prev ? { ...prev, prefix: e.target.value || undefined } : null)}
-                        className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-4 py-2 text-white"
-                        placeholder="$"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[#888d95] text-sm mb-2">Value</label>
-                      <input
-                        type="text"
-                        value={editForm?.value || ''}
-                        onChange={(e) => setEditForm(prev => prev ? { ...prev, value: e.target.value } : null)}
-                        className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-4 py-2 text-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[#888d95] text-sm mb-2">Suffix (e.g. %, K)</label>
-                      <input
-                        type="text"
-                        value={editForm?.suffix || ''}
-                        onChange={(e) => setEditForm(prev => prev ? { ...prev, suffix: e.target.value || undefined } : null)}
-                        className="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-4 py-2 text-white"
-                        placeholder="% or K"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Description</label>
-                    <textarea
-                      value={editForm?.description || ''}
-                      onChange={(e) => setEditForm(prev => prev ? { ...prev, description: e.target.value } : null)}
-                      className="w-full px-3 py-2 bg-[#0d0d0d] border border-[#333] rounded-lg text-white h-20 resize-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Display Order</label>
-                    <select
-                      value={editForm?.order || 1}
-                      onChange={(e) => setEditForm(prev => prev ? { ...prev, order: parseInt(e.target.value) } : null)}
-                      className="w-full px-3 py-2 bg-[#0d0d0d] border border-[#333] rounded-lg text-white"
-                    >
-                      <option value={1}>1st</option>
-                      <option value={2}>2nd</option>
-                      <option value={3}>3rd</option>
-                      <option value={4}>4th</option>
-                    </select>
-                  </div>
-
-                  <div className="flex gap-3 pt-4">
-                    <button
-                      onClick={handleSave}
-                      className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-sm font-medium"
-                    >
-                      Save Changes
-                    </button>
-                    <button
-                      onClick={handleCancel}
-                      className="px-4 py-2 bg-[#333] hover:bg-[#444] rounded-lg transition-colors text-sm font-medium"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                // Display View
-                <div>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="text-4xl">{stat.icon}</div>
-                    <button
-                      onClick={() => handleEdit(stat)}
-                      className="px-3 py-1 bg-[#333] hover:bg-[#444] rounded-lg transition-colors text-sm"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                  
-                  <h3 className="text-lg font-telegraf font-semibold mb-2">
-                    {stat.title}
+          {/* Stats Grid - 4 Column Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Top Row - Section Cards */}
+            <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-6 relative">
+              <div className="flex flex-col h-full">
+                <div className="mb-4">
+                  <h3 className="text-[20px] font-telegraf font-bold text-white">
+                    Sales Stats.
                   </h3>
-                  
-                  <div className="text-3xl font-telegraf font-bold text-white mb-2">
-                    {stat.value}
-                  </div>
-                  
-                  <p className="text-gray-400 text-sm leading-relaxed">
-                    {stat.description}
-                  </p>
-
-                  <div className="mt-4 pt-4 border-t border-[#333]">
-                    <span className="text-xs text-gray-500">
-                      Display Order: {stat.order}
-                    </span>
-                  </div>
                 </div>
-              )}
+                <div className="mb-6 flex-grow">
+                  <p className="text-[#888d95] text-[14px] font-telegraf leading-relaxed">
+                    A real-time look into our company-wide sales metrics. They'll be better if you worked here.
+                  </p>
+                </div>
+                <div className="mt-auto">
+                  <button 
+                    onClick={() => handleEditSection('sales-stats')}
+                    className="flex items-center gap-2 text-[#888d95] text-[14px] font-telegraf hover:text-white transition-colors group"
+                  >
+                    Edit
+                    <div className="transition-transform group-hover:translate-x-1">→</div>
+                  </button>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* Preview Section */}
-        <div className="mt-12">
-          <h3 className="text-lg font-telegraf font-semibold mb-4">Preview</h3>
-          <div className="bg-[#1a1a1a] border border-[#333] rounded-lg p-6">
-            <p className="text-gray-400 text-sm mb-6">
-              This is how the stats will appear on the homepage:
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {stats.sort((a, b) => a.order - b.order).map((stat) => (
-                <div key={stat.id} className="text-center">
-                  <div className="text-center">
-                    <div className="text-[40px] font-telegraf font-black text-white mb-2">
+            <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-6 relative">
+              <div className="flex flex-col h-full">
+                <div className="mb-4">
+                  <h3 className="text-[20px] font-telegraf font-bold text-white">
+                    _2025
+                  </h3>
+                </div>
+                <div className="mb-6 flex-grow">
+                  <p className="text-[#888d95] text-[14px] font-telegraf leading-relaxed">
+                    Year indicator for the stats section
+                  </p>
+                </div>
+                <div className="mt-auto">
+                  <button 
+                    onClick={() => handleEditSection('year-indicator')}
+                    className="flex items-center gap-2 text-[#888d95] text-[14px] font-telegraf hover:text-white transition-colors group"
+                  >
+                    Edit
+                    <div className="transition-transform group-hover:translate-x-1">→</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Row - Individual Stat Cards */}
+            {stats.sort((a, b) => a.order - b.order).map((stat) => (
+              <div
+                key={stat.id}
+                className="bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-6 relative"
+              >
+                <div className="flex flex-col h-full">
+                  {/* Title */}
+                  <div className="mb-4">
+                    <h3 className="text-[20px] font-telegraf font-bold text-white">
+                      {stat.title}
+                    </h3>
+                  </div>
+                  
+                  {/* Value */}
+                  <div className="mb-4 flex-grow flex items-center">
+                    <div className="text-[40px] font-telegraf font-black text-white">
                       {stat.prefix}{stat.value}{stat.suffix}
                     </div>
-                    <p className="text-[#888d95] text-[14px] font-telegraf">
-                      {stat.title}
+                  </div>
+                  
+                  {/* Description */}
+                  <div className="mb-6">
+                    <p className="text-[#888d95] text-[14px] font-telegraf leading-relaxed">
+                      {stat.description}
                     </p>
                   </div>
-                  <div className="text-xs text-gray-400">
-                    {stat.description}
+                  
+                  {/* Edit Button */}
+                  <div className="mt-auto">
+                    <button
+                      onClick={() => handleEdit(stat)}
+                      className="flex items-center gap-2 text-[#888d95] text-[14px] font-telegraf hover:text-white transition-colors group"
+                    >
+                      Edit
+                      <div className="transition-transform group-hover:translate-x-1">
+                        →
+                      </div>
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Save Notice */}
-        <div className="mt-8 bg-[#1a1a1a] border border-[#333] rounded-lg p-6">
-          <h3 className="text-lg font-telegraf font-semibold mb-2 text-blue-400">
-            💡 Note
-          </h3>
-          <p className="text-gray-400 text-sm">
-            Changes made here will update the statistics section on the homepage. Make sure your numbers are accurate and up-to-date to maintain credibility with visitors.
-          </p>
-        </div>
       </div>
-    </div>
+
+      {/* Edit Modal */}
+      <EditModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={editingType === 'stat' ? 'Edit Statistic' : 'Edit Section'}
+        onSave={handleSave}
+        onCancel={handleCancel}
+      >
+        {editingType === 'stat' && editForm && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[#888d95] text-sm mb-2">Title</label>
+              <input
+                type="text"
+                value={editForm.title}
+                onChange={(e) => setEditForm(prev => prev ? { ...prev, title: e.target.value } : null)}
+                className="w-full bg-[#0d0d0d] border border-[#333] rounded-lg px-4 py-2 text-white"
+              />
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-[#888d95] text-sm mb-2">Prefix</label>
+                <input
+                  type="text"
+                  value={editForm.prefix || ''}
+                  onChange={(e) => setEditForm(prev => prev ? { ...prev, prefix: e.target.value || undefined } : null)}
+                  className="w-full bg-[#0d0d0d] border border-[#333] rounded-lg px-4 py-2 text-white"
+                  placeholder="$"
+                />
+              </div>
+              <div>
+                <label className="block text-[#888d95] text-sm mb-2">Value</label>
+                <input
+                  type="text"
+                  value={editForm.value}
+                  onChange={(e) => setEditForm(prev => prev ? { ...prev, value: e.target.value } : null)}
+                  className="w-full bg-[#0d0d0d] border border-[#333] rounded-lg px-4 py-2 text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-[#888d95] text-sm mb-2">Suffix</label>
+                <input
+                  type="text"
+                  value={editForm.suffix || ''}
+                  onChange={(e) => setEditForm(prev => prev ? { ...prev, suffix: e.target.value || undefined } : null)}
+                  className="w-full bg-[#0d0d0d] border border-[#333] rounded-lg px-4 py-2 text-white"
+                  placeholder="% or K"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-[#888d95] text-sm mb-2">Description</label>
+              <textarea
+                value={editForm.description}
+                onChange={(e) => setEditForm(prev => prev ? { ...prev, description: e.target.value } : null)}
+                className="w-full bg-[#0d0d0d] border border-[#333] rounded-lg px-4 py-2 text-white h-20 resize-none"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-[#888d95] text-sm mb-2">Display Order</label>
+              <select
+                value={editForm.order}
+                onChange={(e) => setEditForm(prev => prev ? { ...prev, order: parseInt(e.target.value) } : null)}
+                className="w-full bg-[#0d0d0d] border border-[#333] rounded-lg px-4 py-2 text-white"
+              >
+                <option value={1}>1st</option>
+                <option value={2}>2nd</option>
+                <option value={3}>3rd</option>
+                <option value={4}>4th</option>
+              </select>
+            </div>
+          </div>
+        )}
+        
+        {editingType === 'section' && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[#888d95] text-sm mb-2">Section Title</label>
+              <input
+                type="text"
+                defaultValue={editingId === 'sales-stats' ? 'Sales Stats.' : '_2025'}
+                className="w-full bg-[#0d0d0d] border border-[#333] rounded-lg px-4 py-2 text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-[#888d95] text-sm mb-2">Description</label>
+              <textarea
+                defaultValue={editingId === 'sales-stats' ? 
+                  "A real-time look into our company-wide sales metrics. They'll be better if you worked here." : 
+                  "Year indicator for the stats section"
+                }
+                className="w-full bg-[#0d0d0d] border border-[#333] rounded-lg px-4 py-2 text-white h-20 resize-none"
+              />
+            </div>
+          </div>
+        )}
+      </EditModal>
+    </AdminLayout>
   )
 }
