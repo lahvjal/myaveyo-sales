@@ -17,13 +17,13 @@ export default function CMSHomePage() {
       title: 'Stats Section',
       description: 'Click to manage',
       status: 'active' as const,
-      href: '/admin/home-stats'
+      href: '/admin/cms/home/stats'
     },
     {
       title: 'Sales Section',
       description: 'Click to manage',
       status: 'active' as const,
-      href: '/admin/sales'
+      href: '/admin/cms/home/sales'
     },
     {
       title: 'On The Inside',

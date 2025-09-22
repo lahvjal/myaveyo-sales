@@ -47,6 +47,7 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true)
   const [roleFilter, setRoleFilter] = useState<'all' | 'closer' | 'setter'>('all')
   const [timeFilter, setTimeFilter] = useState<'ytd' | 'mtd'>('ytd')
+  const [metricFilter, setMetricFilter] = useState<'tsi' | 'tss'>('tsi')
   const [mounted, setMounted] = useState(false)
   
 
@@ -54,7 +55,7 @@ export default function LeaderboardPage() {
     try {
       setLoading(true)
       
-      const response = await fetch(`/api/leaderboard?role=${roleFilter}&time=${timeFilter}`)
+      const response = await fetch(`/api/leaderboard?role=${roleFilter}&time=${timeFilter}&metric=${metricFilter}`)
       if (!response.ok) {
         throw new Error('Failed to fetch leaderboard data')
       }
@@ -93,7 +94,7 @@ export default function LeaderboardPage() {
     if (mounted) {
       fetchLeaderboard()
     }
-  }, [roleFilter, timeFilter, mounted])
+  }, [roleFilter, timeFilter, metricFilter, mounted])
 
   if (!mounted) {
     return (
@@ -198,6 +199,32 @@ export default function LeaderboardPage() {
                   }`}
                 >
                   MTD
+                </button>
+              </div>
+            </div>
+
+            {/* Metric Filter */}
+            <div className="flex justify-center">
+              <div className="flex bg-gradient-to-b from-[#232323] to-[#171717] rounded-[60px] p-1 gap-1">
+                <button
+                  onClick={() => setMetricFilter('tsi')}
+                  className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
+                    metricFilter === 'tsi'
+                      ? 'bg-white text-black'
+                      : 'bg-transparent text-white hover:bg-white/10'
+                  }`}
+                >
+                  TSI
+                </button>
+                <button
+                  onClick={() => setMetricFilter('tss')}
+                  className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
+                    metricFilter === 'tss'
+                      ? 'bg-white text-black'
+                      : 'bg-transparent text-white hover:bg-white/10'
+                  }`}
+                >
+                  TSS
                 </button>
               </div>
             </div>

@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '50')
   const roleFilter = (searchParams.get('role') as 'all' | 'closer' | 'setter') || 'all'
   const timeFilter = (searchParams.get('time') as 'ytd' | 'mtd') || 'ytd'
+  const metric = (searchParams.get('metric') as 'tsi' | 'tss') || 'tsi'
   
   try {
     // Google Sheets configuration
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
       sheetName: 'SL',
       roleFilter,
       timeFilter,
+      metric,
       limit,
       timestamp: new Date().toISOString(),
       url: request.url
@@ -32,7 +34,8 @@ export async function GET(request: NextRequest) {
       SPREADSHEET_ID,
       'SL', // Use 'SL' sheet name instead of GID
       roleFilter,
-      timeFilter
+      timeFilter,
+      metric
     )
 
     console.log('Successfully fetched leaderboard data:', {
@@ -88,7 +91,8 @@ export async function GET(request: NextRequest) {
         process.env.GOOGLE_SHEETS_LEADERBOARD_ID!,
         'SL',
         roleFilter,
-        timeFilter
+        timeFilter,
+        metric
       )
       
       console.log('Fallback call succeeded!', {

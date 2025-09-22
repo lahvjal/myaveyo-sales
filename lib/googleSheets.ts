@@ -66,7 +66,8 @@ class GoogleSheetsService {
     spreadsheetId: string, 
     sheetName?: string,
     roleFilter: 'all' | 'closer' | 'setter' = 'all',
-    timeFilter: 'ytd' | 'mtd' = 'ytd'
+    timeFilter: 'ytd' | 'mtd' = 'ytd',
+    sortBy: 'tsi' | 'tss' = 'tsi'
   ): Promise<LeaderboardEntry[]> {
     if (!this.sheets) {
       await this.initializeAuth()
@@ -110,7 +111,8 @@ class GoogleSheetsService {
           'Z (YTD All TSI)': rows[1]?.[25],
           'H (MTD All TSS)': rows[1]?.[7],
           'T (MTD All TSI)': rows[1]?.[19]
-        }
+        },
+        sortBy
       })
 
       const leaderboardData: LeaderboardEntry[] = rows.slice(1).map((row, index) => {
@@ -189,8 +191,12 @@ class GoogleSheetsService {
         }
       })
 
-      // Sort by TSI (Total Solar Installed) descending, then by TSS as tiebreaker
+      // Sort by selected metric descending, use the other metric as a tiebreaker
       leaderboardData.sort((a, b) => {
+        if (sortBy === 'tss') {
+          if (b.tss !== a.tss) return b.tss - a.tss
+          return b.tsi - a.tsi
+        }
         if (b.tsi !== a.tsi) return b.tsi - a.tsi
         return b.tss - a.tss
       })
@@ -200,7 +206,7 @@ class GoogleSheetsService {
         entry.rank = index + 1
       })
 
-      console.log(`Final processed leaderboard data (${roleFilter}, ${timeFilter}):`, {
+      console.log(`Final processed leaderboard data (${roleFilter}, ${timeFilter}, sortBy=${sortBy}):`, {
         totalEntries: leaderboardData.length,
         topThree: leaderboardData.slice(0, 3),
         sampleEntry: leaderboardData[0] ? {

@@ -23,6 +23,12 @@ export default function IncentivesPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'live' | 'coming_up' | 'done'>('all')
   const [mounted, setMounted] = useState(false)
+  const [copyLoading, setCopyLoading] = useState(true)
+  const [incentivesCopy, setIncentivesCopy] = useState<{ section_number: string; section_title: string; description: string }>({
+    section_number: '(2)',
+    section_title: 'Incentives.',
+    description: 'Great commissions are nice, but incredible incentives can be even cooler. Check out what we have cooking.',
+  })
 
   const fetchIncentives = async () => {
     try {
@@ -82,9 +88,28 @@ export default function IncentivesPage() {
     }
   }
 
+  const fetchIncentivesCopy = async () => {
+    try {
+      const res = await fetch('/api/cms/home-incentives')
+      if (res.ok) {
+        const data = await res.json()
+        setIncentivesCopy({
+          section_number: data.section_number ?? '(2)',
+          section_title: data.section_title ?? 'Incentives.',
+          description: data.description ?? '',
+        })
+      }
+    } catch (e) {
+      console.error('Error fetching incentives copy:', e)
+    } finally {
+      setCopyLoading(false)
+    }
+  }
+
   useEffect(() => {
     setMounted(true)
     fetchIncentives()
+    fetchIncentivesCopy()
   }, [])
 
   if (!mounted) {
@@ -128,17 +153,17 @@ export default function IncentivesPage() {
       
       <div className="px-[50px] py-[130px]">
         <div className="max-w-[1480px] mx-auto">
-          {/* Header */}
+          {/* Header (from CMS) */}
           <div className="flex items-center justify-between pb-10 mb-20">
             <div className="flex items-start gap-2.5 text-white opacity-100 translate-y-0">
-              <span className="text-[16px] font-telegraf">(I)</span>
+              <span className="text-[16px] font-telegraf">{incentivesCopy.section_number}</span>
               <h1 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
-                Incentives.
+                {incentivesCopy.section_title}
               </h1>
             </div>
             <div className="text-white text-[16px] font-telegraf max-w-[400px] opacity-100 translate-y-0">
               <p>
-                Unlock your earning potential with our exclusive incentive programs. From monthly sprints to yearly challenges.
+                {incentivesCopy.description}
               </p>
             </div>
           </div>
