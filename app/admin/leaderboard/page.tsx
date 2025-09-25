@@ -102,7 +102,7 @@ export default function AdminLeaderboardPage() {
   const getTSIValue = (entry: LeaderboardEntry) => formatPoints(entry.tsi)
 
   return (
-    <AdminLayout pageKey="leaderboard" topBarTitle="Leaderboard" topBarIcon="/images/leaderboard.svg" topBarTabs={[]}> 
+    <AdminLayout pageKey="leaderboard" topBarTitle="Leaderboard" topBarTabs={[]}> 
       <div className="bg-[#0d0d0d] min-h-screen">
         <div className="px-6 md:px-10 py-8">
           <div className="max-w-[1480px] mx-auto">

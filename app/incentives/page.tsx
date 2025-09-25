@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
+import IncentiveCard from '@/components/incentives/IncentiveCard'
 
 interface Incentive {
   id: string
@@ -194,93 +195,24 @@ export default function IncentivesPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredIncentives.map((incentive) => {
-                const statusBadge = getStatusBadge(incentive.live_status)
-                
-                return (
-                  <div
-                    key={incentive.id}
-                    className="group relative bg-gradient-to-b from-[#171717] to-[#0d0d0d] rounded-[3px] overflow-hidden hover:scale-105 transition-all duration-300"
-                  >
-                    {/* Background Image/Video */}
-                    <div className="relative h-80 overflow-hidden">
-                      {incentive.background_video_url ? (
-                        <video 
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                        >
-                          <source src={incentive.background_video_url} type="video/mp4" />
-                        </video>
-                      ) : (
-                        <div 
-                          className="w-full h-full bg-gradient-to-br group-hover:scale-110 transition-transform duration-500"
-                          style={{
-                            background: `linear-gradient(135deg, ${incentive.category_color}20, ${incentive.category_color}40)`
-                          }}
-                        />
-                      )}
-                      
-                      {/* Overlay */}
-                      <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-30 transition-all duration-300" />
-                      
-                      {/* Status Badge */}
-                      <div className="absolute top-4 right-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${statusBadge.class}`}>
-                          {statusBadge.label}
-                        </span>
-                      </div>
-
-                      {/* Category Badge */}
-                      <div className="absolute top-4 left-4">
-                        <span 
-                          className="px-3 py-1 rounded-full text-xs font-bold text-white"
-                          style={{ backgroundColor: incentive.category_color }}
-                        >
-                          {incentive.category}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-6 h-64 flex flex-col justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-telegraf font-bold mb-3 text-white group-hover:text-white/80 transition-colors">
-                          {incentive.title}
-                        </h3>
-                        
-                        <p className="text-[rgba(255,255,255,0.6)] font-telegraf mb-4 line-clamp-4 text-sm">
-                          {incentive.description}
-                        </p>
-
-                        {/* Dates */}
-                        <div className="flex flex-col gap-1 text-xs text-[rgba(255,255,255,0.6)] font-telegraf mb-4">
-                          <span>Start: {formatDate(incentive.start_date)}</span>
-                          <span>End: {formatDate(incentive.end_date)}</span>
-                        </div>
-                      </div>
-
-                      {/* Action Button */}
-                      <button 
-                        className={`w-full py-3 rounded-[3px] font-telegraf font-semibold transition-all ${
-                          incentive.live_status === 'live'
-                            ? 'bg-white text-black hover:bg-white/90'
-                            : incentive.live_status === 'coming_up'
-                            ? 'bg-gradient-to-b from-[#232323] to-[#171717] text-white hover:from-[#2a2a2a] hover:to-[#1e1e1e]'
-                            : 'bg-gradient-to-b from-[#232323] to-[#171717] text-[rgba(255,255,255,0.6)] cursor-not-allowed'
-                        }`}
-                        disabled={incentive.live_status === 'done'}
-                      >
-                        {incentive.live_status === 'live' ? 'Join Now' : 
-                         incentive.live_status === 'coming_up' ? 'Get Notified' : 
-                         'View Results'}
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
+              {filteredIncentives.map((incentive) => (
+                <div key={incentive.id} className="rounded-[3px] overflow-hidden">
+                  <IncentiveCard
+                    title={incentive.title}
+                    backgroundImage={incentive.background_image_url}
+                    backgroundVideo={incentive.background_video_url}
+                    liveStatus={incentive.live_status}
+                    category={incentive.category}
+                    categoryColor={incentive.category_color}
+                    startDate={incentive.start_date}
+                    endDate={incentive.end_date}
+                    variant="detailed"
+                    onViewClick={() => {
+                      window.location.href = `/incentives/${incentive.id}`
+                    }}
+                  />
+                </div>
+              ))}
             </div>
           )}
 

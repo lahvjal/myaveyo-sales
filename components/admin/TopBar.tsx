@@ -26,17 +26,13 @@ interface TopBarProps {
   breadcrumbs?: BreadcrumbItem[]
 }
 
-const DEFAULT_TABS: TopBarTab[] = [
-  { id: 'home', name: 'Home Page' },
-  { id: 'incentives', name: 'Incentives Page' },
-  { id: 'reviews', name: 'Reviews Page' }
-]
+// No default tabs; tabs are opt-in per page (e.g., CMS)
 
 export default function TopBar({ 
-  title = 'CMS',
-  icon = '/images/16d82f801100a4d0fca41534110993bbb8ff7a62.svg',
-  tabs = DEFAULT_TABS,
-  activeTab = 'home',
+  title = 'Admin',
+  icon = '/images/dashboard-icon.png',
+  tabs = [],
+  activeTab = '',
   onTabChange,
   showProfile = true,
   className = '',
@@ -50,7 +46,7 @@ export default function TopBar({
   }
 
   return (
-    <div className={`bg-[#0d0d0d] box-border content-stretch flex gap-[30px] h-[94px] items-center justify-start px-[20px] py-0 relative shrink-0 w-full border-b border-[#121212] ${className}`}>
+    <div className={`bg-[#0d0d0d] box-border content-stretch flex gap-[30px] h-[94px] items-center justify-start px-[20px] py-0 relative shrink-0 w-full border-b border-[#121212] sticky top-0 z-40 ${className}`}>
       <div className="basis-0 box-border content-stretch flex grow items-center justify-between min-h-px min-w-px px-0 py-[14px] relative shrink-0">
         {/* Left side - Title and navigation */}
         <div className="content-stretch flex gap-[30px] items-center justify-start relative shrink-0">
@@ -60,8 +56,8 @@ export default function TopBar({
               <Image 
                 src={icon}
                 alt={`${title} Icon`}
-                width={24}
-                height={24}
+                width={50}
+                height={50}
                 className="size-full"
               />
             </div>

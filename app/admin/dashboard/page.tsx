@@ -3,10 +3,13 @@
 import React from "react"
 import AdminLayout from "@/components/admin/AdminLayout"
 import Link from "next/link"
+import ProjectMilestoneCard from "@/components/projects/ProjectMilestoneCard"
+import Top3Card from "@/components/leaderboard/Top3Card"
+import UserRankRow from "@/components/leaderboard/UserRankRow"
 
 function SectionHeader({ title, actionLabel, actionHref }: { title: string; actionLabel?: string; actionHref?: string }) {
   return (
-    <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center justify-between">
       <h2 className="text-white font-semibold tracking-tight">{title}</h2>
       {actionLabel && actionHref && (
         <Link
@@ -72,57 +75,50 @@ function IncentiveCard({ title, status, cadence, img }: { title: string; status:
 
 export default function DashboardPage() {
   return (
-    <AdminLayout
-      pageKey="dashboard"
-      topBarTitle="Dashboard"
-      topBarIcon="/images/be4cc85f4c02771c35b4a1e613279641f6cf76e8.svg"
-      topBarTabs={[]}
-    >
+    <AdminLayout pageKey="dashboard">
       <div className="min-h-screen bg-[#0b0b0b] px-6 md:px-8 py-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1480px] mx-auto">
           {/* My Projects */}
-          <SectionHeader title="My Projects" actionLabel="See Projects" actionHref="/projects" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <KpiCard color="#f59e0b" label="Pre-Approval" value="10" />
-            <KpiCard color="#ea580c" label="Approval" value="8" />
-            <KpiCard color="#60a5fa" label="Construction" value="9" />
-            <KpiCard color="#22c55e" label="Activation" value="18" />
+          <div className="mb-20 flex flex-col gap-[20px]">
+            <SectionHeader title="My Projects" actionLabel="See Projects" actionHref="/admin/projects" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <ProjectMilestoneCard label="Pre-Approval" value={10} dotColor="#f2c94c" />
+              <ProjectMilestoneCard label="Approval" value={8} dotColor="#f2c94c" />
+              <ProjectMilestoneCard label="Construction" value={9} dotColor="#61dafb" />
+              <ProjectMilestoneCard label="Activation" value={18} dotColor="#50fa7b" />
+            </div>
           </div>
 
           {/* Leaderboard */}
-          <SectionHeader title="Leaderboard" actionLabel="View Leaderboard" actionHref="/admin/leaderboard" />
-          <div className="bg-gradient-to-b from-[#161616] to-[#101010] rounded-[8px] border border-[#2a2a2a] p-4 mb-4">
-            <div className="flex items-center justify-between text-xs text-gray-300">
-              <div className="flex items-center gap-2">
-                <span className="text-white">#67</span>
-                <span className="text-white font-semibold">Johnny Ives</span>
-              </div>
-              <div>
-                <span className="text-white font-bold text-lg mr-1">164</span>
-                <span>TSI</span>
-                <span className="ml-6 text-gray-300">286</span>
-                <span className="ml-1">TSS</span>
-              </div>
+          <div className="mb-20 flex flex-col gap-[20px]">
+            <SectionHeader title="Leaderboard" actionLabel="View Leaderboard" actionHref="/admin/leaderboard" />
+            {/* Current user rank row */}
+            <UserRankRow rank={67} name="Johnny Ives" tsi={164} tss={286} withLabels/>
+            {/* Top 3 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <Top3Card rank={1} name="Kadin Kutzke" tsi={164} tss={286} />
+              <Top3Card rank={2} name="Austin Townsend" tsi={120} tss={230} />
+              <Top3Card rank={3} name="Sawyer Kieffer" tsi={90} tss={186} />
             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-            <MedalCard place={1} name="Kadin Kutzke" tsi={164} tss={286} tone="#3b3428" />
-            <MedalCard place={2} name="Austin Townsend" tsi={120} tss={230} tone="#2f3137" />
-            <MedalCard place={3} name="Kadin Kutzke" tsi={90} tss={186} tone="#3a2c26" />
+            
           </div>
 
           {/* Incentives */}
-          <SectionHeader title="Incentives" actionLabel="View All Incentives" actionHref="/incentives" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-            <IncentiveCard title="SINK OR SWIM" status="Live" cadence="Yearly" img="" />
-            <IncentiveCard title="King of the Kill" status="Live" cadence="Yearly" img="" />
-            <IncentiveCard title="2025 ANNUAL TSI" status="Live" cadence="Yearly" img="" />
+          <div className="mb-20 flex flex-col gap-[20px]">
+            <SectionHeader title="Incentives" actionLabel="View All Incentives" actionHref="/incentives" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+              <IncentiveCard title="SINK OR SWIM" status="Live" cadence="Yearly" img="" />
+              <IncentiveCard title="King of the Kill" status="Live" cadence="Yearly" img="" />
+              <IncentiveCard title="2025 ANNUAL TSI" status="Live" cadence="Yearly" img="" />
+            </div>
           </div>
 
           {/* EDU Progress */}
-          <SectionHeader title="EDU Progress" actionLabel="Go To EDU" actionHref="/edu" />
-          <div className="rounded-[8px] border border-[#2a2a2a] bg-[#111111] h-[220px] flex items-center justify-center text-gray-500 text-sm">
-            COMING SOON
+          <div className="mb-20 flex flex-col gap-[20px]">
+            <SectionHeader title="EDU Progress" actionLabel="Go To EDU" actionHref="/edu" />
+            <div className="rounded-[8px] border border-[#2a2a2a] bg-[#111111] h-[220px] flex items-center justify-center text-gray-500 text-sm">
+              COMING SOON
+            </div>
           </div>
         </div>
       </div>

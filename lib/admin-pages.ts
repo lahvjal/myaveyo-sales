@@ -11,10 +11,22 @@ export interface AdminPageTab {
 }
 
 export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
+  // Admin Dashboard
+  'dashboard': {
+    title: 'Dashboard',
+    icon: '/images/dashboard-icon.png',
+    tabs: []
+  },
+  // Admin Leaderboard
+  'leaderboard': {
+    title: 'Leaderboard',
+    icon: '/images/leaderboard-icon.png',
+    tabs: []
+  },
   // Main CMS Dashboard
   'cms': {
     title: 'CMS',
-    icon: '/images/16d82f801100a4d0fca41534110993bbb8ff7a62.svg',
+    icon: '/images/CMS-icon.png',
     tabs: [
       { id: 'home', name: 'Home Page', href: '/admin/cms/home' },
       { id: 'incentives', name: 'Incentives Page', href: '/admin/cms/incentives' },
@@ -25,7 +37,7 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
   // Incentives Management
   'incentives': {
     title: 'Incentives',
-    icon: '/images/0ac03851509f4a98cfd3f26ab7414ff754908f3a.svg',
+    icon: '/images/incentives-icon.png',
     tabs: [
       { id: 'manage', name: 'Manage Incentives' },
       { id: 'categories', name: 'Categories' },
@@ -36,7 +48,7 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
   // Home Stats Management
   'home-stats': {
     title: 'Home Stats',
-    icon: '/images/04a56eebcbe4fd4ca78625cbafa767030a0e1360.svg',
+    icon: '/images/CMS-icon.png',
     tabs: [
       { id: 'stats', name: 'Statistics' },
       { id: 'preview', name: 'Preview' }
@@ -46,7 +58,7 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
   // Reviews Management
   'reviews': {
     title: 'Reviews',
-    icon: '/images/c75767911e539a98cf3080c76af0df77e6a62117.png',
+    icon: '/images/reviews-icon.png',
     tabs: [
       { id: 'manage', name: 'Manage Reviews' },
       { id: 'customer', name: 'Customer Reviews' },
@@ -57,7 +69,7 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
   // Sales Analytics
   'sales': {
     title: 'Sales',
-    icon: '/images/16d82f801100a4d0fca41534110993bbb8ff7a62.svg',
+    icon: '/images/CMS-icon.png',
     tabs: [
       { id: 'analytics', name: 'Analytics' },
       { id: 'reports', name: 'Reports' },
@@ -68,12 +80,19 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
   // General Stats
   'stats': {
     title: 'Analytics',
-    icon: '/images/04a56eebcbe4fd4ca78625cbafa767030a0e1360.svg',
+    icon: '/images/CMS-icon.png',
     tabs: [
       { id: 'overview', name: 'Overview' },
       { id: 'performance', name: 'Performance' },
       { id: 'trends', name: 'Trends' }
     ]
+  },
+
+  // Projects
+  'projects': {
+    title: 'Projects',
+    icon: '/images/projects-icon.png',
+    tabs: []
   }
 }
 

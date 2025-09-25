@@ -9,68 +9,68 @@ const navigationItems = [
   {
     id: 'dashboard',
     href: '/admin/dashboard',
-    icon: '/images/be4cc85f4c02771c35b4a1e613279641f6cf76e8.svg',
+    icon: '/images/dashboard-icon.png',
     label: 'Dashboard',
     exact: true
   },
   {
     id: 'projects',
     href: '/admin/projects',
-    icon: '/images/77b13f998ff3e614f19f3bb07e5b0b99bad0ba35.svg',
+    icon: '/images/projects-icon.png',
     label: 'Projects'
   },
   {
     id: 'leaderboard',
-    href: '/leaderboard',
-    icon: '/images/8b7ed2b8291f726071fb9facb57c2556276a3a94.svg',
+    href: '/admin/leaderboard',
+    icon: '/images/leaderboard-icon.png',
     label: 'Leaderboard'
   },
   {
     id: 'incentives',
     href: '/incentives',
-    icon: '/images/4f89ded0cd16e9d2b6130fadc999541ec18ed2ef.svg',
+    icon: '/images/incentives-icon.png',
     label: 'Incentives'
   },
   {
     id: 'edu',
     href: '/edu',
-    icon: '/images/87d1ada7e5fc0f5debe58d8e4fe964a4e4ae1e50.svg',
+    icon: '/images/edu-icon.png',
     label: 'EDU'
   },
   {
     id: 'wiki',
     href: 'https://aveyo-wiki.bullet.site/',
-    icon: '/images/49db87f2f5c2400c90acb397eb78f33fcc2d64fa.svg',
+    icon: '/images/wiki-icon.png',
     label: 'Wiki'
   },
   {
     id: 'store',
     href: 'https://aveyo.shop',
-    icon: '/images/b134686914c825b3c0da0ef4f76c59d1abe5fc18.svg',
+    icon: '/images/store-icon.png',
     label: 'Store'
   },
   {
     id: 'map',
     href: '/map',
-    icon: '/images/f2a59ed38ae42bd3eaa986f122c6f382ef8c1b3a.svg',
+    icon: '/images/map-icon.png',
     label: 'Map'
   },
   {
     id: 'review',
     href: '/reviews',
-    icon: '/images/7833ede87bbf80d55863d3acff182c6cacbf3989.svg',
+    icon: '/images/reviews-icon.png',
     label: 'Reviews'
   },
   {
     id: 'brand',
     href: '/brand',
-    icon: '/images/97a0b56d232a3c85ff79015fc492812ca98183a6.svg',
+    icon: '/images/brand-icon.png',
     label: 'Brand'
   },
   {
     id: 'cms',
     href: '/admin/cms/home',
-    icon: '/images/76264e0f7206ef8ea3717dcb72893e2e59a3bf63.svg',
+    icon: '/images/cms-icon.png',
     label: 'CMS'
   }
 ]
@@ -91,12 +91,12 @@ export default function AdminSidebar({ className = '' }: AdminSidebarProps) {
 
   return (
     <div 
-      className={`bg-[#0d0d0d] box-border content-stretch flex flex-col gap-[20px] items-center justify-start px-0 py-[18px] relative w-[98px] h-[100vh] border-r border-[#121212] ${className}`}
+      className={`bg-[#0d0d0d] box-border content-stretch flex flex-col gap-[20px] items-center justify-start px-0 py-[18px] relative w-[98px] h-[100vh] border-r border-[#121212] sticky top-0 ${className}`}
       data-name="AdminSidebar"
     >
       {/* Logo */}
       <div className="relative shrink-0 size-[62px]">
-        <Link href="/admin" className="block size-full">
+        <Link href="/" className="block size-full">
           <Image 
             src="/images/ad74dd0d12ffb7ab020f4e777da35f195b9778af.svg"
             alt="Aveyo Logo"
@@ -129,8 +129,8 @@ export default function AdminSidebar({ className = '' }: AdminSidebarProps) {
               <Image 
                 src={item.icon}
                 alt={item.label}
-                width={50}
-                height={50}
+                width={25}
+                height={25}
                 className={`
                   transition-all duration-200
                   ${active 

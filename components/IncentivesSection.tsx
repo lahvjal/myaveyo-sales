@@ -2,119 +2,11 @@ import React, { useState, useEffect } from 'react'
 import Button from './Button'
 import { useScrollAnimation, useStaggeredScrollAnimation } from '@/hooks/useScrollAnimation'
 import { Incentive } from '@/lib/types/incentive'
-
-interface IncentiveCardProps {
-  backgroundImage?: string
-  backgroundVideo?: string
-  liveStatus: 'coming_up' | 'live' | 'done'
-  category: string
-  categoryColor: string
-  startDate: string
-  endDate: string
-}
+import IncentiveCard from '@/components/incentives/IncentiveCard'
 
 interface IncentivesSectionProps {
   className?: string
   pageReady?: boolean
-}
-
-const IncentiveCard = ({ backgroundImage, backgroundVideo, liveStatus = 'live', category, categoryColor, startDate, endDate }: IncentiveCardProps) => {
-  const imgEllipse7 = "http://localhost:3845/assets/8670986fdb518a6ffb1b050c901692ea0306a642.svg"
-  const imgEllipse8 = "http://localhost:3845/assets/51eea4ffc43d9f3e0ee44581ac8639e95d47a693.svg"
-
-  // Calculate days for badge text
-  const calculateDaysText = () => {
-    const now = new Date()
-    const start = new Date(startDate)
-    const end = new Date(endDate)
-    
-    if (liveStatus === 'live') {
-      const daysLeft = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-      return daysLeft > 0 ? `${daysLeft} days left` : 'Last day'
-    } else if (liveStatus === 'coming_up') {
-      const daysUntil = Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-      return daysUntil > 0 ? `${daysUntil} days until` : 'Starting soon'
-    }
-    return ''
-  }
-
-  const daysText = calculateDaysText()
-
-  return (
-    <div 
-      className="rounded-[3px] relative h-full min-h-[300px] overflow-hidden"
-    >
-      {/* Background Media */}
-      {backgroundVideo ? (
-        <video 
-          src={backgroundVideo}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          onError={(e) => {
-            console.error('Video failed to load:', backgroundVideo)
-            e.currentTarget.style.display = 'none'
-          }}
-          onLoadedData={() => {
-            console.log('Video loaded successfully:', backgroundVideo)
-          }}
-        />
-      ) : backgroundImage ? (
-        <img 
-          src={backgroundImage} 
-          alt="Incentive background"
-          className="absolute inset-0 w-full h-full object-cover"
-          onError={(e) => {
-            console.error('Image failed to load:', backgroundImage)
-            e.currentTarget.style.display = 'none'
-          }}
-          onLoad={() => {
-            console.log('Image loaded successfully:', backgroundImage)
-          }}
-        />
-      ) : (
-        <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-          <span className="text-white text-sm">No Media</span>
-        </div>
-      )}
-      
-      {/* Content Overlay */}
-      <div className="absolute inset-0 flex flex-col justify-between h-full p-5 relative z-20">
-        <div className="flex-1"></div>
-        <div className="flex items-center justify-between">
-          {/* Status Badge */}
-          <div className={`flex items-center gap-2.5 px-[15px] py-[7px] rounded-[60px] shadow-lg ${
-            liveStatus === 'live' ? 'bg-black' : 
-            liveStatus === 'coming_up' ? 'bg-blue-600' : 'bg-[#959595]'
-          }`}>
-            <div className={`w-[7px] h-[7px] rounded-full ${
-              liveStatus === 'live' ? 'bg-red-500' : 
-              liveStatus === 'coming_up' ? 'bg-white' : 'bg-[#535353]'
-            }`}></div>
-            <span className={`text-[14px] font-semibold flex flex-row gap-5 ${
-              liveStatus === 'live' ? 'text-white' : 
-              liveStatus === 'coming_up' ? 'text-white' : 'text-white'
-            }`}>
-              {liveStatus === 'live' ? 'Live' : 
-               liveStatus === 'coming_up' ? 'Coming Up' : 'Done'}
-            </span>
-          </div>
-          <span className="font-normal">{daysText}</span>
-          {/* Category Badge */}
-          <div 
-            className="flex items-center gap-2.5 px-[15px] py-[7px] rounded-[60px] shadow-lg"
-            style={{ backgroundColor: categoryColor || '#ffffff' }}
-          >
-            <span className="text-[14px] font-semibold text-black">
-              {category || 'Category'}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
 }
 
 export default function IncentivesSection({ className = '', pageReady = true }: IncentivesSectionProps) {
@@ -274,6 +166,7 @@ export default function IncentivesSection({ className = '', pageReady = true }: 
                     }`}
                   >
                     <IncentiveCard
+                      title={incentive.title}
                       backgroundImage={incentive.background_image_url}
                       backgroundVideo={incentive.background_video_url}
                       liveStatus={incentive.live_status}
@@ -281,6 +174,7 @@ export default function IncentivesSection({ className = '', pageReady = true }: 
                       categoryColor={incentive.category_color}
                       startDate={incentive.start_date}
                       endDate={incentive.end_date}
+                      onViewClick={() => console.log('View clicked')}
                     />
                   </div>
                 )

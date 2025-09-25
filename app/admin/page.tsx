@@ -1,14 +1,6 @@
-'use client'
+import { redirect } from 'next/navigation'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-
-export default function AdminDashboard() {
-  const router = useRouter()
-
-  useEffect(() => {
-    router.replace('/admin/cms/home')
-  }, [router])
-
-  return null
+export default function AdminIndex() {
+  // Server-side redirect from /admin to the dashboard
+  return redirect('/admin/dashboard')
 }
