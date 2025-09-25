@@ -8,7 +8,7 @@ import Image from 'next/image'
 const navigationItems = [
   {
     id: 'dashboard',
-    href: '/dashboard',
+    href: '/admin/dashboard',
     icon: '/images/be4cc85f4c02771c35b4a1e613279641f6cf76e8.svg',
     label: 'Dashboard',
     exact: true

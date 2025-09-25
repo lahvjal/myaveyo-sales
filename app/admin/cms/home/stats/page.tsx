@@ -135,97 +135,108 @@ export default function HomeStatsPage() {
         { name: 'Stats Section' }
       ]}
     >
+      
       <div className="p-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white mb-2">Stats Section CMS</h1>
-            <p className="text-gray-400">Manage the homepage stats section content</p>
-          </div>
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </div>
-
-        {/* Stats Grid Preview */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4">Preview</h2>
-          <div className="bg-black p-8 rounded-lg">
-            <div className="mb-6">
-              <h3 className="text-white text-xl font-bold">Stats Section</h3>
+        <div className='max-w-7xl mx-auto'>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-2xl font-bold text-white mb-2">Stats Section CMS</h1>
+              <p className="text-gray-400">Manage the homepage stats section content</p>
             </div>
-            <div className="grid grid-cols-4 grid-rows-2 gap-5 h-[346px]">
-              {cards.map((card, index) => {
-                const placement =
-                  index === 0 ? 'col-start-1 row-start-1' :
-                  index === 1 ? 'col-start-4 row-start-1' :
-                  index === 2 ? 'col-start-1 row-start-2' :
-                  index === 3 ? 'col-start-2 row-start-2' :
-                  index === 4 ? 'col-start-3 row-start-2' :
-                  index === 5 ? 'col-start-4 row-start-2' : ''
-
-                return (
-                  <CMSgridCard
-                    key={card.id}
-                    type={'text'}
-                    title={card.title}
-                    description={card.subtitle}
-                    className={placement}
-                    onClick={() => startEditing(card)}
-                  />
-                )
-              })}
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => window.open('/', '_blank')}
+                className="bg-gray-700 hover:bg-gray-600 text-white"
+              >
+                View Homepage →
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
             </div>
           </div>
-        </div>
 
-        {/* Edit Modal */}
-        {editingCard && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 p-6 rounded-lg w-96">
-              <h3 className="text-white text-lg font-semibold mb-4">Edit Card</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-gray-300 text-sm mb-2">Title</label>
-                  <input
-                    type="text"
-                    value={formData.title || ''}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full p-2 bg-gray-700 text-white rounded"
-                  />
-                </div>
+          {/* Stats Grid Preview */}
+          <div className="mb-8">
+            <div className="bg-black rounded-lg">
+              <div className="mb-6">
+                <h3 className="text-white text-xl font-bold">Stats Section</h3>
+              </div>
+              <div className="grid grid-cols-4 grid-rows-2 gap-5" style={{ gridTemplateRows: 'repeat(2, 210px)' }}>
+                {cards.map((card, index) => {
+                  const placement =
+                    index === 0 ? 'col-start-1 row-start-1' :
+                    index === 1 ? 'col-start-4 row-start-1' :
+                    index === 2 ? 'col-start-1 row-start-2' :
+                    index === 3 ? 'col-start-2 row-start-2' :
+                    index === 4 ? 'col-start-3 row-start-2' :
+                    index === 5 ? 'col-start-4 row-start-2' : ''
+
+                  return (
+                    <CMSgridCard
+                      key={card.id}
+                      type={'text'}
+                      title={card.title}
+                      description={card.subtitle}
+                      className={placement}
+                      onClick={() => startEditing(card)}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Edit Modal */}
+          {editingCard && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-gray-800 p-6 rounded-lg w-96">
+                <h3 className="text-white text-lg font-semibold mb-4">Edit Card</h3>
                 
-                <div>
-                  <label className="block text-gray-300 text-sm mb-2">Subtitle</label>
-                  <textarea
-                    value={formData.subtitle || ''}
-                    onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                    className="w-full p-2 bg-gray-700 text-white rounded h-20"
-                  />
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-gray-300 text-sm mb-2">Title</label>
+                    <input
+                      type="text"
+                      value={formData.title || ''}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      className="w-full p-2 bg-gray-700 text-white rounded"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-gray-300 text-sm mb-2">Subtitle</label>
+                    <textarea
+                      value={formData.subtitle || ''}
+                      onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                      className="w-full p-2 bg-gray-700 text-white rounded h-20"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    onClick={saveCard}
+                    className="bg-blue-600 hover:bg-blue-700 flex-1"
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    onClick={cancelEditing}
+                    className="bg-gray-600 hover:bg-gray-700 flex-1"
+                  >
+                    Cancel
+                  </Button>
                 </div>
               </div>
-
-              <div className="flex gap-3 mt-6">
-                <Button
-                  onClick={saveCard}
-                  className="bg-blue-600 hover:bg-blue-700 flex-1"
-                >
-                  Save
-                </Button>
-                <Button
-                  onClick={cancelEditing}
-                  className="bg-gray-600 hover:bg-gray-700 flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </AdminLayout>
   )

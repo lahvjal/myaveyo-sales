@@ -1,45 +1,211 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { Review } from '@/lib/types/review'
+import Button from '@/components/Button'
 import AdminLayout from '@/components/admin/AdminLayout'
-import HomePageManagementCard from '@/components/admin/HomePageManagementCard'
+import CMSgridCard from '@/components/admin/CMSgridCard'
 
-export default function CMSReviewsPage() {
+export default function AdminReviewsPage() {
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [editingReview, setEditingReview] = useState<Review | null>(null)
+  const [formLoading, setFormLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('reviews')
 
-  const reviewsSections = [
+  // Reviews Section Copy (header + description) state
+  type ReviewsCopy = {
+    section_number: string
+    section_title: string
+    description: string
+    is_published?: boolean
+  }
+  const [copy, setCopy] = useState<ReviewsCopy>({
+    section_number: '(3)',
+    section_title: 'Reviews.',
+    description: 'Hear from real customers and reps about their experiences with our solar solutions.',
+    is_published: false,
+  })
+  const [copyLoading, setCopyLoading] = useState(true)
+  const [copySaving, setCopySaving] = useState(false)
+
+  // Edit modal for reviews copy
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false)
+  const [copyModalType, setCopyModalType] = useState<'title' | 'description' | null>(null)
+  const [copyForm, setCopyForm] = useState<ReviewsCopy>({
+    section_number: '(3)',
+    section_title: 'Reviews.',
+    description: '',
+    is_published: false,
+  })
+
+  // Mock data for now - replace with API calls
+  const mockReviews: Review[] = [
     {
-      title: 'Manage Reviews',
-      description: 'Click to manage',
-      status: 'active' as const,
-      href: '/admin/reviews'
+      id: '1',
+      title: 'Amazing Solar Installation',
+      description: 'The team was professional and the installation was seamless.',
+      video_url: '/videos/rep-review.mp4',
+      thumbnail_url: '/images/rep-review-thumbnail.png',
+      type: 'customer',
+      featured: true,
+      customer_name: 'Sarah Johnson',
+      location: 'Austin, TX',
+      date_recorded: '2024-01-15',
+      status: 'active',
+      created_at: '2024-01-16T10:00:00Z',
+      updated_at: '2024-01-16T10:00:00Z'
     },
     {
-      title: 'Content Moderation',
-      description: 'Click to manage',
-      status: 'coming-soon' as const
-    },
-    {
-      title: 'Customer Reviews',
-      description: 'Click to manage',
-      status: 'coming-soon' as const
-    },
-    {
-      title: 'Rep Reviews',
-      description: 'Click to manage',
-      status: 'coming-soon' as const
-    },
-    {
-      title: 'Featured Reviews',
-      description: 'Click to manage',
-      status: 'coming-soon' as const
-    },
-    {
-      title: 'Review Analytics',
-      description: 'Click to manage',
-      status: 'coming-soon' as const
+      id: '2',
+      title: 'Rep Success Story',
+      description: 'How I helped this family save on their energy bills.',
+      video_url: '/videos/rep-review.mp4',
+      thumbnail_url: '/images/rep-review-thumbnail.png',
+      type: 'rep',
+      featured: false,
+      rep_name: 'Mike Chen',
+      location: 'Dallas, TX',
+      date_recorded: '2024-01-10',
+      status: 'active',
+      created_at: '2024-01-11T14:30:00Z',
+      updated_at: '2024-01-11T14:30:00Z'
     }
   ]
+
+  // Fetch reviews
+  const fetchReviews = async () => {
+    try {
+      // TODO: Replace with actual API call
+      // const response = await fetch('/api/reviews/admin')
+      // if (response.ok) {
+      //   const data = await response.json()
+      //   setReviews(data)
+      // }
+      setReviews(mockReviews)
+    } catch (error) {
+      console.error('Error fetching reviews:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Fetch reviews copy
+  const fetchReviewsCopy = async () => {
+    try {
+      const res = await fetch('/api/cms/home-reviews')
+      if (res.ok) {
+        const data = await res.json()
+        setCopy({
+          section_number: data.section_number ?? '(3)',
+          section_title: data.section_title ?? 'Reviews.',
+          description: data.description ?? '',
+          is_published: data.is_published ?? false,
+        })
+      }
+    } catch (e) {
+      console.error('Error fetching reviews copy:', e)
+    } finally {
+      setCopyLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchReviews()
+    fetchReviewsCopy()
+  }, [])
+
+  // Save reviews copy
+  const saveReviewsCopy = async (override?: Partial<ReviewsCopy>) => {
+    setCopySaving(true)
+    try {
+      const res = await fetch('/api/cms/home-reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: {
+            section_number: (override ?? copy).section_number,
+            section_title: (override ?? copy).section_title,
+            description: (override ?? copy).description,
+          },
+          is_published: (override ?? copy).is_published ?? false,
+        }),
+      })
+      if (!res.ok) {
+        console.error('Failed to save reviews copy')
+      }
+    } catch (e) {
+      console.error('Error saving reviews copy:', e)
+    } finally {
+      setCopySaving(false)
+    }
+  }
+
+  // Handle CRUD operations
+  const handleCreate = async (reviewData: Partial<Review>) => {
+    setFormLoading(true)
+    try {
+      // TODO: Replace with actual API call
+      console.log('Creating review:', reviewData)
+      await fetchReviews()
+      setShowForm(false)
+    } catch (error) {
+      console.error('Error creating review:', error)
+    } finally {
+      setFormLoading(false)
+    }
+  }
+
+  const handleUpdate = async (reviewData: Partial<Review>) => {
+    setFormLoading(true)
+    try {
+      // TODO: Replace with actual API call
+      console.log('Updating review:', reviewData)
+      await fetchReviews()
+      setEditingReview(null)
+    } catch (error) {
+      console.error('Error updating review:', error)
+    } finally {
+      setFormLoading(false)
+    }
+  }
+
+  const handleEdit = (review: Review) => {
+    setEditingReview(review)
+    setShowForm(false)
+  }
+
+  const handleDelete = async (reviewId: string) => {
+    if (!confirm('Are you sure you want to delete this review?')) return
+    
+    try {
+      // TODO: Replace with actual API call
+      console.log('Deleting review:', reviewId)
+      await fetchReviews()
+    } catch (error) {
+      console.error('Error deleting review:', error)
+    }
+  }
+
+  const handleCancel = () => {
+    setShowForm(false)
+    setEditingReview(null)
+  }
+
+  if (loading) {
+    return (
+      <AdminLayout
+        pageKey="cms"
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      >
+        <div className="flex items-center justify-center h-64">
+          <div className="text-white">Loading reviews...</div>
+        </div>
+      </AdminLayout>
+    )
+  }
 
   return (
     <AdminLayout
@@ -49,27 +215,265 @@ export default function CMSReviewsPage() {
     >
       <div className="min-h-screen bg-[#0d0d0d] px-8 py-12">
         <div className="max-w-7xl mx-auto">
-          <div className="text-white">
-            <h1 className="text-4xl font-telegraf font-bold mb-4">
-              Reviews Page Management
-            </h1>
-            <p className="text-gray-400 text-lg">
-              Manage customer and rep review videos, moderation, and display settings.
-            </p>
-            
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {reviewsSections.map((section, index) => (
-                <HomePageManagementCard
-                  key={index}
-                  title={section.title}
-                  description={section.description}
-                  status={section.status}
-                  href={section.href}
-                  className="h-[120px]"
-                />
-              ))}
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-white text-4xl font-telegraf font-bold">
+                Reviews Management
+              </h1>
+              <p className="text-gray-400 mt-2">
+                Manage customer and rep review videos displayed on the public pages
+              </p>
             </div>
+            <Button
+              variant="secondary"
+              onClick={() => window.open('/reviews', '_blank')}
+              className="bg-gray-700 hover:bg-gray-600 text-white"
+            >
+              View Reviews Page →
+            </Button>
           </div>
+
+          {/* Reviews Section Copy (mirrors home reviews header layout) */}
+          <div className="mb-12">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-white text-2xl font-telegraf font-bold">Reviews Section Copy</h2>
+            </div>
+
+            {/* Preview cards grid (1:1 with reviews header design) */}
+            <div className="pb-10 mb-6">
+              {copyLoading ? (
+                <div className="text-gray-400">Loading copy...</div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  {/* Title Card */}
+                  <CMSgridCard
+                    type="text"
+                    title={`${copy.section_number} ${copy.section_title}`}
+                    className="md:col-start-2 md:row-start-1"
+                    onClick={() => {
+                      setCopyModalType('title')
+                      setCopyForm(copy)
+                      setIsCopyModalOpen(true)
+                    }}
+                  />
+
+                  {/* Description Card */}
+                  <CMSgridCard
+                    type="text"
+                    description={copy.description}
+                    className="md:col-start-2 md:row-start-2"
+                    onClick={() => {
+                      setCopyModalType('description')
+                      setCopyForm(copy)
+                      setIsCopyModalOpen(true)
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Edit Modal for Reviews Copy */}
+            {isCopyModalOpen && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-gray-800 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+                  <h3 className="text-white text-lg font-semibold mb-4">
+                    {copyModalType === 'title' ? 'Edit Title' : 'Edit Description'}
+                  </h3>
+
+                  <div className="space-y-4">
+                    {copyModalType === 'title' && (
+                      <>
+                        <div>
+                          <label className="block text-gray-300 text-sm mb-2">Section Number</label>
+                          <input
+                            type="text"
+                            value={copyForm.section_number}
+                            onChange={(e) => setCopyForm({ ...copyForm, section_number: e.target.value })}
+                            className="w-full p-2 bg-gray-700 text-white rounded"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-gray-300 text-sm mb-2">Section Title</label>
+                          <input
+                            type="text"
+                            value={copyForm.section_title}
+                            onChange={(e) => setCopyForm({ ...copyForm, section_title: e.target.value })}
+                            className="w-full p-2 bg-gray-700 text-white rounded"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    {copyModalType === 'description' && (
+                      <div>
+                        <label className="block text-gray-300 text-sm mb-2">Description</label>
+                        <textarea
+                          value={copyForm.description}
+                          onChange={(e) => setCopyForm({ ...copyForm, description: e.target.value })}
+                          className="w-full p-2 bg-gray-700 text-white rounded h-24"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-3 mt-6">
+                    <Button
+                      onClick={async () => {
+                        // Update local copy and persist using override to avoid race conditions
+                        setCopy(copyForm)
+                        setIsCopyModalOpen(false)
+                        await saveReviewsCopy(copyForm)
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 flex-1"
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      onClick={() => setIsCopyModalOpen(false)}
+                      className="bg-gray-600 hover:bg-gray-700 flex-1"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Create/Edit Review Modal */}
+          {(showForm || editingReview) && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-gray-900 p-6 rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-[#333]">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-white text-lg font-semibold">
+                    {editingReview ? 'Edit Review' : 'Create New Review'}
+                  </h3>
+                  <button
+                    onClick={handleCancel}
+                    className="text-gray-400 hover:text-white"
+                    aria-label="Close"
+                  >
+                    ✕
+                  </button>
+                </div>
+                {/* TODO: Create ReviewForm component similar to IncentiveForm */}
+                <div className="text-white p-4 bg-gray-800 rounded">
+                  Review form placeholder - TODO: Create ReviewForm component
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Button
+            variant="primary"
+            onClick={() => setShowForm(true)}
+            className="mb-[100px]"
+          >
+            Add New Review
+          </Button>
+
+          {/* Reviews List - Figma row design */}
+          <div className="space-y-6">
+            {reviews.map((review) => {
+              const recordedDate = new Date(review.date_recorded)
+              const formattedDate = recordedDate.toLocaleDateString(undefined, { 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric' 
+              })
+
+              return (
+                <div
+                  key={review.id}
+                  className="bg-gradient-to-b from-[#121212] to-[#0f0f0f] border border-[#2a2a2a] rounded-[6px] px-4 py-4 md:px-6 md:py-5 flex items-start gap-5"
+                >
+                  {/* Thumbnail */}
+                  <div className="w-[132px] h-[132px] rounded-[3px] overflow-hidden flex-shrink-0 bg-[#222] relative">
+                    <img src={review.thumbnail_url} alt={review.title} className="w-full h-full object-cover" />
+                    {/* Play button overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+                      <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                        <div className="w-0 h-0 border-l-[6px] border-l-black border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent ml-1"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex-1 min-w-0">
+                    {/* Title + Type */}
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-white text-[20px] font-telegraf font-bold truncate">{review.title}</h3>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        review.type === 'customer' ? 'bg-blue-500/20 text-blue-300' : 'bg-green-500/20 text-green-300'
+                      }`}>
+                        {review.type === 'customer' ? 'Customer' : 'Rep'}
+                      </span>
+                      {review.featured && (
+                        <span className="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-500/20 text-yellow-300">
+                          Featured
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Status + Name */}
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                        review.status === 'active' ? 'bg-green-500 text-white' : 
+                        review.status === 'pending' ? 'bg-yellow-500 text-black' : 'bg-gray-600 text-white'
+                      }`}>{review.status}</span>
+                      <span className="text-gray-300 text-sm">
+                        {review.type === 'customer' ? review.customer_name : review.rep_name}
+                      </span>
+                    </div>
+
+                    {/* Location and Date */}
+                    <div className="text-gray-300 text-sm space-y-1">
+                      <div>{review.location}</div>
+                      <div>Recorded {formattedDate}</div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-col items-end gap-3 ml-auto">
+                    <button
+                      onClick={() => handleEdit(review)}
+                      className="px-5 py-2 rounded bg-[#2a2f36] hover:bg-[#343a42] text-gray-200 text-sm font-medium"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(review.id!)}
+                      className="px-5 py-2 rounded bg-[#8b2231] hover:bg-[#9a2737] text-white text-sm font-medium"
+                    >
+                      Delete
+                    </button>
+                    <div className="opacity-60">
+                      <div className="w-6 h-6 flex items-center justify-center">
+                        <span className="block w-4 h-0.5 bg-gray-400 rounded mb-1" />
+                        <span className="block w-4 h-0.5 bg-gray-400 rounded mb-1" />
+                        <span className="block w-4 h-0.5 bg-gray-400 rounded" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {reviews.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 text-lg mb-4">
+                No reviews found
+              </div>
+              <Button
+                variant="primary"
+                onClick={() => setShowForm(true)}
+              >
+                Add Your First Review
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </AdminLayout>

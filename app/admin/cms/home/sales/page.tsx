@@ -146,114 +146,125 @@ export default function SalesSectionCMS() {
       ]}
     >
       <div className="p-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white mb-2">Sales Section CMS</h1>
-            <p className="text-gray-400">Manage the sales section content based on the 3-column grid design</p>
-          </div>
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </div>
-
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4">Preview</h2>
-          <div className="bg-black p-8 rounded-lg">
-            <div className="mb-6">
-              <h3 className="text-white text-xl font-bold">Sales Section</h3>
+        <div className='max-w-7xl mx-auto'>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-2xl font-bold text-white mb-2">Sales Section CMS</h1>
+              <p className="text-gray-400">Manage the sales section content based on the 3-column grid design</p>
             </div>
-            <div className="grid grid-cols-3 grid-rows-5 gap-5 h-[950px]">
-              {cards.map((card: SalesCard) => (
-                <CMSgridCard
-                  key={card.id}
-                  type={card.type}
-                  title={card.title}
-                  subtitle={card.subtitle}
-                  description={card.description}
-                  imageUrl={card.imageUrl}
-                  className=""
-                  style={{ gridArea: card.gridArea }}
-                  onClick={() => startEditing(card)}
-                />
-              ))}
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                onClick={() => window.open('/', '_blank')}
+                className="bg-gray-700 hover:bg-gray-600 text-white"
+              >
+                View Homepage →
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
             </div>
           </div>
-        </div>
 
-        {editingCard && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
-              <h3 className="text-white text-lg font-semibold mb-4">Edit Card</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-gray-300 text-sm mb-2">Title</label>
-                  <input
-                    type="text"
-                    value={formData.title || ''}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full p-2 bg-gray-700 text-white rounded"
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-white mb-4">Preview</h2>
+            <div className="bg-black p-8 rounded-lg">
+              <div className="mb-6">
+                <h3 className="text-white text-xl font-bold">Sales Section</h3>
+              </div>
+              <div className="grid grid-cols-3 grid-rows-5 gap-5" style={{ gridTemplateRows: 'repeat(5, 210px)' }}>
+                {cards.map((card: SalesCard) => (
+                  <CMSgridCard
+                    key={card.id}
+                    type={card.type}
+                    title={card.title}
+                    subtitle={card.subtitle}
+                    description={card.description}
+                    imageUrl={card.imageUrl}
+                    className=""
+                    style={{ gridArea: card.gridArea }}
+                    onClick={() => startEditing(card)}
                   />
-                </div>
-                
-                {formData.type === 'stat' && (
-                  <div>
-                    <label className="block text-gray-300 text-sm mb-2">Subtitle</label>
-                    <input
-                      type="text"
-                      value={formData.subtitle || ''}
-                      onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                      className="w-full p-2 bg-gray-700 text-white rounded"
-                    />
-                  </div>
-                )}
-
-                {formData.type === 'description' && (
-                  <div>
-                    <label className="block text-gray-300 text-sm mb-2">Description</label>
-                    <textarea
-                      value={formData.description || ''}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      className="w-full p-2 bg-gray-700 text-white rounded h-20"
-                    />
-                  </div>
-                )}
-
-                {formData.type === 'image' && (
-                  <div>
-                    <label className="block text-gray-300 text-sm mb-2">Image URL</label>
-                    <input
-                      type="text"
-                      value={formData.imageUrl || ''}
-                      onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                      className="w-full p-2 bg-gray-700 text-white rounded"
-                      placeholder="Enter image URL"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                <Button
-                  onClick={saveCard}
-                  className="bg-blue-600 hover:bg-blue-700 flex-1"
-                >
-                  Save
-                </Button>
-                <Button
-                  onClick={cancelEditing}
-                  className="bg-gray-600 hover:bg-gray-700 flex-1"
-                >
-                  Cancel
-                </Button>
+                ))}
               </div>
             </div>
           </div>
-        )}
+
+          {editingCard && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-gray-800 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+                <h3 className="text-white text-lg font-semibold mb-4">Edit Card</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-gray-300 text-sm mb-2">Title</label>
+                    <input
+                      type="text"
+                      value={formData.title || ''}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      className="w-full p-2 bg-gray-700 text-white rounded"
+                    />
+                  </div>
+                  
+                  {formData.type === 'stat' && (
+                    <div>
+                      <label className="block text-gray-300 text-sm mb-2">Subtitle</label>
+                      <input
+                        type="text"
+                        value={formData.subtitle || ''}
+                        onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                        className="w-full p-2 bg-gray-700 text-white rounded"
+                      />
+                    </div>
+                  )}
+
+                  {formData.type === 'description' && (
+                    <div>
+                      <label className="block text-gray-300 text-sm mb-2">Description</label>
+                      <textarea
+                        value={formData.description || ''}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        className="w-full p-2 bg-gray-700 text-white rounded h-20"
+                      />
+                    </div>
+                  )}
+
+                  {formData.type === 'image' && (
+                    <div>
+                      <label className="block text-gray-300 text-sm mb-2">Image URL</label>
+                      <input
+                        type="text"
+                        value={formData.imageUrl || ''}
+                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                        className="w-full p-2 bg-gray-700 text-white rounded"
+                        placeholder="Enter image URL"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <Button
+                    onClick={saveCard}
+                    className="bg-blue-600 hover:bg-blue-700 flex-1"
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    onClick={cancelEditing}
+                    className="bg-gray-600 hover:bg-gray-700 flex-1"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </AdminLayout>
   )

@@ -206,6 +206,13 @@ export default function AdminIncentivesPage() {
                 Manage incentives displayed on the public sales page
               </p>
             </div>
+            <Button
+              variant="secondary"
+              onClick={() => window.open('/incentives', '_blank')}
+              className="bg-gray-700 hover:bg-gray-600 text-white"
+            >
+              View Incentives Page →
+            </Button>
           </div>
 
           {/* Incentives Section Copy (mirrors home incentives header layout) */}
@@ -247,7 +254,7 @@ export default function AdminIncentivesPage() {
                   {/* Filters Preview Card - row 2 center column */}
                   <CMSgridCardPills
                     pills={copy.filters || []}
-                    className="min-h-[140px] md:col-start-2 md:row-start-2"
+                    className="md:col-start-2 md:row-start-2"
                     onClick={() => {
                       setCopyModalType('filters')
                       setCopyForm(copy)

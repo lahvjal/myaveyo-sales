@@ -14,7 +14,7 @@ interface CMSgridCardPillsProps {
 export default function CMSgridCardPills({ pills, className = '', style, onClick }: CMSgridCardPillsProps) {
   return (
     <div
-      className={`bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-5 flex flex-col justify-between cursor-pointer hover:from-[#1a1a1a] hover:to-[#141414] ${className}`}
+      className={`bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-5 flex flex-col justify-between cursor-pointer hover:from-[#1a1a1a] hover:to-[#141414] min-h-[210px] ${className}`}
       style={style}
       onClick={onClick}
     >

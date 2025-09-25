@@ -11,13 +11,13 @@ const navItems = [
   { name: 'About', href: '/#sales-section' },
   { name: 'Reviews', href: '/reviews' },
   { name: 'Stats', href: '/stats' },
-  { name: 'Leaderboard', href: '/leaderboard' },
+  // { name: 'Leaderboard', href: '/leaderboard' },
   { name: 'Incentives', href: '/incentives' }, 
-  { name: 'EDU', href: '/edu' },
+  // { name: 'EDU', href: '/edu' },
   { name: 'Store', href: 'https://aveyo.shop/' },
   { name: 'Brand', href: '/brand' },
-  { name: 'Wiki', href: 'https://aveyo-wiki.bullet.site/' },
-  { name: 'Map', href: '/map' },
+  // { name: 'Wiki', href: 'https://aveyo-wiki.bullet.site/' },
+  // { name: 'Map', href: '/map' },
 ]
 
 export default function Navbar({ className = '' }: NavbarProps) {
