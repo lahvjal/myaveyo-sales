@@ -38,11 +38,7 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
   'incentives': {
     title: 'Incentives',
     icon: '/images/incentives-icon.png',
-    tabs: [
-      { id: 'manage', name: 'Manage Incentives' },
-      { id: 'categories', name: 'Categories' },
-      { id: 'settings', name: 'Settings' }
-    ]
+    tabs: []
   },
   
   // Home Stats Management

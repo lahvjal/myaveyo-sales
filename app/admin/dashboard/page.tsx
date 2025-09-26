@@ -1,23 +1,37 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useState } from "react"
 import AdminLayout from "@/components/admin/AdminLayout"
 import Link from "next/link"
+import Button from "@/components/Button"
 import ProjectMilestoneCard from "@/components/projects/ProjectMilestoneCard"
 import Top3Card from "@/components/leaderboard/Top3Card"
 import UserRankRow from "@/components/leaderboard/UserRankRow"
+import IncentiveCard from "@/components/incentives/IncentiveCard"
+
+type Incentive = {
+  id: string
+  title: string
+  description?: string
+  background_image_url: string
+  background_video_url?: string
+  live_status: 'coming_up' | 'live' | 'done'
+  category: string
+  category_color: string
+  start_date: string
+  end_date: string
+  sort_order: number
+}
 
 function SectionHeader({ title, actionLabel, actionHref }: { title: string; actionLabel?: string; actionHref?: string }) {
   return (
     <div className="flex items-center justify-between">
       <h2 className="text-white font-semibold tracking-tight">{title}</h2>
       {actionLabel && actionHref && (
-        <Link
-          href={actionHref}
-          className="inline-flex items-center gap-2 text-[13px] px-3 py-2 rounded bg-white text-black hover:bg-gray-100"
-        >
-          {actionLabel}
-          <span aria-hidden>→</span>
+        <Link href={actionHref}>
+          <Button variant="primary" className="!rounded-[3px]">
+            {actionLabel}
+          </Button>
         </Link>
       )}
     </div>
@@ -56,24 +70,29 @@ function MedalCard({ place, name, tsi, tss, tone }: { place: 1 | 2 | 3; name: st
   )
 }
 
-function IncentiveCard({ title, status, cadence, img }: { title: string; status: string; cadence: string; img: string }) {
-  return (
-    <div className="relative rounded-[8px] overflow-hidden border border-[#2a2a2a] bg-[#0f0f0f]">
-      {/* image placeholder */}
-      <div className="aspect-[3/4] w-full bg-[#0b0b0b] flex items-center justify-center text-gray-600 text-sm">
-        <span>{title}</span>
-      </div>
-      <div className="absolute left-3 bottom-3 flex items-center gap-2">
-        <span className="inline-flex items-center gap-2 text-xs bg-black/80 text-white px-2 py-1 rounded-full">
-          <span className="inline-block w-2 h-2 bg-red-500 rounded-full" /> {status}
-        </span>
-        <span className="text-xs bg-yellow-300/90 text-black px-2 py-1 rounded-full">{cadence}</span>
-      </div>
-    </div>
-  )
-}
-
 export default function DashboardPage() {
+  const [incentives, setIncentives] = useState<Incentive[]>([])
+  const [loadingIncentives, setLoadingIncentives] = useState(true)
+  const [incentivesError, setIncentivesError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchIncentives = async () => {
+      try {
+        setLoadingIncentives(true)
+        const res = await fetch('/api/incentives')
+        if (!res.ok) throw new Error('Failed to fetch incentives')
+        const data = await res.json()
+        setIncentives(Array.isArray(data) ? data : [])
+      } catch (e: any) {
+        console.error('Dashboard incentives fetch error:', e)
+        setIncentivesError(e?.message || 'Failed to load incentives')
+      } finally {
+        setLoadingIncentives(false)
+      }
+    }
+    fetchIncentives()
+  }, [])
+
   return (
     <AdminLayout pageKey="dashboard">
       <div className="min-h-screen bg-[#0b0b0b] px-6 md:px-8 py-8">
@@ -83,7 +102,7 @@ export default function DashboardPage() {
             <SectionHeader title="My Projects" actionLabel="See Projects" actionHref="/admin/projects" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <ProjectMilestoneCard label="Pre-Approval" value={10} dotColor="#f2c94c" />
-              <ProjectMilestoneCard label="Approval" value={8} dotColor="#f2c94c" />
+              <ProjectMilestoneCard label="Approval" value={8} dotColor="#EF650F" />
               <ProjectMilestoneCard label="Construction" value={9} dotColor="#61dafb" />
               <ProjectMilestoneCard label="Activation" value={18} dotColor="#50fa7b" />
             </div>
@@ -105,12 +124,51 @@ export default function DashboardPage() {
 
           {/* Incentives */}
           <div className="mb-20 flex flex-col gap-[20px]">
-            <SectionHeader title="Incentives" actionLabel="View All Incentives" actionHref="/incentives" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-              <IncentiveCard title="SINK OR SWIM" status="Live" cadence="Yearly" img="" />
-              <IncentiveCard title="King of the Kill" status="Live" cadence="Yearly" img="" />
-              <IncentiveCard title="2025 ANNUAL TSI" status="Live" cadence="Yearly" img="" />
-            </div>
+            <SectionHeader title="Incentives" actionLabel="View All Incentives" actionHref="/admin/incentives" />
+            {loadingIncentives ? (
+              <div className="flex justify-center items-center h-[220px] text-[rgba(255,255,255,0.6)]">Loading incentives...</div>
+            ) : incentivesError ? (
+              <div className="flex justify-center items-center h-[220px] text-red-400">{incentivesError}</div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                {incentives
+                  .sort((a, b) => {
+                    // 1) Live first
+                    const liveRank = (s: Incentive['live_status']) => (s === 'live' ? 0 : s === 'coming_up' ? 1 : 2)
+                    const liveCmp = liveRank(a.live_status) - liveRank(b.live_status)
+                    if (liveCmp !== 0) return liveCmp
+
+                    // 2) Category priority: Yearly (0), Summer (1), others (2)
+                    const catRank = (c: string) => {
+                      const v = c?.toLowerCase()
+                      if (v === 'yearly') return 0
+                      if (v === 'summer') return 1
+                      return 2
+                    }
+                    const catCmp = catRank(a.category) - catRank(b.category)
+                    if (catCmp !== 0) return catCmp
+
+                    // 3) sort_order ascending as tiebreaker
+                    return a.sort_order - b.sort_order
+                  })
+                  .slice(0, 3)
+                  .map((inc) => (
+                    <IncentiveCard
+                      key={inc.id}
+                      title={inc.title}
+                      backgroundImage={inc.background_image_url}
+                      backgroundVideo={inc.background_video_url}
+                      liveStatus={inc.live_status}
+                      category={inc.category}
+                      categoryColor={inc.category_color}
+                      startDate={inc.start_date}
+                      endDate={inc.end_date}
+                      variant="detailed"
+                      onViewClick={() => (window.location.href = `/incentives/${inc.id}`)}
+                    />
+                  ))}
+              </div>
+            )}
           </div>
 
           {/* EDU Progress */}

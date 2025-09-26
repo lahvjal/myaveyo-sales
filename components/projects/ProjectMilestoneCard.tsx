@@ -52,7 +52,7 @@ export default function ProjectMilestoneCard({
         }
       }}
     >
-      <div className="flex flex-col justify-between items-center p-5 gap-3">
+      <div className="flex flex-col justify-center items-center p-5 gap-3 min-h-[180px]">
         {/* Header with dot and label */}
         <div className="w-full flex items-center gap-2">
           <span
@@ -69,7 +69,7 @@ export default function ProjectMilestoneCard({
         </div>
 
         {/* Value and sublabel */}
-        <div className="w-full flex flex-col items-center justify-center gap-[7px]">
+        <div className="w-full flex flex-1 flex-col items-center justify-center gap-[7px]">
           <div className="text-white text-[20px] font-semibold leading-none" aria-live="polite">
             {value}
           </div>

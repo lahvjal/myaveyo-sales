@@ -20,9 +20,28 @@ export function useScrollAnimation<T extends HTMLElement = HTMLElement>({
 
   useEffect(() => {
     if (disabled) {
-      setIsVisible(false)
+      // When disabled, show immediately (no animation), ensuring content isn't hidden.
+      setIsVisible(true)
       return
     }
+
+    // Helper to find the nearest scrollable parent to use as IntersectionObserver root
+    const getScrollParent = (el: HTMLElement | null): HTMLElement | null => {
+      let parent: HTMLElement | null = el?.parentElement || null
+      while (parent) {
+        const style = window.getComputedStyle(parent)
+        const overflowY = style.overflowY
+        const overflow = style.overflow
+        const isScrollable = ['auto', 'scroll'].includes(overflowY) || ['auto', 'scroll'].includes(overflow)
+        if (isScrollable && parent.scrollHeight > parent.clientHeight) {
+          return parent
+        }
+        parent = parent.parentElement
+      }
+      return null
+    }
+
+    const rootEl = getScrollParent(ref.current)
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -34,7 +53,8 @@ export function useScrollAnimation<T extends HTMLElement = HTMLElement>({
       },
       {
         threshold,
-        rootMargin
+        rootMargin,
+        root: rootEl || null
       }
     )
 
@@ -46,12 +66,21 @@ export function useScrollAnimation<T extends HTMLElement = HTMLElement>({
       setTimeout(() => {
         if (currentRef) {
           const rect = currentRef.getBoundingClientRect()
-          const isInViewport = rect.top < window.innerHeight && rect.bottom > 0
-          
-          if (isInViewport) {
-            setTimeout(() => {
-              setIsVisible(true)
-            }, delay)
+          if (rootEl) {
+            const rootRect = rootEl.getBoundingClientRect()
+            const isInViewport = rect.top < rootRect.bottom && rect.bottom > rootRect.top
+            if (isInViewport) {
+              setTimeout(() => {
+                setIsVisible(true)
+              }, delay)
+            }
+          } else {
+            const isInViewport = rect.top < window.innerHeight && rect.bottom > 0
+            if (isInViewport) {
+              setTimeout(() => {
+                setIsVisible(true)
+              }, delay)
+            }
           }
         }
       }, 100)

@@ -1,15 +1,20 @@
+"use client"
 import React, { useState, useEffect } from 'react'
 import Button from './Button'
 import { useScrollAnimation, useStaggeredScrollAnimation } from '@/hooks/useScrollAnimation'
 import { Incentive } from '@/lib/types/incentive'
 import IncentiveCard from '@/components/incentives/IncentiveCard'
+import { useRouter } from 'next/navigation'
 
 interface IncentivesSectionProps {
   className?: string
   pageReady?: boolean
+  cardVariant?: 'simple' | 'detailed'
+  detailBasePath?: string
 }
 
-export default function IncentivesSection({ className = '', pageReady = true }: IncentivesSectionProps) {
+export default function IncentivesSection({ className = '', pageReady = true, cardVariant = 'simple', detailBasePath }: IncentivesSectionProps) {
+  const router = useRouter()
   const [activeFilter, setActiveFilter] = useState('All')
   const [incentives, setIncentives] = useState<Incentive[]>([])
   const [loading, setLoading] = useState(true)
@@ -174,7 +179,12 @@ export default function IncentivesSection({ className = '', pageReady = true }: 
                       categoryColor={incentive.category_color}
                       startDate={incentive.start_date}
                       endDate={incentive.end_date}
-                      onViewClick={() => console.log('View clicked')}
+                      variant={cardVariant}
+                      onViewClick={() => {
+                        if (detailBasePath) {
+                          router.push(`${detailBasePath}/${incentive.id}/about`)
+                        }
+                      }}
                     />
                   </div>
                 )

@@ -27,13 +27,13 @@ const navigationItems = [
   },
   {
     id: 'incentives',
-    href: '/incentives',
+    href: '/admin/incentives',
     icon: '/images/incentives-icon.png',
     label: 'Incentives'
   },
   {
     id: 'edu',
-    href: '/edu',
+    href: '/admin/edu',
     icon: '/images/edu-icon.png',
     label: 'EDU'
   },
