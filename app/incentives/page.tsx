@@ -152,17 +152,17 @@ export default function IncentivesPage() {
     <div className="bg-[#0d0d0d] min-h-screen">
       <Navbar />
       
-      <div className="px-[50px] py-[130px]">
+      <div className="px-6 sm:px-8 md:px-10 lg:px-[50px] py-16 sm:py-20 lg:py-[130px]">
         <div className="max-w-[1480px] mx-auto">
           {/* Header (from CMS) */}
-          <div className="flex items-center justify-between pb-10 mb-20">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-8 sm:pb-10 mb-10 sm:mb-16 lg:mb-20">
             <div className="flex items-start gap-2.5 text-white opacity-100 translate-y-0">
-              <span className="text-[16px] font-telegraf">{incentivesCopy.section_number}</span>
-              <h1 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
+              <span className="text-[14px] sm:text-[16px] font-telegraf">{incentivesCopy.section_number}</span>
+              <h1 className="text-[32px] sm:text-[40px] md:text-[52px] lg:text-[60px] font-telegraf font-extrabold uppercase leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[63px]">
                 {incentivesCopy.section_title}
               </h1>
             </div>
-            <div className="text-white text-[16px] font-telegraf max-w-[400px] opacity-100 translate-y-0">
+            <div className="text-white text-[14px] sm:text-[16px] font-telegraf max-w-[400px] opacity-100 translate-y-0">
               <p>
                 {incentivesCopy.description}
               </p>
@@ -170,13 +170,13 @@ export default function IncentivesPage() {
           </div>
 
           {/* Filter Buttons */}
-          <div className="flex justify-center mb-12">
-            <div className="flex bg-gradient-to-b from-[#232323] to-[#171717] rounded-[60px] p-1 gap-1">
+          <div className="flex justify-center mb-8 sm:mb-12">
+            <div className="flex flex-wrap justify-center bg-gradient-to-b from-[#232323] to-[#171717] rounded-[60px] p-1 gap-1">
               {['all', 'live', 'coming_up', 'done'].map((filterOption) => (
                 <button
                   key={filterOption}
                   onClick={() => setFilter(filterOption as any)}
-                  className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors capitalize ${
+                  className={`px-[12px] sm:px-[15px] py-[6px] sm:py-[7px] rounded-[60px] text-[12px] sm:text-[14px] font-inter font-semibold transition-colors capitalize ${
                     filter === filterOption 
                       ? 'bg-white text-black' 
                       : 'bg-transparent text-white hover:bg-white/10'
@@ -194,7 +194,7 @@ export default function IncentivesPage() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {filteredIncentives.map((incentive) => (
                 <a key={incentive.id} href={`/incentives/${incentive.id}`} className="block rounded-[3px] overflow-hidden focus:outline-none focus:ring-2 focus:ring-white/50">
                   <IncentiveCard
@@ -220,9 +220,9 @@ export default function IncentivesPage() {
           )}
 
           {/* CTA Section */}
-          <div className="mt-12 text-center">
-            <h2 className="text-4xl font-telegraf font-bold mb-6 text-white">Ready to Maximize Your Earnings?</h2>
-            <p className="text-xl text-[rgba(255,255,255,0.6)] font-telegraf mb-8">
+          {/* <div className="mt-10 sm:mt-12 text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-telegraf font-bold mb-4 sm:mb-6 text-white">Ready to Maximize Your Earnings?</h2>
+            <p className="text-base sm:text-lg md:text-xl text-[rgba(255,255,255,0.6)] font-telegraf mb-6 sm:mb-8">
               Join our top performers and start earning more with every sale. 
               Check the leaderboard to see where you stand.
             </p>
@@ -240,7 +240,7 @@ export default function IncentivesPage() {
                 My Dashboard
               </a>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

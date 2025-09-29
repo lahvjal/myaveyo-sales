@@ -102,7 +102,7 @@ export default function IncentiveCard({
       )}
 
       {/* Content Overlay */}
-      <div className="absolute inset-0 flex flex-col justify-end h-full relative z-20">
+      <div className="absolute inset-0 flex flex-col justify-end h-[600px] relative z-20">
         <div className="flex items-center justify-between p-[20px]">
           {/* Status Badge */}
           <div

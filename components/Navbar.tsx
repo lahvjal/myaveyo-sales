@@ -25,7 +25,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
   const [open, setOpen] = useState(false)
 
   return (
-    <nav className={`relative z-10 px-4 sm:px-6 md:px-12 py-4 md:py-5 ${className}`}>
+    <nav className={`relative z-[100] px-4 sm:px-6 md:px-12 py-4 md:py-5 ${className}`}>
       <div className="mx-auto max-w-[1480px]">
         <div className="flex items-center md:justify-center justify-between md:gap-[20px]">
           {/* Left: Logo */}
@@ -76,22 +76,32 @@ export default function Navbar({ className = '' }: NavbarProps) {
           </button>
         </div>
 
-        {/* Mobile dropdown */}
+        {/* Mobile dropdown (overlay) */}
         {open && (
-          <div className="md:hidden mt-3 rounded-md border border-white/10 bg-black/70 backdrop-blur supports-[backdrop-filter]:bg-black/50">
-            <div className="flex flex-col py-2">
-              {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="px-4 py-3 text-white text-sm font-bold uppercase tracking-wide hover:bg-white/10 transition-colors font-telegraf"
-                >
-                  {item.name}
-                </a>
-              ))}
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 z-[90] bg-black/50 pointer-events-auto"
+              onClick={() => setOpen(false)}
+            />
+            {/* Menu panel anchored to navbar */}
+            <div className="md:hidden absolute left-0 right-0 top-full z-[110] mt-2 px-4 pointer-events-auto">
+              <div className="rounded-md border border-white/10 bg-black/80 backdrop-blur supports-[backdrop-filter]:bg-black/60 shadow-lg">
+                <div className="flex flex-col py-2">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      className="px-4 py-3 text-white text-sm font-bold uppercase tracking-wide hover:bg-white/10 transition-colors font-telegraf"
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </nav>

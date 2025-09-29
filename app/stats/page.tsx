@@ -119,12 +119,12 @@ export default function StatsPage() {
         </div>
       )}
       
-      <div className="box-border content-stretch flex flex-col items-center justify-start px-[50px] py-[100px] relative size-full">
-        <div className="box-border content-stretch flex flex-col gap-[90px] items-start justify-start max-w-[1480px] pb-[30px] pt-0 px-0 relative w-full">
+      <div className="box-border content-stretch flex flex-col items-center justify-start px-6 sm:px-8 md:px-10 lg:px-[50px] py-12 sm:py-16 lg:py-[100px] relative size-full">
+        <div className="box-border content-stretch flex flex-col gap-[60px] sm:gap-[80px] lg:gap-[90px] items-start justify-start max-w-[1480px] pb-[30px] pt-0 px-0 relative w-full">
           {/* Header Section */}
           <div 
             id="stats-header"
-            className={`flex items-end justify-between leading-[0] not-italic relative shrink-0 w-full transition-all duration-700 ${
+            className={`flex flex-col md:flex-row md:items-end md:justify-between gap-4 leading-[0] not-italic relative shrink-0 w-full transition-all duration-700 ${
               visibleSections.has('stats-header') ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
@@ -132,11 +132,11 @@ export default function StatsPage() {
               <div className="font-telegraf relative shrink-0 text-[16px] text-nowrap">
                 <p className="leading-[normal] whitespace-pre">(1)</p>
               </div>
-              <h1 className="font-telegraf font-extrabold leading-[0.8] text-[60px] sm:text-[50px] md:text-[80px] uppercase w-[70%]">
+              <h1 className="font-telegraf font-extrabold leading-[0.8] text-[36px] sm:text-[48px] md:text-[64px] lg:text-[80px] uppercase w-full md:w-[70%]">
                 {headerContent?.title || "Why Sell Solar With Aveyo?"}
               </h1>
             </div>
-            <div className="font-telegraf font-bold leading-[0] not-italic relative shrink-0 text-[30px] text-right text-white uppercase w-[555.304px]">
+            <div className="font-telegraf font-bold leading-[0] not-italic relative shrink-0 text-[18px] sm:text-[22px] md:text-[26px] lg:text-[30px] text-left md:text-right text-white uppercase w-full md:w-[555.304px]">
               <p className="leading-[normal]">
                 <span>Real Numbers. Real earnings. real impact. </span>
                 <span className="text-[rgba(255,255,255,0.6)]">
@@ -160,7 +160,7 @@ export default function StatsPage() {
             </div>
             
             {/* Bar Chart */}
-            <div className="content-stretch flex gap-5 h-[381px] items-start justify-start relative shrink-0 w-full">
+            <div className="content-stretch flex gap-5 h-[260px] sm:h-[320px] md:h-[381px] items-start justify-start relative shrink-0 w-full">
               <div className="basis-0 bg-[#121212] box-border content-stretch flex flex-col grow h-full items-center justify-between min-h-px min-w-px overflow-clip pt-[40px] relative rounded-[3px] shrink-0">
                 <div className="basis-0 content-stretch flex flex-col gap-6 grow items-center justify-start min-h-px min-w-px relative shrink-0 w-full">
                   <div className="basis-0 content-stretch flex grow items-center justify-between min-h-px min-w-px relative shrink-0 w-full">
@@ -169,19 +169,23 @@ export default function StatsPage() {
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                           data={barChartData}
-                          margin={{ top: 30, right: 30, left: 30, bottom: 30 }}
+                          margin={{ top: 30, right: 30, left: 0, bottom: 30 }}
                         >
                           <XAxis 
                             dataKey="name" 
                             axisLine={false}
                             tickLine={false}
                             tick={{ 
-                              fontSize: 14, 
+                              fontSize: 12, 
                               fill: '#888d95', 
                               fontFamily: 'PP Telegraf, sans-serif',
                               fontWeight: 'bold'
                             }}
                             interval={0}
+                            angle={-35}
+                            textAnchor="end"
+                            height={60}
+                            tickMargin={8}
                           />
                           <YAxis 
                             domain={[0, 50]}
@@ -209,17 +213,17 @@ export default function StatsPage() {
             </div>
             
             {/* Comparison Tiles */}
-            <div className="content-stretch flex gap-5 h-[151px] items-center justify-start relative shrink-0 w-full">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-stretch relative w-full md:h-[200px] h-[340px]">
               <div className="basis-0 bg-gradient-to-b box-border content-stretch flex flex-col from-[#171717] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#0e0e0e]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[#888d95] text-[25px] text-nowrap">
+                    <div className="relative shrink-0 text-[#888d95] md:text-[25px] text-[18px] text-nowrap">
                       <p className="leading-[normal] whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px] text-nowrap text-white">
                       <p className="leading-[normal] whitespace-pre">13</p>
                     </div>
-                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] text-[25px] w-3.5">
+                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] md:text-[25px] text-[18px] w-3.5">
                       <p className="leading-[normal]">K</p>
                     </div>
                   </div>
@@ -231,13 +235,13 @@ export default function StatsPage() {
               <div className="basis-0 bg-gradient-to-b box-border content-stretch flex flex-col from-[#171717] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#0e0e0e]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[#888d95] text-[25px] text-nowrap">
+                    <div className="relative shrink-0 text-[#888d95] md:text-[25px] text-[18px] text-nowrap">
                       <p className="leading-[normal] whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px] text-nowrap text-white">
                       <p className="leading-[normal] whitespace-pre">25</p>
                     </div>
-                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] text-[25px] w-3.5">
+                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] md:text-[25px] text-[18px] w-3.5">
                       <p className="leading-[normal]">K</p>
                     </div>
                   </div>
@@ -249,13 +253,13 @@ export default function StatsPage() {
               <div className="basis-0 bg-gradient-to-b box-border content-stretch flex flex-col from-[#171717] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#0e0e0e]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[#888d95] text-[25px] text-nowrap">
+                    <div className="relative shrink-0 text-[#888d95] md:text-[25px] text-[18px] text-nowrap">
                       <p className="leading-[normal] whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px] text-nowrap text-white">
                       <p className="leading-[normal] whitespace-pre">35</p>
                     </div>
-                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] text-[25px] w-3.5">
+                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] md:text-[25px] text-[18px] w-3.5">
                       <p className="leading-[normal]">K</p>
                     </div>
                   </div>
@@ -267,13 +271,13 @@ export default function StatsPage() {
               <div className="basis-0 bg-gradient-to-b box-border content-stretch flex flex-col from-[#171717] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#0e0e0e]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[#9dc3fc] text-[25px] text-nowrap">
+                    <div className="relative shrink-0 text-[#9dc3fc] md:text-[25px] text-[18px] text-nowrap">
                       <p className="leading-[normal] whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px] text-nowrap text-white">
                       <p className="leading-[normal] whitespace-pre">120+</p>
                     </div>
-                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#9dc3fc] text-[25px] w-3.5">
+                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#9dc3fc] md:text-[25px] text-[18px] w-3.5">
                       <p className="leading-[normal]">K</p>
                     </div>
                   </div>
@@ -293,7 +297,7 @@ export default function StatsPage() {
             }`}
           >
             <div className="box-border content-stretch flex gap-2.5 items-center justify-center pb-[30px] pt-0 px-0 relative shrink-0">
-              <div className="font-telegraf font-black leading-[0] not-italic relative shrink-0 text-[30px] text-white uppercase w-[721.026px]">
+              <div className="font-telegraf font-black leading-[0] not-italic relative shrink-0 text-[30px] text-white uppercase w-[100%]">
                 <p className="leading-[normal]">{growthPathContent?.title || "Your Growth Path with Aveyo"}</p>
               </div>
             </div>
@@ -309,20 +313,24 @@ export default function StatsPage() {
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart
                           data={lineChartData}
-                          margin={{ top: 30, right: 60, left: 30, bottom: 50 }}
+                          margin={{ top: 30, right: 10, left: 0, bottom: 50 }}
                         >
                           <XAxis 
                             dataKey="name" 
                             axisLine={false}
                             tickLine={false}
                             tick={{ 
-                              fontSize: 14, 
+                              fontSize: 12, 
                               fill: '#888d95', 
                               fontFamily: 'PP Telegraf, sans-serif',
                               fontWeight: 'bold'
                             }}
                             interval={0}
-                            padding={{ left: 60, right: 60 }}
+                            padding={{ left: 20, right: 20 }}
+                            angle={-35}
+                            textAnchor="end"
+                            height={60}
+                            tickMargin={8}
                           />
                           <YAxis 
                             domain={[0, 200]}
@@ -360,17 +368,17 @@ export default function StatsPage() {
             </div>
 
             {/* Growth Path Milestone Cards */}
-            <div className="content-stretch flex gap-5 h-[151px] items-center justify-start relative shrink-0 w-full">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-stretch relative w-full md:h-[200px] h-[340px]">
               <div className="basis-0 bg-gradient-to-b box-border content-stretch flex flex-col from-[#171717] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#0e0e0e]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[#888d95] text-[25px] text-nowrap">
+                    <div className="relative shrink-0 text-[#888d95] md:text-[25px] text-[18px] text-nowrap">
                       <p className="leading-[normal] whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px] text-nowrap text-white">
                       <p className="leading-[normal] whitespace-pre">30</p>
                     </div>
-                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] text-[25px] w-3.5">
+                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] md:text-[25px] text-[18px] w-3.5">
                       <p className="leading-[normal]">K</p>
                     </div>
                   </div>
@@ -382,13 +390,13 @@ export default function StatsPage() {
               <div className="basis-0 bg-gradient-to-b box-border content-stretch flex flex-col from-[#171717] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#0e0e0e]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[#888d95] text-[25px] text-nowrap">
+                    <div className="relative shrink-0 text-[#888d95] md:text-[25px] text-[18px] text-nowrap">
                       <p className="leading-[normal] whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px] text-nowrap text-white">
                       <p className="leading-[normal] whitespace-pre">70</p>
                     </div>
-                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] text-[25px] w-3.5">
+                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] md:text-[25px] text-[18px] w-3.5">
                       <p className="leading-[normal]">K</p>
                     </div>
                   </div>
@@ -400,13 +408,13 @@ export default function StatsPage() {
               <div className="basis-0 bg-gradient-to-b box-border content-stretch flex flex-col from-[#171717] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#0e0e0e]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[#888d95] text-[25px] text-nowrap">
+                    <div className="relative shrink-0 text-[#888d95] md:text-[25px] text-[18px] text-nowrap">
                       <p className="leading-[normal] whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px] text-nowrap text-white">
                       <p className="leading-[normal] whitespace-pre">140</p>
                     </div>
-                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] text-[25px] w-3.5">
+                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] md:text-[25px] text-[18px] w-3.5">
                       <p className="leading-[normal]">K</p>
                     </div>
                   </div>
@@ -418,13 +426,13 @@ export default function StatsPage() {
               <div className="basis-0 bg-gradient-to-b box-border content-stretch flex flex-col from-[#171717] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#0e0e0e]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[#888d95] text-[25px] text-nowrap">
+                    <div className="relative shrink-0 text-[#888d95] md:text-[25px] text-[18px] text-nowrap">
                       <p className="leading-[normal] whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px] text-nowrap text-white">
                       <p className="leading-[normal] whitespace-pre">200+</p>
                     </div>
-                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] text-[25px] w-3.5">
+                    <div className="flex flex-col justify-end relative self-stretch shrink-0 text-[#888d95] md:text-[25px] text-[18px] w-3.5">
                       <p className="leading-[normal]">K</p>
                     </div>
                   </div>
@@ -449,11 +457,11 @@ export default function StatsPage() {
               </div>
             </div>
             
-            <div className="content-stretch flex gap-5 h-[151px] items-center justify-start relative shrink-0 w-full">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-stretch relative w-full md:h-[200px] h-[340px]">
               <div className="basis-0 bg-gradient-to-t box-border content-stretch flex flex-col from-[#121212] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#37414f]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 text-nowrap text-white w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[25px]">
+                    <div className="relative shrink-0 md:text-[25px] text-[18px]">
                       <p className="leading-[normal] text-nowrap whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px]">
@@ -468,7 +476,7 @@ export default function StatsPage() {
               <div className="basis-0 bg-gradient-to-t box-border content-stretch flex flex-col from-[#121212] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#37414f]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 text-nowrap text-white w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">
-                    <div className="relative shrink-0 text-[25px]">
+                    <div className="relative shrink-0 md:text-[25px] text-[18px]">
                       <p className="leading-[normal] text-nowrap whitespace-pre">$</p>
                     </div>
                     <div className="relative shrink-0 text-[50px]">
@@ -486,7 +494,7 @@ export default function StatsPage() {
                     <div className="relative shrink-0 text-[50px]">
                       <p className="leading-[normal] text-nowrap whitespace-pre">15</p>
                     </div>
-                    <div className="flex flex-col justify-end relative shrink-0 text-[19px]">
+                    <div className="flex flex-col justify-end relative shrink-0 md:text-[19px] text-[16px]">
                       <p className="leading-[20px] text-nowrap whitespace-pre">
                         Trees<br />Planted
                       </p>

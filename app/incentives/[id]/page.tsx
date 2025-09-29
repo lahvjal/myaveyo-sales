@@ -162,11 +162,11 @@ export default async function IncentiveDetailPage({ params }: PageProps) {
                 {/* Actions */}
                 <div className="flex flex-wrap gap-3 pt-2">
                   <Link href={`/incentives`} className="px-4 py-2 bg-white text-black rounded-[3px] font-semibold hover:bg-white/90">Back to incentives</Link>
-                  {Boolean(incentive.background_image_url || incentive.background_video_url) && (
+                  {/* {Boolean(incentive.background_image_url || incentive.background_video_url) && (
                     <Link href={incentive.background_video_url || incentive.background_image_url || '#'} target="_blank" className="px-4 py-2 bg-gradient-to-b from-[#232323] to-[#171717] text-white rounded-[3px] font-semibold hover:from-[#2a2a2a] hover:to-[#1e1e1e]">
                       Open Media
                     </Link>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>
