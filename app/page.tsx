@@ -204,11 +204,11 @@ export default function Home() {
       {isMobile ? null : <VideoMaskSection pageReady={pageReady} />}
 
       {/* Sales Section */}
-      <SalesSection pageReady={pageReady} />
+      <SalesSection pageReady={pageReady} onJoinClick={() => setJoinOpen(true)} />
 
 
       {/* On The Inside Section */}
-      <OnTheInsideSection pageReady={pageReady} />
+      <OnTheInsideSection pageReady={pageReady} onJoinClick={() => setJoinOpen(true)} />
 
       {/* Video Call to Action Section */}
       <VideoCallToActionSection 

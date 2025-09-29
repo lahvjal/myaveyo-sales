@@ -7,9 +7,10 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 interface OnTheInsideSectionProps {
   className?: string
   pageReady?: boolean
+  onJoinClick?: () => void
 }
 
-export default function OnTheInsideSection({ className = '', pageReady = true }: OnTheInsideSectionProps) {
+export default function OnTheInsideSection({ className = '', pageReady = true, onJoinClick }: OnTheInsideSectionProps) {
   const [expandedBlock, setExpandedBlock] = useState<string>('001')
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
@@ -239,7 +240,7 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
               buttonAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <Button variant="primary" theme="dark">
+            <Button variant="primary" theme="dark" onClick={onJoinClick}>
               APPLY NOW
             </Button>
           </div>

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 interface SalesSectionProps {
   className?: string
   pageReady?: boolean
+  onJoinClick?: () => void
 }
 
 interface SalesContent {
@@ -50,7 +51,7 @@ interface SalesContent {
   }
 }
 
-export default function SalesSection({ className = '', pageReady = true }: SalesSectionProps) {
+export default function SalesSection({ className = '', pageReady = true, onJoinClick }: SalesSectionProps) {
   const [content, setContent] = useState<SalesContent>({
     section_number: '(3)',
     section_title: 'Sales.',
@@ -241,7 +242,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
               buttonAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <Button variant={content.grid.button.variant as any} className="w-full">
+            <Button variant={content.grid.button.variant as any} className="w-full" onClick={onJoinClick}>
               {content.grid.button.text}
             </Button>
           </div>
