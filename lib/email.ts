@@ -1,8 +1,14 @@
 import { Resend } from 'resend'
 
-// Initialize Resend client using environment variable
-// Set RESEND_API_KEY in your environment (e.g., .env.local)
-export const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazily initialize Resend so builds don't crash if key is missing at build time
+let _resend: Resend | null = null
+export function getResend(): Resend | null {
+  if (_resend) return _resend
+  const key = process.env.RESEND_API_KEY
+  if (!key) return null
+  _resend = new Resend(key)
+  return _resend
+}
 
 export interface SendEmailParams {
   to: string | string[]
@@ -14,7 +20,8 @@ export interface SendEmailParams {
 }
 
 export async function sendEmail({ to, subject, html, text, from, replyTo }: SendEmailParams) {
-  if (!process.env.RESEND_API_KEY) {
+  const client = getResend()
+  if (!client) {
     console.warn('RESEND_API_KEY is not set; skipping email send')
     return { id: null }
   }
@@ -31,5 +38,5 @@ export async function sendEmail({ to, subject, html, text, from, replyTo }: Send
     ...(text ? { text } : {}),
     ...(replyTo ? { replyTo } : {}),
   }
-  return await resend.emails.send(options)
+  return await client.emails.send(options)
 }
