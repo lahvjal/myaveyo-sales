@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 interface TopBarTab {
   id: string
@@ -128,16 +129,29 @@ export default function TopBar({
           )}
         </div>
         
-        {/* Right side - Profile */}
+        {/* Right side - Profile / Actions */}
         {showProfile && (
-          <div className="relative shrink-0 size-[30px]">
-            <Image 
-              src="/images/c75767911e539a98cf3080c76af0df77e6a62117.png"
-              alt="Profile"
-              width={30}
-              height={30}
-              className="size-full rounded-full cursor-pointer hover:opacity-80 transition-opacity duration-200"
-            />
+          <div className="flex items-center gap-3">
+            <div className="relative shrink-0 size-[30px]">
+              <Image 
+                src="/images/c75767911e539a98cf3080c76af0df77e6a62117.png"
+                alt="Profile"
+                width={30}
+                height={30}
+                className="size-full rounded-full"
+              />
+            </div>
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut()
+                const params = new URLSearchParams(window.location.search)
+                const redirect = params.get('redirect')
+                window.location.replace(redirect || '/login')
+              }}
+              className="px-3 py-1.5 rounded-[4px] bg-white text-black text-sm font-telegraf hover:opacity-90 transition"
+            >
+              Logout
+            </button>
           </div>
         )}
       </div>
