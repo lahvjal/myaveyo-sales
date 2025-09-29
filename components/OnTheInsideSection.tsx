@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import ExpandableBlock from './ExpandableBlock'
 import Button from './Button'
 import { useScrollAnimation, useStaggeredScrollAnimation } from '@/hooks/useScrollAnimation'
@@ -21,11 +21,30 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
     offset: ["start end", "start start"]
   })
   
-  const containerWidth = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [1480, typeof window !== 'undefined' ? document.documentElement.clientWidth : 1920]
-  )
+  // Responsive width animation: use vw on mobile, px on desktop
+  const [widthStart, setWidthStart] = useState<string | number>(1480)
+  const [widthEnd, setWidthEnd] = useState<string | number>(typeof window !== 'undefined' ? document.documentElement.clientWidth : 1920)
+  const [isMobile, setIsMobile] = useState<boolean>(false)
+
+  useEffect(() => {
+    const compute = () => {
+      const w = typeof window !== 'undefined' ? window.innerWidth : 1920
+      const mobile = w < 768
+      setIsMobile(mobile)
+      if (mobile) {
+        setWidthStart('90vw')
+        setWidthEnd('100vw')
+      } else {
+        setWidthStart(1480)
+        setWidthEnd(w)
+      }
+    }
+    compute()
+    window.addEventListener('resize', compute)
+    return () => window.removeEventListener('resize', compute)
+  }, [])
+
+  const containerWidth = useTransform(scrollYProgress, [0, 1], [widthStart as any, widthEnd as any])
   
   const borderRadius = useTransform(
     scrollYProgress,
@@ -109,17 +128,16 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
   const buttonAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200, disabled: !pageReady })
 
   return (
-    <motion.section ref={sectionRef} className={`flex flex-col items-center pt-[130px] ${className}`}>
+    <motion.section ref={sectionRef} className={`flex flex-col items-center pt-[130px] w-[100vw] ${className}`}>
       <motion.div 
-        className="bg-[#e6e6e6] py-[160px] px-[30px] mx-auto overflow-visible"
+        className={`bg-[#e6e6e6] py-[160px] px-[30px] mx-auto overflow-visible md:w-[${containerWidth}px] w-[100%]`}
         style={{ 
-          width: containerWidth,
           borderRadius: borderRadius
         }}
       >
         <div className="max-w-[1480px] mx-auto">
           {/* Header */}
-          <div className="flex flex-row items-start justify-between w-[100%] pb-10 mb-[160px] h-[500px]">
+          <div className="flex md:flex-row flex-col items-start justify-between w-[100%] pb-10 md:mb-[160px] mb-[30px] md:h-[500px] h-[auto]">
             <div className="flex flex-col items-start justify-between h-[100%] max-w-[680px]">
               <div 
                 ref={headerAnimation.ref}
@@ -128,8 +146,8 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
                 }`}
               >
                 <span className="text-[16px] font-telegraf text-black">(4)</span>
-                <div className="flex flex-col gap-5 items-end">
-                  <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px] text-black text-right">
+                <div className="flex flex-col gap-5 md:items-end items-start">
+                  <h2 className="md:text-[60px] text-[40px] font-telegraf font-extrabold uppercase leading-[63px] text-black md:text-right text-left">
                   PULLING BACK
                   <br />
                   THE CURTAIN
@@ -141,7 +159,7 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
               </div>
               <div 
                 ref={descriptionAnimation.ref}
-                className={`font-telegraf w-[100%] pl-[30%] text-black text-[16px] leading-[28px] transition-all duration-700 ${
+                className={`font-telegraf w-[100%] md:pl-[30%] pl-[0] text-black text-[16px] leading-[28px] transition-all duration-700 ${
                   descriptionAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
                 }`}
               >
@@ -151,7 +169,7 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
             {/* Video thumbnail section */}
             <div 
               ref={videoAnimation.ref}
-              className={`w-[40%] mb-[40px] h-[100%] transition-all duration-700 ${
+              className={`md:w-[40%] w-[100%] mb-[40px] h-[100%] transition-all duration-700 ${
                 videoAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
               }`}
             >
@@ -189,7 +207,7 @@ export default function OnTheInsideSection({ className = '', pageReady = true }:
                   backgroundImage={block.backgroundImage}
                   isExpanded={expandedBlock === block.id}
                   onToggle={handleToggle}
-                  className={`${expandedBlock === block.id ? 'h-[500px]' : 'h-[120px]'} relative before:absolute before:inset-0 before:bg-black before:opacity-30 before:z-10`}
+                  className={`${expandedBlock === block.id ? 'md:h-[500px] h-[300px]' : 'h-[120px]'} relative before:absolute before:inset-0 before:bg-black before:opacity-30 before:z-10`}
                 >
                   {/* Filter buttons - only show in expanded state for "The Culture"
                   {block.id === '001' && expandedBlock === block.id && (

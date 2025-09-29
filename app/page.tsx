@@ -14,6 +14,7 @@ import VideoCallToActionSection from '@/components/VideoCallToActionSection'
 import VideoMaskSection from '@/components/VideoMaskSection'
 import PageLoader from '@/components/PageLoader'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
+import JoinAveyoModal from '@/components/JoinAveyoModal'
 
 // Image constants from Figma
 const imgAMan = "http://localhost:3845/assets/c75767911e539a98cf3080c76af0df77e6a62117.png"
@@ -26,6 +27,8 @@ const imgVector117 = "http://localhost:3845/assets/b74939b67987caa88b59e0e1a8a00
 export default function Home() {
   const [showLoader, setShowLoader] = useState(true)
   const [pageReady, setPageReady] = useState(false)
+  const [joinOpen, setJoinOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   const handleLoaderComplete = () => {
     setShowLoader(false)
@@ -56,6 +59,14 @@ export default function Home() {
         document.body.removeChild(script)
       }
     }
+  }, [])
+
+  // Track viewport to expose `isMobile`
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   return (
@@ -93,7 +104,7 @@ export default function Home() {
         <Navbar />
 
         {/* Hero Content */}
-        <div className="flex flex-col justify-between px-24 py-16 min-h-[calc(100vh-120px)] relative z-10">
+        <div className="flex flex-col justify-between px-6 sm:px-10 md:px-16 lg:px-24 py-12 sm:py-14 md:py-16 min-h-[calc(100vh-120px)] relative z-10">
           {/* Main Hero Text */}
           <div className="flex-1 flex flex-col justify-end pb-12">
             <div className="max-w-4xl">
@@ -108,7 +119,7 @@ export default function Home() {
               
               <h2 
                 ref={headingAnimation.ref}
-                className={`text-white text-[100px] font-black uppercase leading-[84px] mb-5 font-telegraf transition-all duration-700 ${
+                className={`text-white text-[40px] sm:text-[56px] md:text-[72px] lg:text-[100px] font-black uppercase leading-[40px] sm:leading-[56px] md:leading-[66px] lg:leading-[84px] mb-5 font-telegraf transition-all duration-700 ${
                   headingAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
                 }`}
               >
@@ -116,7 +127,7 @@ export default function Home() {
               </h2>
               <h1 
                 ref={subheadingAnimation.ref}
-                className={`text-white text-[40px] font-extrabold uppercase leading-[30px] mb-12 font-telegraf transition-all duration-700 ${
+                className={`text-white text-[20px] sm:text-[28px] md:text-[36px] lg:text-[40px] font-extrabold uppercase leading-[26px] sm:leading-[30px] md:leading-[34px] lg:leading-[30px] mb-8 md:mb-12 font-telegraf transition-all duration-700 ${
                   subheadingAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
                 }`}
               >
@@ -125,22 +136,22 @@ export default function Home() {
               {/* CTA Buttons */}
               <div 
                 ref={buttonsAnimation.ref}
-                className={`flex gap-8 transition-all duration-700 ${
+                className={`flex flex-col sm:flex-row gap-4 sm:gap-8 w-full sm:w-auto transition-all duration-700 ${
                   buttonsAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
                 }`}
               >
-                <Button variant="primary">
+                <Button variant="primary" onClick={() => setJoinOpen(true)}>
                   JOIN AVEYO
                 </Button>
-                <Button variant="secondary">
+                {/* <Button variant="secondary">
                   LOGIN
-                </Button>
+                </Button> */}
               </div>
             </div>
           </div>
 
           {/* Bottom Section */}
-          <div className="flex items-end justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
             {/* Left - Description */}
             <div 
               ref={descriptionAnimation.ref}
@@ -190,7 +201,7 @@ export default function Home() {
       <IncentivesSection pageReady={pageReady} />
 
       {/* Video Mask Section */}
-      <VideoMaskSection pageReady={pageReady} />
+      {isMobile ? null : <VideoMaskSection pageReady={pageReady} />}
 
       {/* Sales Section */}
       <SalesSection pageReady={pageReady} />
@@ -202,11 +213,14 @@ export default function Home() {
       {/* Video Call to Action Section */}
       <VideoCallToActionSection 
         buttonText="JOIN THE TEAM"
-        onButtonClick={() => console.log('Join the team clicked')}
+        onButtonClick={() => setJoinOpen(true)}
         pageReady={pageReady}
       />
 
       </div>
+
+      {/* Join Aveyo Modal */}
+      <JoinAveyoModal open={joinOpen} onClose={() => setJoinOpen(false)} />
     </>
   )
 }

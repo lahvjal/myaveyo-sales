@@ -125,30 +125,30 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
   const bottomImageAnimation = useScrollAnimation<HTMLDivElement>({ delay: 800, disabled: !pageReady })
 
   return (
-    <section className={`px-[50px] py-[130px] relative flex flex-col items-center overflow-hidden ${className}`} id="sales-section">
+    <section className={`px-6 sm:px-8 md:px-10 lg:px-[50px] py-16 sm:py-20 lg:py-[130px] relative flex flex-col items-center overflow-hidden ${className}`} id="sales-section">
 
       <div className="max-w-[1480px] mx-auto pb-[30px] relative z-10">
         {/* Header */}
-        <div className="flex items-center justify-start pb-10 mb-20">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-start gap-4 pb-8 sm:pb-10 mb-10 sm:mb-16 lg:mb-20">
           <div 
             ref={headerAnimation.ref}
             className={`flex items-start gap-2.5 text-white transition-all duration-700 ${
               headerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <span className="text-[16px] font-telegraf">{content.section_number}</span>
-            <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px] w-[623.886px]">
+            <span className="text-[14px] sm:text-[16px] font-telegraf">{content.section_number}</span>
+            <h2 className="text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-telegraf font-extrabold uppercase leading-[32px] sm:leading-[42px] md:leading-[52px] lg:leading-[63px] max-w-[900px]">
               {content.main_heading}
             </h2>
           </div>
         </div>
 
         {/* Content Row */}
-        <div className="flex items-center justify-between pb-10 mb-20">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-8 sm:pb-10 mb-10 sm:mb-16 lg:mb-20">
           {/* Left Side - Rotated Copyright */}
           <div 
             ref={copyrightAnimation.ref}
-            className={`flex h-[0px] items-center justify-center relative w-[0px] transition-all duration-700 ${
+            className={`hidden md:flex h-[0px] items-center justify-center relative w-[0px] transition-all duration-700 ${
               copyrightAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
@@ -167,7 +167,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
           {/* Right Side - Description */}
           <div 
             ref={descriptionAnimation.ref}
-            className={`font-telegraf font-bold text-white text-[30px] text-right uppercase w-[642.702px] transition-all duration-700 ${
+            className={`font-telegraf font-bold text-white text-[18px] sm:text-[22px] md:text-[26px] lg:text-[30px] text-left md:text-right uppercase w-full md:w-[642.702px] transition-all duration-700 ${
               descriptionAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
@@ -179,7 +179,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
 
         {/* Main Grid */}
         <motion.div 
-          className="grid grid-cols-3 grid-rows-4 gap-5 h-[1386px] w-full"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full"
           initial="hidden"
           animate="visible"
           variants={{
@@ -193,7 +193,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
         >
           {/* Large Image Card - spans 2 rows, 1 column */}
           <div 
-            className="row-span-2 bg-cover bg-center bg-no-repeat rounded-[3px] relative overflow-hidden"
+            className="lg:row-span-2 bg-cover bg-center bg-no-repeat rounded-[3px] relative overflow-hidden min-h-[240px]"
             style={{ backgroundImage: `url('${content.grid.large_image.url}')` }}
             ref={imageCardAnimation.ref}
           >
@@ -221,23 +221,23 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
             </div>
           </div>
 
-          {/* Text Block - middle column, first row */}
+          {/* Text Block */}
           <div 
             ref={textBlockAnimation.ref}
-            className={`flex flex-col items-start justify-center px-[30px] py-0 transition-all duration-700 ${
+            className={`flex flex-col items-start justify-center px-5 sm:px-[30px] py-4 sm:py-0 transition-all duration-700 ${
               textBlockAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <b className='mb-[40px]'>{content.grid.text_block.title}</b>
-            <div className="font-telegraf text-white text-[16px] leading-[28px] w-full">
+            <b className='mb-[20px] sm:mb-[40px]'>{content.grid.text_block.title}</b>
+            <div className="font-telegraf text-white text-[14px] sm:text-[16px] leading-[24px] sm:leading-[28px] w-full">
               {content.grid.text_block.content}
             </div>
           </div>
 
-          {/* Join Button - right column, first row */}
+          {/* Join Button */}
           <div 
             ref={buttonAnimation.ref}
-            className={`flex flex-col items-center justify-center px-[90px] py-2.5 transition-all duration-700 ${
+            className={`flex flex-col items-center justify-center px-6 sm:px-[90px] py-2.5 transition-all duration-700 ${
               buttonAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
@@ -246,7 +246,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
             </Button>
           </div>
 
-          {/* Stats Card 1 - middle column, second row */}
+          {/* Stats Card 1 */}
           <div 
             ref={statCard1Animation.ref}
             className={`transition-all duration-700 ${
@@ -265,7 +265,7 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
             />
           </div>
 
-          {/* Stats Card 2 - right column, second row */}
+          {/* Stats Card 2 */}
           <div 
             ref={statCard2Animation.ref}
             className={`transition-all duration-700 ${
@@ -284,9 +284,9 @@ export default function SalesSection({ className = '', pageReady = true }: Sales
             />
           </div>
 
-          {/* Large Bottom Image - spans 2 rows, 3 columns */}
+          {/* Large Bottom Image */}
           <div 
-            className="row-span-2 col-span-3 bg-cover bg-center bg-no-repeat rounded-[3px] relative overflow-hidden"
+            className="lg:row-span-2 lg:col-span-3 bg-cover bg-center bg-no-repeat rounded-[3px] relative overflow-hidden min-h-[260px]"
             style={{ backgroundImage: `url('${content.grid.bottom_image.url}')` }}
             ref={bottomImageAnimation.ref}
           >

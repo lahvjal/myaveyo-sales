@@ -68,24 +68,24 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
   const gridItemAnimations = useStaggeredScrollAnimation<HTMLDivElement>(12, 900, 100, !pageReady)
 
   return (
-    <section className={`px-[50px] py-[130px] ${className}`}>
+    <section className={`px-6 sm:px-8 md:px-10 lg:px-[50px] py-16 sm:py-20 lg:py-[130px] ${className}`}>
       <div className="max-w-[1480px] mx-auto pb-[30px]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-10 mb-20">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-8 sm:pb-10 mb-10 sm:mb-16 lg:mb-20">
           <div 
             ref={headerAnimation.ref}
             className={`flex items-start gap-2.5 text-white transition-all duration-700 ${
               headerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <span className="text-[16px] font-telegraf">(2)</span>
-            <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
+            <span className="text-[14px] sm:text-[16px] font-telegraf">(2)</span>
+            <h2 className="text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-telegraf font-extrabold uppercase leading-[32px] sm:leading-[42px] md:leading-[52px] lg:leading-[63px]">
               Incentives.
             </h2>
           </div>
           <div 
             ref={descriptionAnimation.ref}
-            className={`text-white text-[16px] font-telegraf max-w-[364px] transition-all duration-700 ${
+            className={`text-white text-[14px] sm:text-[16px] font-telegraf max-w-[364px] transition-all duration-700 ${
               descriptionAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
@@ -99,7 +99,7 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
           {/* Filter Buttons */}
           <div 
             ref={filtersAnimation.ref}
-            className={`flex items-center justify-center gap-2.5 transition-all duration-700 ${
+            className={`flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 transition-all duration-700 ${
               filtersAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
@@ -107,7 +107,7 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
+                className={`px-[12px] sm:px-[15px] py-[6px] sm:py-[7px] rounded-[60px] text-[12px] sm:text-[14px] font-inter font-semibold transition-colors ${
                   activeFilter === filter
                     ? 'bg-white text-black'
                     : 'bg-gradient-to-b from-[#232323] to-[#171717]'
@@ -137,10 +137,9 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
           {!loading && !error && (
             <div 
               ref={gridContainerAnimation.ref}
-              className={`grid grid-cols-3 gap-5 min-h-[1380px] transition-all duration-700 ${
+              className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 transition-all duration-700 ${
                 gridContainerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
               }`}
-              style={{ gridTemplateRows: 'repeat(4, 1fr)' }}
             >
               {filteredIncentives
                 .sort((a, b) => {
@@ -156,9 +155,6 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
                   return a.sort_order - b.sort_order
                 })
                 .map((incentive, index) => {
-                // Define grid positioning based on index
-                let gridClass = 'row-span-2'
-                
                 // Get the animation for this specific grid item
                 const itemAnimation = gridItemAnimations[index] || gridItemAnimations[gridItemAnimations.length - 1]
                 
@@ -166,7 +162,7 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
                   <div 
                     key={incentive.id} 
                     ref={itemAnimation.ref}
-                    className={`${gridClass} transition-all duration-700 ${
+                    className={`transition-all duration-700 ${
                       itemAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                     }`}
                   >
@@ -180,11 +176,6 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
                       startDate={incentive.start_date}
                       endDate={incentive.end_date}
                       variant={cardVariant}
-                      onViewClick={() => {
-                        if (detailBasePath) {
-                          router.push(`${detailBasePath}/${incentive.id}/about`)
-                        }
-                      }}
                     />
                   </div>
                 )

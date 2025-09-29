@@ -27,24 +27,24 @@ const StatCard = ({ value, suffix, prefix, label, isVisible = false, delay = 0 }
   })
 
   return (
-    <div className="flex-1 bg-gradient-to-b from-[#171717] to-[#0d0d0d] h-[205px] rounded-[3px] relative">
-      <div className="flex flex-col items-center justify-center h-full p-5">
-        <div className="flex items-start justify-center gap-[7px] mb-[15px]">
+    <div className="flex-1 bg-gradient-to-b from-[#171717] to-[#0d0d0d] h-[170px] sm:h-[190px] lg:h-[205px] rounded-[3px] relative">
+      <div className="flex flex-col items-center justify-center h-full px-4 py-5">
+        <div className="flex items-start justify-center gap-[6px] sm:gap-[7px] mb-[10px] sm:mb-[15px]">
           {prefix && (
-            <span className="text-[#888d95] text-[25px] font-telegraf font-black leading-none">
+            <span className="text-[#888d95] text-[18px] sm:text-[22px] lg:text-[25px] font-telegraf font-black leading-none">
               {prefix}
             </span>
           )}
-          <span className="text-white text-[70px] font-telegraf font-black leading-none">
+          <span className="text-white text-[44px] sm:text-[56px] lg:text-[70px] font-telegraf font-black leading-none">
             {animatedValue}
           </span>
           {suffix && (
-            <span className="text-[#888d95] text-[25px] font-telegraf font-black leading-none flex flex-col justify-end">
+            <span className="text-[#888d95] text-[18px] sm:text-[22px] lg:text-[25px] font-telegraf font-black leading-none flex flex-col justify-end">
               {suffix}
             </span>
           )}
         </div>
-        <p className="text-[#888d95] text-[14px] font-telegraf text-center">
+        <p className="text-[#888d95] text-[12px] sm:text-[13px] lg:text-[14px] font-telegraf text-center">
           {label}
         </p>
       </div>
@@ -88,10 +88,10 @@ export default function StatsSection({ className = '', pageReady = true }: Stats
   const cardAnimations = useStaggeredScrollAnimation<HTMLDivElement>(stats.length, 600, 150, !pageReady)
 
   return (
-    <section className={`px-[50px] py-[130px] ${className}`}>
+    <section className={`px-6 sm:px-8 md:px-10 lg:px-[50px] py-16 sm:py-20 lg:py-[130px] ${className}`}>
       <div className="max-w-[1480px] mx-auto pb-[30px]">
         {/* Header */}
-        <div className="flex items-end justify-between mb-20">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10 sm:mb-16 lg:mb-20">
           <div 
             ref={headerAnimation.ref}
             className={`flex flex-col items-start gap-2.5 text-white transition-all duration-700 ${
@@ -104,14 +104,14 @@ export default function StatsSection({ className = '', pageReady = true }: Stats
               headerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
             >
-              <span className="text-[16px] font-telegraf">(1)</span>
-              <h2 className="text-[60px] font-telegraf font-extrabold uppercase leading-[63px]">
+              <span className="text-[14px] sm:text-[16px] font-telegraf">(1)</span>
+              <h2 className="text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-telegraf font-extrabold uppercase leading-[32px] sm:leading-[42px] md:leading-[52px] lg:leading-[63px]">
                 Sales Stats.
               </h2>
             </div>
             <div 
             ref={yearAnimation.ref}
-            className={`text-white text-[16px] font-telegraf pl-[30px] pr-[330px] transition-all duration-700 ${
+            className={`text-white text-[14px] sm:text-[16px] font-telegraf md:pl-[30px] max-w-[660px] transition-all duration-700 ${
               yearAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
@@ -124,7 +124,7 @@ export default function StatsSection({ className = '', pageReady = true }: Stats
           </div>
           <div 
             ref={yearAnimation.ref}
-            className={`text-[rgba(255,255,255,0.4)] text-[16px] font-telegraf font-extrabold transition-all duration-700 ${
+            className={`text-[rgba(255,255,255,0.4)] text-[14px] sm:text-[16px] font-telegraf font-extrabold transition-all duration-700 ${
               yearAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
@@ -133,7 +133,7 @@ export default function StatsSection({ className = '', pageReady = true }: Stats
         </div>
 
         {/* Stats Cards */}
-        <div className="flex gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {stats.map((stat, index) => (
             <div
               key={index}
