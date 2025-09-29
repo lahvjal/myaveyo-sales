@@ -21,12 +21,15 @@ export async function sendEmail({ to, subject, html, text, from, replyTo }: Send
 
   const fromAddress = from || process.env.RESEND_FROM || 'onboarding@resend.dev'
 
-  return await resend.emails.send({
+  // Some versions of the Resend SDK ship types that incorrectly require `react`.
+  // Our usage with raw `html`/`text` is valid at runtime; cast to any to satisfy TS.
+  const options: any = {
     from: fromAddress,
     to,
     subject,
-    html,
-    text,
-    replyTo,
-  })
+    ...(html ? { html } : {}),
+    ...(text ? { text } : {}),
+    ...(replyTo ? { replyTo } : {}),
+  }
+  return await resend.emails.send(options)
 }
