@@ -20,7 +20,7 @@ export type ProjectMilestoneCardProps = {
 export default function ProjectMilestoneCard({
   label,
   value,
-  sublabel = 'YTD',
+  sublabel,
   dotColor = '#f2c94c',
   className = '',
   active = false,

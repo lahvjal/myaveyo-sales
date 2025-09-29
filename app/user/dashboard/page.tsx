@@ -6,6 +6,7 @@ import Link from "next/link"
 import Button from "@/components/Button"
 import ProjectMilestoneCard from "@/components/projects/ProjectMilestoneCard"
 import Top3Card from "@/components/leaderboard/Top3Card"
+import { fetchTopLeaders, LeaderboardEntry } from "@/lib/leaderboard"
 import UserRankRow from "@/components/leaderboard/UserRankRow"
 import IncentiveCard from "@/components/incentives/IncentiveCard"
 
@@ -74,6 +75,17 @@ export default function DashboardPage() {
   const [incentives, setIncentives] = useState<Incentive[]>([])
   const [loadingIncentives, setLoadingIncentives] = useState(true)
   const [incentivesError, setIncentivesError] = useState<string | null>(null)
+  const [projLoading, setProjLoading] = useState(true)
+  const [projError, setProjError] = useState<string | null>(null)
+  const [projCounts, setProjCounts] = useState({
+    preApproval: 0,
+    approvals: 0,
+    construction: 0,
+    activation: 0,
+  })
+  const [leaders, setLeaders] = useState<LeaderboardEntry[]>([])
+  const [leadersLoading, setLeadersLoading] = useState(true)
+  const [leadersError, setLeadersError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchIncentives = async () => {
@@ -93,38 +105,107 @@ export default function DashboardPage() {
     fetchIncentives()
   }, [])
 
+  // Load leaderboard top 3 from API (shared helper)
+  useEffect(() => {
+    const loadLeaders = async () => {
+      try {
+        setLeadersLoading(true)
+        setLeadersError(null)
+        const top3 = await fetchTopLeaders({ role: 'all', time: 'ytd', metric: 'tsi', limit: 3 })
+        setLeaders(top3)
+      } catch (e: any) {
+        console.error('Dashboard leaderboard fetch error:', e)
+        setLeadersError(e?.message || 'Failed to load leaderboard')
+      } finally {
+        setLeadersLoading(false)
+      }
+    }
+    loadLeaders()
+  }, [])
+
+  // Load current user's projects and compute counts by stage
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        setProjLoading(true)
+        setProjError(null)
+        const res = await fetch('/api/projects', { cache: 'no-store' })
+        if (!res.ok) {
+          const err = await res.json().catch(() => null)
+          throw new Error(err?.details || err?.error || 'Failed to load projects')
+        }
+        const data = await res.json()
+        const items: any[] = Array.isArray(data) ? data : []
+        // Normalize stage from dataset; DB uses 'Approvals'
+        const getStage = (r: any): string => r?.milestone || r?.stage_label || r?.stage || ''
+        const counts = items.reduce(
+          (acc, r) => {
+            const s = String(getStage(r))
+            if (s === 'Pre-Approval') acc.preApproval += 1
+            else if (s === 'Approvals' || s === 'Approval') acc.approvals += 1
+            else if (s === 'Construction') acc.construction += 1
+            else if (s === 'Activation' || s === 'Final Stage' || s === 'Complete') acc.activation += 1
+            return acc
+          },
+          { preApproval: 0, approvals: 0, construction: 0, activation: 0 }
+        )
+        setProjCounts(counts)
+      } catch (e: any) {
+        console.error('Dashboard projects fetch error:', e)
+        setProjError(e?.message || 'Failed to load projects')
+      } finally {
+        setProjLoading(false)
+      }
+    }
+    loadProjects()
+  }, [])
+
   return (
     <AdminLayout pageKey="dashboard">
       <div className="min-h-screen bg-[#0b0b0b] px-6 md:px-8 py-8">
         <div className="max-w-[1480px] mx-auto">
           {/* My Projects */}
           <div className="mb-20 flex flex-col gap-[20px]">
-            <SectionHeader title="My Projects" actionLabel="See Projects" actionHref="/admin/projects" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <ProjectMilestoneCard label="Pre-Approval" value={10} dotColor="#f2c94c" />
-              <ProjectMilestoneCard label="Approval" value={8} dotColor="#EF650F" />
-              <ProjectMilestoneCard label="Construction" value={9} dotColor="#61dafb" />
-              <ProjectMilestoneCard label="Activation" value={18} dotColor="#50fa7b" />
-            </div>
+            <SectionHeader title="My Projects" actionLabel="See Projects" actionHref="/user/projects" />
+            {projLoading ? (
+              <div className="flex items-center justify-center h-24 text-gray-400">Loading projects...</div>
+            ) : projError ? (
+              <div className="flex items-center justify-center h-24 text-red-400">{projError}</div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <ProjectMilestoneCard label="Pre-Approval" value={projCounts.preApproval} dotColor="#f2c94c" />
+                <ProjectMilestoneCard label="Approvals" value={projCounts.approvals} dotColor="#EF650F" />
+                <ProjectMilestoneCard label="Construction" value={projCounts.construction} dotColor="#61dafb" />
+                <ProjectMilestoneCard label="Activation" value={projCounts.activation} dotColor="#50fa7b" />
+              </div>
+            )}
           </div>
 
           {/* Leaderboard */}
           <div className="mb-20 flex flex-col gap-[20px]">
-            <SectionHeader title="Leaderboard" actionLabel="View Leaderboard" actionHref="/admin/leaderboard" />
+            <SectionHeader title="Leaderboard" actionLabel="View Leaderboard" actionHref="/user/leaderboard" />
             {/* Current user rank row */}
             <UserRankRow rank={67} name="Johnny Ives" tsi={164} tss={286} withLabels/>
             {/* Top 3 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <Top3Card rank={1} name="Kadin Kutzke" tsi={164} tss={286} />
-              <Top3Card rank={2} name="Austin Townsend" tsi={120} tss={230} />
-              <Top3Card rank={3} name="Sawyer Kieffer" tsi={90} tss={186} />
-            </div>
+            {leadersLoading ? (
+              <div className="text-gray-400">Loading leaderboard...</div>
+            ) : leadersError ? (
+              <div className="text-red-400">{leadersError}</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                {leaders.length === 0 ? (
+                  <div className="text-gray-400">No leaderboard data</div>
+                ) : leaders.map((p, idx) => (
+                  <Top3Card key={`${p.name}-${idx}`} rank={(idx + 1) as 1 | 2 | 3} name={p.name} tsi={p.tsi} tss={p.tss} />
+                ))}
+              </div>
+            )}
             
           </div>
 
           {/* Incentives */}
           <div className="mb-20 flex flex-col gap-[20px]">
-            <SectionHeader title="Incentives" actionLabel="View All Incentives" actionHref="/admin/incentives" />
+            <SectionHeader title="Incentives" actionLabel="View All Incentives" actionHref="/user/incentives" />
             {loadingIncentives ? (
               <div className="flex justify-center items-center h-[220px] text-[rgba(255,255,255,0.6)]">Loading incentives...</div>
             ) : incentivesError ? (
@@ -173,7 +254,7 @@ export default function DashboardPage() {
 
           {/* EDU Progress */}
           <div className="mb-20 flex flex-col gap-[20px]">
-            <SectionHeader title="EDU Progress" actionLabel="Go To EDU" actionHref="/edu" />
+            <SectionHeader title="EDU Progress" actionLabel="Go To EDU" actionHref="/user/edu" />
             <div className="rounded-[8px] border border-[#2a2a2a] bg-[#111111] h-[220px] flex items-center justify-center text-gray-500 text-sm">
               COMING SOON
             </div>

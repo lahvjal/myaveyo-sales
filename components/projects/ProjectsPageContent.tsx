@@ -1,119 +1,120 @@
 'use client'
 import React from 'react'
-import PeriodToggleVertical, { Period } from '@/components/projects/PeriodToggleVertical'
+import { supabase } from '@/lib/supabase-browser'
 import ProjectMilestoneCard from '@/components/projects/ProjectMilestoneCard'
 import ProjectCard from '@/components/projects/ProjectCard'
 
 export default function ProjectsPageContent() {
-  const [period, setPeriod] = React.useState<Period>('YTD')
   const [selectedStage, setSelectedStage] = React.useState<string | null>(null)
+  const [loading, setLoading] = React.useState<boolean>(true)
+  const [error, setError] = React.useState<string | null>(null)
 
   type Project = {
     id: string
     imageUrl: string
     address: string
     lastUpdatedLabel: string
-    stageLabel: 'Pre-Approval' | 'Approval' | 'Construction' | 'Activation'
+    stageLabel: 'Pre-Approval' | 'Approvals' | 'Construction' | 'Activation'
     nextMilestoneLabel: string
     createdAt: string // ISO date
   }
 
-  // Mock data with varying stages and createdAt dates
-  const projects: Project[] = [
-    {
-      id: '1',
-      imageUrl: 'https://placehold.co/284x160?text=Map',
-      address: '2056 N 3830 W Lehi UT',
-      lastUpdatedLabel: 'Last updated 1 week ago',
-      stageLabel: 'Pre-Approval',
-      nextMilestoneLabel: 'Install Substantial Completion',
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      imageUrl: 'https://placehold.co/284x160?text=Map',
-      address: '456 N 3830 W Lehi UT',
-      lastUpdatedLabel: 'Last updated 1 week ago',
-      stageLabel: 'Approval',
-      nextMilestoneLabel: 'Install Substantial Completion',
-      createdAt: new Date(new Date().getFullYear(), 0, 15).toISOString(), // mid Jan (YTD)
-    },
-    {
-      id: '3',
-      imageUrl: 'https://placehold.co/284x160?text=Map',
-      address: '998 N 3830 W Lehi UT',
-      lastUpdatedLabel: 'Last updated 1 week ago',
-      stageLabel: 'Construction',
-      nextMilestoneLabel: 'Install Substantial Completion',
-      createdAt: new Date(new Date().getFullYear(), new Date().getMonth(), 2).toISOString(), // early MTD
-    },
-    {
-      id: '4',
-      imageUrl: 'https://placehold.co/284x160?text=Map',
-      address: '2056 N 3830 W Lehi UT',
-      lastUpdatedLabel: 'Last updated 1 week ago',
-      stageLabel: 'Activation',
-      nextMilestoneLabel: 'Closeout',
-      createdAt: new Date(new Date().getFullYear(), new Date().getMonth()-1, 20).toISOString(), // last month
-    },
-    {
-      id: '5',
-      imageUrl: 'https://placehold.co/284x160?text=Map',
-      address: '456 N 3830 W Lehi UT',
-      lastUpdatedLabel: 'Last updated 1 week ago',
-      stageLabel: 'Pre-Approval',
-      nextMilestoneLabel: 'Approval',
-      createdAt: new Date(new Date().getFullYear(), 5, 1).toISOString(), // June (YTD)
-    },
-    {
-      id: '6',
-      imageUrl: 'https://placehold.co/284x160?text=Map',
-      address: '998 N 3830 W Lehi UT',
-      lastUpdatedLabel: 'Last updated 1 week ago',
-      stageLabel: 'Construction',
-      nextMilestoneLabel: 'Activation',
-      createdAt: new Date(new Date().getFullYear(), new Date().getMonth(), 10).toISOString(), // MTD
-    },
-  ]
+  const [projects, setProjects] = React.useState<Project[]>([])
+
+  // Debug: log current user email in the browser console
+  React.useEffect(() => {
+    let mounted = true
+    supabase.auth.getUser().then(({ data: { user }, error }) => {
+      if (!mounted) return
+      if (error) {
+        console.warn('[Projects] getUser error:', error.message)
+      }
+      console.log('[Projects] current user email:', user?.email ?? '(none)')
+    })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  // Load projects from API (based on current user's rep_id)
+  React.useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        const res = await fetch('/api/projects', { cache: 'no-store' })
+        if (!res.ok) {
+          const err = await res.json().catch(() => null)
+          throw new Error(err?.details || err?.error || 'Failed to load projects')
+        }
+        const data = await res.json()
+        if (!mounted) return
+        // Map API records to UI shape with safe fallbacks
+        const mapped: Project[] = (Array.isArray(data) ? data : []).map((r: any, idx: number) => {
+          const fullAddress = `${r.raw_payload?.address ?? ''} ${r.raw_payload?.city ?? ''}, ${r.raw_payload?.state ?? ''}, ${r.raw_payload?.zip ?? ''}`.trim()
+          const imageUrl = `/api/maps/snapshot?address=${encodeURIComponent(fullAddress)}&w=284&h=160&zoom=17`
+          return {
+          id: r.id ?? String(idx),
+          imageUrl,
+          address: fullAddress || 'Unknown Address',
+          lastUpdatedLabel: r.updated_at ? `Last updated ${new Date(r.updated_at).toLocaleDateString()}` : '',
+          stageLabel: (r.milestone || 'Pre-Approval') as Project['stageLabel'],
+          nextMilestoneLabel: (() => {
+            switch (r.milestone) {
+              case 'Pre-Approval':
+                return 'Approvals'
+              case 'Approvals':
+                return 'Construction'
+              case 'Construction':
+                return 'Final Stage'
+              case 'Final Stage':
+                return 'Complete'
+              default:
+                return '—'
+            }
+          })(),
+          createdAt: r.created_at || new Date().toISOString(),
+        }})
+        console.log('data', data[0])
+        setProjects(mapped)
+      } catch (e: any) {
+        console.error('Projects fetch error:', e)
+        if (mounted) setError(e?.message || 'Failed to load projects')
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   const stages: { label: Project['stageLabel']; color: string }[] = [
     { label: 'Pre-Approval', color: '#f2c94c' },
-    { label: 'Approval', color: '#f2c94c' },
+    { label: 'Approvals', color: '#EF650F' },
     { label: 'Construction', color: '#61dafb' },
     { label: 'Activation', color: '#50fa7b' },
   ]
 
-  // Compute period range
-  const now = new Date()
-  const startOfYear = new Date(now.getFullYear(), 0, 1)
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-  const start = period === 'YTD' ? startOfYear : startOfMonth
-
-  const withinPeriod = (d: string) => {
-    const date = new Date(d)
-    return date >= start && date <= now
-  }
-
-  // Counts by stage for current period
+  // Counts by stage (no MTD/YTD filtering)
   const stageCounts = stages.reduce<Record<string, number>>((acc, s) => {
-    acc[s.label] = projects.filter((p) => p.stageLabel === s.label && withinPeriod(p.createdAt)).length
+    acc[s.label] = projects.filter((p) => p.stageLabel === s.label).length
     return acc
   }, {})
 
-  // Filtered project list
-  const filtered = projects.filter((p) => withinPeriod(p.createdAt) && (!selectedStage || p.stageLabel === selectedStage))
-
-  const sub = period
+  // Filtered project list (by selected stage only)
+  const filtered = projects.filter((p) => !selectedStage || p.stageLabel === selectedStage)
 
   return (
     <>
-      {/* Top area: toggle + milestone summary grid */}
+      {/* Top area: milestone summary grid */}
       <section className="px-6 py-6">
         <div className="flex flex-row">
 
           {/* Milestones grid */}
           <div className="w-full flex flex-row gap-[14px]">
-            <PeriodToggleVertical value={period} onChange={setPeriod} />
             <div className="flex flex-row gap-[14px] w-full">
               {stages.map((s) => (
                 <ProjectMilestoneCard
@@ -121,7 +122,6 @@ export default function ProjectsPageContent() {
                   label={s.label}
                   value={stageCounts[s.label] ?? 0}
                   dotColor={s.color}
-                  sublabel={sub}
                   active={selectedStage === s.label}
                   onClick={() => setSelectedStage((prev) => (prev === s.label ? null : s.label))}
                   className='w-full'
@@ -131,20 +131,26 @@ export default function ProjectsPageContent() {
           </div>
         </div>
       </section>
-      {/* Projects list (filtered by period and selected stage) */}
+      {/* Projects list (filtered by selected stage) */}
       <section className="px-6 pb-10">
-        <div className="space-y-4">
-        {filtered.map((p) => (
-            <ProjectCard
-            key={p.id}
-            imageUrl={p.imageUrl}
-            address={p.address}
-            lastUpdatedLabel={p.lastUpdatedLabel}
-            stageLabel={p.stageLabel}
-            nextMilestoneLabel={p.nextMilestoneLabel}
-            />
-        ))}
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center h-40 text-gray-400">Loading projects...</div>
+        ) : error ? (
+          <div className="flex items-center justify-center h-40 text-red-400">{error}</div>
+        ) : (
+          <div className="space-y-4">
+            {filtered.map((p) => (
+              <ProjectCard
+                key={p.id}
+                imageUrl={p.imageUrl}
+                address={p.address}
+                lastUpdatedLabel={p.lastUpdatedLabel}
+                stageLabel={p.stageLabel}
+                nextMilestoneLabel={p.nextMilestoneLabel}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </>
   )

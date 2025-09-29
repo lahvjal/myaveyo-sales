@@ -34,7 +34,7 @@ const navigationItems = [
   {
     id: 'edu',
     href: '/user/edu',
-    icon: '/images/edu-icon.png',
+    icon: '/images/EDU-icon.png',
     label: 'EDU'
   },
   {
@@ -70,7 +70,7 @@ const navigationItems = [
   {
     id: 'cms',
     href: '/admin/cms/home',
-    icon: '/images/cms-icon.png',
+    icon: '/images/CMS-icon.png',
     label: 'CMS'
   }
 ]
