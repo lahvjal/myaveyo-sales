@@ -47,19 +47,19 @@ export default function Home() {
   const cardAnimation = useScrollAnimation<HTMLDivElement>({ delay: 1200, disabled: !pageReady })
 
   // Load AI chatbot script
-  useEffect(() => {
-    const script = document.createElement('script')
-    script.src = 'https://ava-ai-chatbot.vercel.app/embed.js'
-    script.async = true
-    document.body.appendChild(script)
+  // useEffect(() => {
+  //   const script = document.createElement('script')
+  //   script.src = 'https://ava-ai-chatbot.vercel.app/embed.js'
+  //   script.async = true
+  //   document.body.appendChild(script)
 
-    return () => {
+    //return () => {
       // Cleanup script on unmount
-      if (document.body.contains(script)) {
-        document.body.removeChild(script)
-      }
-    }
-  }, [])
+      //if (document.body.contains(script)) {
+      //  document.body.removeChild(script)
+      //}
+    //}
+  //}, [])
 
   // Track viewport to expose `isMobile`
   useEffect(() => {
@@ -177,16 +177,16 @@ export default function Home() {
             </div>
 
             {/* Right - AI Chatbot */}
-            <div 
+            {/* <div 
               ref={cardAnimation.ref}
               className={`transition-all duration-700 ${
                 cardAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
               }`}
             >
               <div id="ava-chatbot-container" className="w-full h-full min-h-[200px]">
-                {/* AI Chatbot will be embedded here */}
+                AI Chatbot will be embedded here
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

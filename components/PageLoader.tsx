@@ -60,7 +60,15 @@ export default function PageLoader({ onComplete }: PageLoaderProps) {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              AVEYO
+            <motion.img
+              src="/aveyoSalesLogo.svg"
+              alt="Aveyo Sales Logo"
+              className="w-[100px] h-[100px] object-contain"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            />
+              
             </motion.h1>
 
             {/* Loading dots animation */}
