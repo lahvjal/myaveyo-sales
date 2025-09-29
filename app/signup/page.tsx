@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
+import { siteUrl } from '@/lib/siteUrl'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -21,7 +22,7 @@ export default function SignupPage() {
     e.preventDefault()
     setLoading(true)
     setMessage(null)
-    const redirectTo = `${window.location.origin}/auth/callback`
+    const redirectTo = `${siteUrl}/auth/callback`
     const { error } = await supabase.auth.signUp({
       email,
       password,

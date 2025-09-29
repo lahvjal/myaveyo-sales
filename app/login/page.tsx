@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
+import { siteUrl } from '@/lib/siteUrl'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -32,7 +33,7 @@ export default function LoginPage() {
   const sendMagicLink = async () => {
     setLoading(true)
     setMessage(null)
-    const redirectTo = `${window.location.origin}/auth/callback`
+    const redirectTo = `${siteUrl}/auth/callback`
     const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } })
     setLoading(false)
     if (error) return setMessage(error.message)
@@ -41,7 +42,7 @@ export default function LoginPage() {
 
   const signInWithGoogle = async () => {
     setLoading(true)
-    const redirectTo = `${window.location.origin}/auth/callback`
+    const redirectTo = `${siteUrl}/auth/callback`
     const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } })
     setLoading(false)
     if (error) setMessage(error.message)

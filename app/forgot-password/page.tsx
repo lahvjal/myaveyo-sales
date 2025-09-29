@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
+import { siteUrl } from '@/lib/siteUrl'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -12,7 +13,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
     setLoading(true)
     setMessage(null)
-    const redirectTo = `${window.location.origin}/auth/callback?type=recovery`
+    const redirectTo = `${siteUrl}/auth/callback?type=recovery`
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
     setLoading(false)
     if (error) return setMessage(error.message)
