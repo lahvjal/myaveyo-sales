@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase-browser'
+import { siteUrl } from '@/lib/siteUrl'
 
 interface TopBarTab {
   id: string
@@ -143,10 +144,16 @@ export default function TopBar({
             </div>
             <button
               onClick={async () => {
-                await supabase.auth.signOut()
-                const params = new URLSearchParams(window.location.search)
-                const redirect = params.get('redirect')
-                window.location.replace(redirect || '/login')
+                try {
+                  await supabase.auth.signOut()
+                } finally {
+                  const params = new URLSearchParams(window.location.search)
+                  const redirect = params.get('redirect')
+                  const target = redirect || '/login'
+                  // Use absolute URL to ensure correct domain (esp. prod subdomain)
+                  const url = '/login'
+                  window.location.replace(url)
+                }
               }}
               className="px-3 py-1.5 rounded-[4px] bg-white text-black text-sm font-telegraf hover:opacity-90 transition"
             >
