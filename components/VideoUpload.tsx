@@ -34,45 +34,74 @@ export default function VideoUpload({
 }: VideoUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [compressing, setCompressing] = useState(false)
-  const [progress, setProgress] = useState(0)
+  const [progress, setProgress] = useState(0) // legacy
+  const [compressionProgress, setCompressionProgress] = useState(0)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [currentTask, setCurrentTask] = useState<UploadTask | null>(null)
   const [queueStatus, setQueueStatus] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const uploadTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  const startUploadProgress = () => {
+    setUploadProgress(5)
+    if (uploadTimerRef.current) clearInterval(uploadTimerRef.current)
+    uploadTimerRef.current = setInterval(() => {
+      setUploadProgress((p) => (p < 90 ? p + 2 : p))
+    }, 300)
+  }
+
+  const finalizeUploadProgress = () => {
+    if (uploadTimerRef.current) {
+      clearInterval(uploadTimerRef.current)
+      uploadTimerRef.current = null
+    }
+    setUploadProgress(100)
+  }
+
+  const resetUploadProgress = () => {
+    if (uploadTimerRef.current) {
+      clearInterval(uploadTimerRef.current)
+      uploadTimerRef.current = null
+    }
+    setUploadProgress(0)
+  }
 
   const compressVideo = async (file: File, targetSizeMB: number = 25): Promise<File> => {
     const fileSizeMB = file.size / (1024 * 1024)
     console.log(`Starting compression for ${file.name}, target: ${targetSizeMB}MB`)
     
-    // Skip compression entirely to preserve audio
-    // Client-side compression consistently strips audio tracks
-    if (fileSizeMB <= 200) {
-      console.log(`File under 200MB - skipping compression to preserve audio (Pro plan)`)
-      return file
-    }
-    
     if (fileSizeMB > 200) {
-      throw new Error(`File size (${fileSizeMB.toFixed(1)}MB) is very large. For best performance, please compress your video to under 200MB using external software to preserve audio quality. Your Pro plan supports files up to 500GB if needed.`)
+      throw new Error(`File size (${fileSizeMB.toFixed(1)}MB) is very large. Please compress below 200MB before uploading.`)
     }
     
-    // Implement working compression using MediaRecorder with optimized settings
+    // Implement resizing/compression using MediaRecorder
     return new Promise((resolve, reject) => {
       const video = document.createElement('video')
       video.src = URL.createObjectURL(file)
-      video.muted = true // Prevent audio playback during compression
+      video.muted = true // Prevent audio playback during processing
       video.preload = 'metadata'
       
       video.onloadedmetadata = async () => {
         try {
           console.log(`Original: ${video.videoWidth}x${video.videoHeight}, ${video.duration.toFixed(1)}s`)
           
-          // Calculate target dimensions (max 720p for efficiency)
+          // Decide if we must resize: enforce max dimension 1080px
+          const mustResize = Math.max(video.videoWidth, video.videoHeight) > 1080
+          // Calculate target dimensions: cap at 1080 on the longest side
           let { width, height } = calculateOptimalDimensions(
-            video.videoWidth, 
-            video.videoHeight, 
-            fileSizeMB > 50 ? 720 : 1080
+            video.videoWidth,
+            video.videoHeight,
+            1080
           )
+          // If no resize needed and file is within safe limit, skip processing
+          if (!mustResize && fileSizeMB <= 200) {
+            console.log('No resize needed and file under cap – skipping compression')
+            URL.revokeObjectURL(video.src)
+            resolve(file)
+            return
+          }
           
           // Calculate target bitrate based on compression ratio needed
           const compressionRatio = Math.min(targetSizeMB / fileSizeMB, 0.8)
@@ -90,13 +119,25 @@ export default function VideoUpload({
           canvas.height = height
           
           // Get video stream for frames
-          const videoStream = canvas.captureStream(24) // 24fps for good quality/size balance
-          
-          // For now, let's use video-only compression to ensure it works
-          // Audio preservation in browser compression is complex and often unreliable
-          const combinedStream = videoStream
-          
-          console.log(`Using video-only compression for reliability`)
+          const videoStream = canvas.captureStream(24) // 24fps for quality/size balance
+
+          // Try to capture original audio and merge with the canvas video stream
+          let combinedStream: MediaStream = videoStream
+          try {
+            const mediaWithAudio: MediaStream | undefined = (video as any).captureStream?.() || (video as any).mozCaptureStream?.()
+            if (mediaWithAudio) {
+              const audioTracks = mediaWithAudio.getAudioTracks()
+              if (audioTracks && audioTracks.length > 0) {
+                combinedStream = new MediaStream([
+                  ...videoStream.getTracks(),
+                  ...audioTracks
+                ])
+                console.log('Audio track attached to compression stream')
+              }
+            }
+          } catch (e) {
+            console.warn('Audio track capture failed, proceeding without audio', e)
+          }
           
           // Create MediaRecorder with audio support
           let mediaRecorder: MediaRecorder
@@ -162,6 +203,9 @@ export default function VideoUpload({
             if (video.currentTime < video.duration) {
               ctx.drawImage(video, 0, 0, width, height)
               frameCount++
+              // Update compression progress based on playback position
+              const pct = Math.min(100, Math.max(0, (video.currentTime / video.duration) * 100))
+              setCompressionProgress(pct)
               requestAnimationFrame(drawFrame)
             }
           }
@@ -170,9 +214,10 @@ export default function VideoUpload({
           video.onended = () => {
             console.log(`Processed ${frameCount} frames`)
             mediaRecorder.stop()
+            setCompressionProgress(100)
           }
           
-          // Start playback (muted)
+          // Start playback (muted) and draw frames to scaled canvas
           video.currentTime = 0
           video.play()
           
@@ -231,6 +276,28 @@ export default function VideoUpload({
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
       const filePath = `${folder}/${fileName}`
 
+      // Supabase signed upload URLs often cap payloads (~50MB). Fallback to our API for larger files.
+      const SIGNED_UPLOAD_SAFE_MB = 50
+
+      if (fileSizeMB > SIGNED_UPLOAD_SAFE_MB) {
+        console.log(`File > ${SIGNED_UPLOAD_SAFE_MB}MB, using server upload route /api/upload`)
+        const form = new FormData()
+        form.append('file', file)
+        form.append('folder', `${folder}`)
+        startUploadProgress()
+        const uploadRes = await fetch('/api/upload', { method: 'POST', body: form })
+        if (!uploadRes.ok) {
+          const errText = await uploadRes.text()
+          resetUploadProgress()
+          throw new Error(`Server upload failed: ${uploadRes.status} - ${errText}`)
+        }
+        const result = await uploadRes.json()
+        if (!result?.url) throw new Error('Server upload returned no URL')
+        console.log('Server upload successful, public URL:', result.url)
+        finalizeUploadProgress()
+        return result.url
+      }
+
       console.log(`Getting signed URL for path: ${filePath}`)
       
       // Get a signed upload URL from our API to bypass RLS
@@ -255,6 +322,7 @@ export default function VideoUpload({
       console.log('Signed URL obtained, starting direct upload...')
 
       // Upload directly to Supabase using signed URL
+      startUploadProgress()
       const uploadResponse = await fetch(signedUrl, {
         method: 'PUT',
         body: file,
@@ -268,70 +336,116 @@ export default function VideoUpload({
       if (!uploadResponse.ok) {
         const errorText = await uploadResponse.text()
         console.error('Direct upload error response:', errorText)
+        // Fallback automatically if payload too large (413 / 400 payload) or similar
+        if (uploadResponse.status === 413 || uploadResponse.status === 400) {
+          console.log('Direct upload rejected due to size. Falling back to server upload...')
+          const form = new FormData()
+          form.append('file', file)
+          form.append('folder', `${folder}`)
+          resetUploadProgress()
+          startUploadProgress()
+          const uploadRes = await fetch('/api/upload', { method: 'POST', body: form })
+          if (!uploadRes.ok) {
+            const errText = await uploadRes.text()
+            resetUploadProgress()
+            throw new Error(`Server upload failed: ${uploadRes.status} - ${errText}`)
+          }
+          const result = await uploadRes.json()
+          if (!result?.url) throw new Error('Server upload returned no URL')
+          console.log('Server upload (fallback) successful, public URL:', result.url)
+          finalizeUploadProgress()
+          return result.url
+        }
         throw new Error(`Direct upload failed: ${uploadResponse.status} - ${errorText}`)
       }
 
       console.log('Direct upload successful, public URL:', publicUrl)
+      finalizeUploadProgress()
       return publicUrl
     } catch (error) {
       console.error('Direct Supabase upload failed:', error)
+      resetUploadProgress()
       throw error
     }
   }
 
   const generateThumbnail = async (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file)
       const video = document.createElement('video')
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')!
-      
-      // Add better error handling and timeout
-      const timeoutId = setTimeout(() => {
-        reject(new Error('Thumbnail generation timed out'))
-      }, 10000) // 10 second timeout
-      
-      video.onloadedmetadata = () => {
-        canvas.width = video.videoWidth
-        canvas.height = video.videoHeight
-        
-        // Try seeking to 0.5 seconds instead of 1 second (some videos might be shorter)
-        video.currentTime = Math.min(0.5, video.duration * 0.1)
+
+      let settled = false
+      const settle = (fn: () => void) => {
+        if (settled) return
+        settled = true
+        cleanup()
+        fn()
       }
-      
-      video.onseeked = () => {
+
+      const cleanup = () => {
+        video.onloadedmetadata = null
+        video.onseeked = null
+        video.onloadeddata = null
+        video.onerror = null
+        URL.revokeObjectURL(url)
+        clearTimeout(overallTimeout)
+        if (seekTimeout !== undefined) clearTimeout(seekTimeout)
+      }
+
+      const finalizeFromCurrentFrame = () => {
         try {
+          canvas.width = Math.max(2, video.videoWidth)
+          canvas.height = Math.max(2, video.videoHeight)
           ctx.drawImage(video, 0, 0)
           canvas.toBlob((blob) => {
-            clearTimeout(timeoutId)
-            if (blob) {
-              const thumbnailFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), {
-                type: 'image/jpeg'
-              })
-              resolve(thumbnailFile)
-            } else {
-              reject(new Error('Failed to generate thumbnail blob'))
-            }
-          }, 'image/jpeg', 0.8)
-        } catch (drawError) {
-          clearTimeout(timeoutId)
-          reject(new Error(`Failed to draw video frame: ${drawError}`))
+            if (!blob) return settle(() => reject(new Error('Failed to generate thumbnail blob')))
+            const thumbnailFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), { type: 'image/jpeg' })
+            settle(() => resolve(thumbnailFile))
+          }, 'image/jpeg', 0.85)
+        } catch (e) {
+          settle(() => reject(new Error(`Failed to draw video frame: ${e}`)))
         }
       }
-      
+
+      const overallTimeout = window.setTimeout(() => {
+        settle(() => reject(new Error('Thumbnail generation timed out')))
+      }, 20000) // 20s overall timeout
+
+      let seekTimeout: number | undefined = undefined
+
+      video.onloadedmetadata = () => {
+        // Kick off a quick seek to an early frame; also listen to loadeddata as fallback
+        seekTimeout = window.setTimeout(() => {
+          // If seeking never fires, fall back to whatever we have
+          finalizeFromCurrentFrame()
+        }, 4000) // 4s seek timeout
+        const target = Math.min(0.5, Math.max(0.1, video.duration * 0.05))
+        try {
+          video.currentTime = target
+        } catch {
+          // Some browsers throw on immediate seek; rely on loadeddata
+        }
+      }
+
+      video.onloadeddata = () => {
+        // If loadeddata fires before seeked, we can already draw a valid first frame
+        if (!settled) finalizeFromCurrentFrame()
+      }
+
+      video.onseeked = () => {
+        if (seekTimeout) clearTimeout(seekTimeout)
+        if (!settled) finalizeFromCurrentFrame()
+      }
+
       video.onerror = (event) => {
-        clearTimeout(timeoutId)
-        console.error('Video error for thumbnail:', event)
-        reject(new Error('Failed to load video for thumbnail'))
+        settle(() => reject(new Error('Failed to load video for thumbnail')))
       }
-      
-      video.onloadstart = () => {
-        console.log('Started loading video for thumbnail')
-      }
-      
-      // Set video properties for better compatibility
+
       video.crossOrigin = 'anonymous'
-      video.preload = 'metadata'
-      video.src = URL.createObjectURL(file)
+      video.preload = 'auto'
+      video.src = url
     })
   }
 
@@ -357,7 +471,7 @@ export default function VideoUpload({
       // Update UI with current task
       setCurrentTask(pendingTask)
       setCompressing(true)
-      setProgress(10)
+      setCompressionProgress(0)
       setQueueStatus(`Compressing ${pendingTask.file.name}...`)
       
       // Compression phase
@@ -374,7 +488,7 @@ export default function VideoUpload({
       pendingTask.progress = 50
       setCompressing(false)
       setUploading(true)
-      setProgress(50)
+      setUploadProgress(0)
       setQueueStatus(`Uploading ${pendingTask.file.name}...`)
       
       // Generate thumbnail and upload video concurrently
@@ -407,7 +521,7 @@ export default function VideoUpload({
       pendingTask.videoUrl = videoUrl
       pendingTask.thumbnailUrl = thumbnailResult.url
       
-      setProgress(100)
+      setUploadProgress(100)
       setQueueStatus(`Upload completed: ${pendingTask.file.name}`)
       
       onUploadComplete(videoUrl, thumbnailResult.url)
@@ -479,7 +593,9 @@ export default function VideoUpload({
     // Reset UI after a short delay to allow new uploads
     setTimeout(() => {
       setUploading(false)
-      setProgress(0)
+      setCompressionProgress(0)
+      setUploadProgress(0)
+      resetUploadProgress()
     }, 2000)
   }
 
@@ -502,24 +618,26 @@ export default function VideoUpload({
         >
           {uploading ? 'Uploading...' : 'Select Video'}
         </button>
-        
         <div className="text-sm text-gray-400">
           Any size accepted • Compresses to 8-35MB • Supports: MP4, WebM, MOV
         </div>
       </div>
 
-      {/* Progress Bar */}
       {(uploading || compressing || queueStatus) && (
-        <div className="space-y-2">
-          <div className="w-full bg-gray-700 rounded-full h-2">
-            <div 
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
+        <div className="space-y-3">
+          <div>
+            <div className="flex justify-between text-xs text-gray-400 mb-1"><span>Compression</span><span>{Math.round(compressionProgress)}%</span></div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div className="bg-purple-500 h-2 rounded-full transition-all duration-300" style={{ width: `${compressionProgress}%` }} />
+            </div>
           </div>
-          <div className="text-sm text-gray-400 text-center">
-            {queueStatus || (compressing ? 'Compressing video...' : `Uploading... ${progress}%`)}
+          <div>
+            <div className="flex justify-between text-xs text-gray-400 mb-1"><span>Upload</span><span>{Math.round(uploadProgress)}%</span></div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+            </div>
           </div>
+          <div className="text-sm text-gray-400 text-center">{queueStatus}</div>
           {currentTask && (
             <div className="text-xs text-gray-500 text-center">
               Processing: {currentTask.file.name} ({(currentTask.file.size / (1024 * 1024)).toFixed(1)}MB)
@@ -528,21 +646,18 @@ export default function VideoUpload({
         </div>
       )}
 
-      {/* Queue Status */}
       {uploadQueue.length > 1 && (
         <div className="text-xs text-blue-400 text-center">
           Queue: {uploadQueue.filter(t => t.status === 'compressing').length} pending, {activeUploads} processing
         </div>
       )}
 
-      {/* Error Message */}
       {error && (
         <div className="p-3 bg-red-900/50 border border-red-500 rounded-lg text-red-300 text-sm">
           {error}
         </div>
       )}
 
-      {/* Upload Tips */}
       <div className="text-xs text-gray-500 space-y-1">
         <p>• Videos of any size accepted and automatically compressed to 8-35MB range</p>
         <p>• Large files (&gt;100MB) compressed to 35MB, medium files (50-100MB) to 25MB</p>

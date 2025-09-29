@@ -5,6 +5,163 @@ import { Review } from '@/lib/types/review'
 import Button from '@/components/Button'
 import AdminLayout from '@/components/admin/AdminLayout'
 import CMSgridCard from '@/components/admin/CMSgridCard'
+import VideoUpload from '@/components/VideoUpload'
+
+// Simple form for creating/updating a Review
+interface ReviewFormProps {
+  initial?: Partial<Review>
+  loading?: boolean
+  onSubmit: (data: Partial<Review>) => Promise<void> | void
+  onCancel: () => void
+}
+
+function ReviewForm({ initial, loading = false, onSubmit, onCancel }: ReviewFormProps) {
+  const [form, setForm] = React.useState<Partial<Review>>({
+    title: initial?.title || '',
+    description: initial?.description || '',
+    type: (initial?.type as Review['type']) || 'customer',
+    featured: initial?.featured ?? false,
+    customer_name: initial?.customer_name || '',
+    rep_name: initial?.rep_name || '',
+    location: initial?.location || '',
+    date_recorded: initial?.date_recorded || new Date().toISOString().slice(0, 10),
+    status: (initial?.status as Review['status']) || 'active',
+    video_url: initial?.video_url || '',
+    thumbnail_url: initial?.thumbnail_url || ''
+  })
+
+  const handleChange = (field: keyof Review, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  return (
+    <form
+      className="text-white space-y-5"
+      onSubmit={async (e) => {
+        e.preventDefault()
+        await onSubmit(form)
+      }}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-gray-300 text-sm mb-1">Title</label>
+          <input
+            className="w-full p-2 bg-gray-800 rounded border border-[#333]"
+            value={form.title || ''}
+            onChange={(e) => handleChange('title', e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-gray-300 text-sm mb-1">Type</label>
+          <select
+            className="w-full p-2 bg-gray-800 rounded border border-[#333]"
+            value={form.type}
+            onChange={(e) => handleChange('type', e.target.value as Review['type'])}
+          >
+            <option value="customer">Customer</option>
+            <option value="rep">Rep</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-gray-300 text-sm mb-1">Location</label>
+          <input
+            className="w-full p-2 bg-gray-800 rounded border border-[#333]"
+            value={form.location || ''}
+            onChange={(e) => handleChange('location', e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="block text-gray-300 text-sm mb-1">Recorded Date</label>
+          <input
+            type="date"
+            className="w-full p-2 bg-gray-800 rounded border border-[#333]"
+            value={form.date_recorded?.slice(0, 10) || ''}
+            onChange={(e) => handleChange('date_recorded', e.target.value)}
+          />
+        </div>
+        {form.type === 'customer' ? (
+          <div>
+            <label className="block text-gray-300 text-sm mb-1">Customer Name</label>
+            <input
+              className="w-full p-2 bg-gray-800 rounded border border-[#333]"
+              value={form.customer_name || ''}
+              onChange={(e) => handleChange('customer_name', e.target.value)}
+            />
+          </div>
+        ) : (
+          <div>
+            <label className="block text-gray-300 text-sm mb-1">Rep Name</label>
+            <input
+              className="w-full p-2 bg-gray-800 rounded border border-[#333]"
+              value={form.rep_name || ''}
+              onChange={(e) => handleChange('rep_name', e.target.value)}
+            />
+          </div>
+        )}
+        <div>
+          <label className="block text-gray-300 text-sm mb-1">Status</label>
+          <select
+            className="w-full p-2 bg-gray-800 rounded border border-[#333]"
+            value={form.status}
+            onChange={(e) => handleChange('status', e.target.value as Review['status'])}
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2 pt-6">
+          <input
+            id="featured"
+            type="checkbox"
+            checked={!!form.featured}
+            onChange={(e) => handleChange('featured', e.target.checked)}
+          />
+          <label htmlFor="featured" className="text-sm text-gray-300">Featured</label>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-gray-300 text-sm mb-1">Description</label>
+        <textarea
+          className="w-full p-2 bg-gray-800 rounded border border-[#333] h-24"
+          value={form.description || ''}
+          onChange={(e) => handleChange('description', e.target.value)}
+        />
+      </div>
+
+      {/* Video Upload */}
+      <div className="space-y-3">
+        <label className="block text-gray-300 text-sm">Video Upload</label>
+        <VideoUpload
+          onUploadComplete={(videoUrl, thumbUrl) => {
+            handleChange('video_url', videoUrl)
+            handleChange('thumbnail_url', thumbUrl)
+          }}
+          folder="reviews"
+        />
+        {form.video_url && (
+          <div className="text-xs text-gray-400">Video: {form.video_url}</div>
+        )}
+        {form.thumbnail_url && (
+          <div className="text-xs text-gray-400">Thumb: {form.thumbnail_url}</div>
+        )}
+      </div>
+
+      <div className="flex gap-3 justify-end pt-4">
+        <Button onClick={onCancel} className="bg-gray-700 hover:bg-gray-600" >Cancel</Button>
+        <Button
+          type="submit"
+          className="bg-blue-600 hover:bg-blue-700"
+          disabled={loading}
+        >
+          {loading ? 'Saving...' : 'Save Review'}
+        </Button>
+      </div>
+    </form>
+  )
+}
 
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
@@ -40,50 +197,13 @@ export default function AdminReviewsPage() {
     is_published: false,
   })
 
-  // Mock data for now - replace with API calls
-  const mockReviews: Review[] = [
-    {
-      id: '1',
-      title: 'Amazing Solar Installation',
-      description: 'The team was professional and the installation was seamless.',
-      video_url: '/videos/rep-review.mp4',
-      thumbnail_url: '/images/rep-review-thumbnail.png',
-      type: 'customer',
-      featured: true,
-      customer_name: 'Sarah Johnson',
-      location: 'Austin, TX',
-      date_recorded: '2024-01-15',
-      status: 'active',
-      created_at: '2024-01-16T10:00:00Z',
-      updated_at: '2024-01-16T10:00:00Z'
-    },
-    {
-      id: '2',
-      title: 'Rep Success Story',
-      description: 'How I helped this family save on their energy bills.',
-      video_url: '/videos/rep-review.mp4',
-      thumbnail_url: '/images/rep-review-thumbnail.png',
-      type: 'rep',
-      featured: false,
-      rep_name: 'Mike Chen',
-      location: 'Dallas, TX',
-      date_recorded: '2024-01-10',
-      status: 'active',
-      created_at: '2024-01-11T14:30:00Z',
-      updated_at: '2024-01-11T14:30:00Z'
-    }
-  ]
-
   // Fetch reviews
   const fetchReviews = async () => {
     try {
-      // TODO: Replace with actual API call
-      // const response = await fetch('/api/reviews/admin')
-      // if (response.ok) {
-      //   const data = await response.json()
-      //   setReviews(data)
-      // }
-      setReviews(mockReviews)
+      const response = await fetch('/api/reviews?limit=100', { cache: 'no-store' })
+      if (!response.ok) throw new Error('Failed to fetch reviews')
+      const data = await response.json()
+      setReviews(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Error fetching reviews:', error)
     } finally {
@@ -146,8 +266,12 @@ export default function AdminReviewsPage() {
   const handleCreate = async (reviewData: Partial<Review>) => {
     setFormLoading(true)
     try {
-      // TODO: Replace with actual API call
-      console.log('Creating review:', reviewData)
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reviewData)
+      })
+      if (!res.ok) throw new Error('Failed to create review')
       await fetchReviews()
       setShowForm(false)
     } catch (error) {
@@ -160,8 +284,12 @@ export default function AdminReviewsPage() {
   const handleUpdate = async (reviewData: Partial<Review>) => {
     setFormLoading(true)
     try {
-      // TODO: Replace with actual API call
-      console.log('Updating review:', reviewData)
+      const res = await fetch('/api/reviews', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reviewData)
+      })
+      if (!res.ok) throw new Error('Failed to update review')
       await fetchReviews()
       setEditingReview(null)
     } catch (error) {
@@ -180,8 +308,8 @@ export default function AdminReviewsPage() {
     if (!confirm('Are you sure you want to delete this review?')) return
     
     try {
-      // TODO: Replace with actual API call
-      console.log('Deleting review:', reviewId)
+      const res = await fetch(`/api/reviews?id=${encodeURIComponent(reviewId)}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Failed to delete review')
       await fetchReviews()
     } catch (error) {
       console.error('Error deleting review:', error)
@@ -357,10 +485,18 @@ export default function AdminReviewsPage() {
                     ✕
                   </button>
                 </div>
-                {/* TODO: Create ReviewForm component similar to IncentiveForm */}
-                <div className="text-white p-4 bg-gray-800 rounded">
-                  Review form placeholder - TODO: Create ReviewForm component
-                </div>
+                <ReviewForm
+                  initial={editingReview || undefined}
+                  loading={formLoading}
+                  onCancel={handleCancel}
+                  onSubmit={async (data) => {
+                    if (editingReview?.id) {
+                      await handleUpdate({ id: editingReview.id, ...data })
+                    } else {
+                      await handleCreate(data)
+                    }
+                  }}
+                />
               </div>
             </div>
           )}

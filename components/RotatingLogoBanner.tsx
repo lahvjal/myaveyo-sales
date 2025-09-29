@@ -1,11 +1,23 @@
 'use client'
 
 import React from 'react'
+import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 
-export default function RotatingLogoBanner() {
+interface RotatingLogoBannerProps {
+  pageReady?: boolean
+}
+
+export default function RotatingLogoBanner({ pageReady = true }: RotatingLogoBannerProps) {
+  const bannerAnim = useScrollAnimation<HTMLDivElement>({ delay: 200, disabled: !pageReady })
+
   return (
     <div className="w-full overflow-hidden bg-[#0d0d0d] py-8">
-      <div className="flex animate-marquee gap-[50px] items-center opacity-20">
+      <div
+        ref={bannerAnim.ref}
+        className={`flex animate-marquee gap-[50px] items-center opacity-20 transition-all duration-700 ${
+          bannerAnim.isVisible ? 'opacity-20 translate-y-0' : 'opacity-0 translate-y-4'
+        }`}
+      >
         {/* Create multiple logo instances for seamless infinite scroll */}
         {Array.from({ length: 24 }, (_, index) => (
           <React.Fragment key={index}>

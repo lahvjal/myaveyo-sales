@@ -184,7 +184,7 @@ export default function Home() {
       <StatsSection pageReady={pageReady} />
 
       {/* Rotating Logo Banner */}
-      <RotatingLogoBanner />
+      <RotatingLogoBanner pageReady={pageReady} />
 
       {/* Incentives Section */}
       <IncentivesSection pageReady={pageReady} />

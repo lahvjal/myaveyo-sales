@@ -6,6 +6,9 @@ export const maxDuration = 60 // Maximum duration for Pro plans
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
+// Max raw upload size allowed by this route (videos should normally use signed URL direct PUT)
+const MAX_UPLOAD_MB = 200
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now()
   
@@ -24,10 +27,10 @@ export async function POST(request: NextRequest) {
     const contentLength = request.headers.get('content-length')
     console.log('Content-Length header:', contentLength)
     
-    if (contentLength && parseInt(contentLength) > 100 * 1024 * 1024) { // 100MB limit for Pro plan
+    if (contentLength && parseInt(contentLength) > MAX_UPLOAD_MB * 1024 * 1024) {
       console.log('Request too large:', contentLength)
       return NextResponse.json({ 
-        error: 'File too large. Maximum size is 100MB.' 
+        error: `File too large. Maximum size is ${MAX_UPLOAD_MB}MB.` 
       }, { status: 413 })
     }
 
@@ -53,12 +56,12 @@ export async function POST(request: NextRequest) {
 
     console.log(`Processing file: ${file.name}, Size: ${(file.size / 1024 / 1024).toFixed(2)}MB, Type: ${file.type}`)
 
-    // Validate file size (client-side compression should handle this, but double-check)
+    // Validate file size (client-side compression/direct upload should handle this, but double-check)
     const fileSizeMB = file.size / (1024 * 1024)
-    if (fileSizeMB > 100) {
+    if (fileSizeMB > MAX_UPLOAD_MB) {
       console.log('File size validation failed:', fileSizeMB)
       return NextResponse.json({ 
-        error: `File size (${fileSizeMB.toFixed(2)}MB) exceeds 100MB limit` 
+        error: `File size (${fileSizeMB.toFixed(2)}MB) exceeds ${MAX_UPLOAD_MB}MB limit` 
       }, { status: 413 })
     }
 

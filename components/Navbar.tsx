@@ -15,7 +15,7 @@ const navItems = [
   { name: 'Incentives', href: '/incentives' }, 
   // { name: 'EDU', href: '/edu' },
   { name: 'Store', href: 'https://aveyo.shop/' },
-  { name: 'Brand', href: '/brand' },
+  // { name: 'Brand', href: '/brand' },
   // { name: 'Wiki', href: 'https://aveyo-wiki.bullet.site/' },
   // { name: 'Map', href: '/map' },
 ]
@@ -44,17 +44,14 @@ export default function Navbar({ className = '' }: NavbarProps) {
       </div>
       
       {/* Right side icons */}
-      <div className="flex items-center gap-8">
-        {/* <div className="w-9 h-full flex items-center justify-center">
-          <img alt="Search" className="w-[15px] h-[19px]" src={imgUnion1} />
-        </div> */}
+      {/* <div className="flex items-center gap-8">
         <div 
           className="w-[40px] h-[40px] rounded-full overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => window.location.href = '/admin'}
         >
           <img alt="Profile" className="w-full h-full object-cover" src="/images/TomKarenHead.png" />
         </div>
-      </div>
+      </div> */}
     </nav>
   )
 }

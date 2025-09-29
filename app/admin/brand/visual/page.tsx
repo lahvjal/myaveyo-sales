@@ -1,0 +1,30 @@
+import AdminLayout from '@/components/admin/AdminLayout'
+
+export const dynamic = 'force-dynamic'
+
+export default function BrandVisualPage() {
+  const tabs = [
+    { id: 'title', name: 'Title', href: '/admin/brand' },
+    { id: 'theory', name: 'Theory', href: '/admin/brand/theory' },
+    { id: 'messaging', name: 'Messaging', href: '/admin/brand/messaging' },
+    { id: 'visual', name: 'Visual Elements', href: '/admin/brand/visual' },
+    { id: 'personas', name: 'Personas', href: '/admin/brand/personas' },
+  ]
+
+  return (
+    <AdminLayout
+      pageKey="brand"
+      topBarTitle="Brand"
+      topBarIcon="/images/Brand-icon.png"
+      topBarTabs={tabs}
+      activeTab="visual"
+    >
+      <div className="bg-[#0d0d0d] min-h-screen text-white">
+        <div className="px-[50px] py-[40px] max-w-[1480px] mx-auto">
+          <h1 className="text-3xl font-telegraf font-bold mb-6">Brand – Visual Elements</h1>
+          <p className="text-white/70">Visual elements content coming soon.</p>
+        </div>
+      </div>
+    </AdminLayout>
+  )
+}

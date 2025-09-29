@@ -17,6 +17,12 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
     icon: '/images/dashboard-icon.png',
     tabs: []
   },
+  // Brand Guide
+  'brand': {
+    title: 'Brand',
+    icon: '/images/brand-icon.png',
+    tabs: []
+  },
   // Admin Leaderboard
   'leaderboard': {
     title: 'Leaderboard',

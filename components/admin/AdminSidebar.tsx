@@ -63,8 +63,8 @@ const navigationItems = [
   },
   {
     id: 'brand',
-    href: '/brand',
-    icon: '/images/brand-icon.png',
+    href: '/admin/brand',
+    icon: '/images/Brand-icon.png',
     label: 'Brand'
   },
   {
