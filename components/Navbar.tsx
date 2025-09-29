@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase-browser'
 
 interface NavbarProps {
   className?: string
@@ -24,12 +25,36 @@ const navItems = [
 export default function Navbar({ className = '' }: NavbarProps) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    let mounted = true
+    const init = async () => {
+      const { data } = await supabase.auth.getUser()
+      if (!mounted) return
+      const user = data.user
+      setIsLoggedIn(!!user)
+      const meta = (user?.user_metadata as any) || {}
+      setAvatarUrl(meta.avatar_url || null)
+    }
+    init()
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user)
+      const meta = (session?.user?.user_metadata as any) || {}
+      setAvatarUrl(meta.avatar_url || null)
+    })
+    return () => {
+      mounted = false
+      sub.subscription.unsubscribe()
+    }
   }, [])
 
   return (
@@ -58,6 +83,18 @@ export default function Navbar({ className = '' }: NavbarProps) {
                 {item.name}
               </a>
             ))}
+            {/* Right: Profile link */}
+          <a
+            href={isLoggedIn ? '/user' : '/login'}
+            className="ml-auto mr-3 hidden md:flex items-center justify-center rounded-full overflow-hidden size-8"
+            title={isLoggedIn ? 'Profile' : 'Sign in'}
+          >
+            <img
+              alt="Profile"
+              src={avatarUrl || '/images/user-icon.png'}
+              className="block max-w-none size-full object-cover"
+            />
+          </a>
           </div>
 
           {/* Mobile menu button */}
@@ -102,6 +139,21 @@ export default function Navbar({ className = '' }: NavbarProps) {
             <div className="md:hidden absolute left-0 right-0 top-full z-[110] mt-2 px-4 pointer-events-auto">
               <div className="rounded-md border border-white/10 bg-black/80 backdrop-blur supports-[backdrop-filter]:bg-black/60 shadow-lg">
                 <div className="flex flex-col py-2">
+                  {/* Profile link (mobile) */}
+                  <a
+                    href={isLoggedIn ? '/user' : '/login'}
+                    onClick={() => setOpen(false)}
+                    className="px-4 py-3 text-white text-sm font-bold uppercase tracking-wide hover:bg-white/10 transition-colors font-telegraf flex items-center gap-3"
+                  >
+                    <span className="inline-block size-6 rounded-full overflow-hidden border border-white/20">
+                      <img
+                        alt="Profile"
+                        src={avatarUrl || '/images/user-icon.png'}
+                        className="block max-w-none size-full object-cover"
+                      />
+                    </span>
+                    {isLoggedIn ? 'Profile' : 'Sign in'}
+                  </a>
                   {navItems.map((item) => (
                     <a
                       key={item.name}

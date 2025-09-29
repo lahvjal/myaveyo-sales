@@ -6,11 +6,11 @@ export const dynamic = 'force-dynamic'
 
 export default function AdminBrandPage() {
   const tabs = [
-    { id: 'title', name: 'Title', href: '/admin/brand' },
-    { id: 'theory', name: 'Theory', href: '/admin/brand/theory' },
-    { id: 'messaging', name: 'Messaging', href: '/admin/brand/messaging' },
-    { id: 'visual', name: 'Visual Elements', href: '/admin/brand/visual' },
-    { id: 'personas', name: 'Personas', href: '/admin/brand/personas' },
+    { id: 'title', name: 'Title', href: '/user/brand' },
+    { id: 'theory', name: 'Theory', href: '/user/brand/theory' },
+    { id: 'messaging', name: 'Messaging', href: '/user/brand/messaging' },
+    { id: 'visual', name: 'Visual Elements', href: '/user/brand/visual' },
+    { id: 'personas', name: 'Personas', href: '/user/brand/personas' },
   ]
 
   return (

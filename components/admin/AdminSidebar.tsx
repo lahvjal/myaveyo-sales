@@ -57,7 +57,7 @@ const navigationItems = [
   },
   {
     id: 'review',
-    href: '/reviews',
+    href: '/user/reviews',
     icon: '/images/reviews-icon.png',
     label: 'Reviews'
   },
@@ -69,7 +69,7 @@ const navigationItems = [
   },
   {
     id: 'cms',
-    href: '/user/cms/home',
+    href: '/admin/cms/home',
     icon: '/images/cms-icon.png',
     label: 'CMS'
   }
