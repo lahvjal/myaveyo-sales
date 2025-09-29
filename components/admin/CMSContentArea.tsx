@@ -29,42 +29,42 @@ const CMS_TABS: CMSTab[] = [
         id: 'hero',
         title: 'Hero Section',
         description: 'Edit welcome text, headings, and CTA buttons',
-        href: '/admin/hero',
+        href: '/user/hero',
         status: 'coming-soon'
       },
       {
         id: 'stats',
         title: 'Stats Section',
         description: 'Update homepage statistics and metrics',
-        href: '/admin/home-stats',
+        href: '/user/home-stats',
         status: 'active'
       },
       {
         id: 'sales',
         title: 'Sales Section',
         description: 'Manage sales content and images',
-        href: '/admin/sales',
+        href: '/user/sales',
         status: 'active'
       },
       {
         id: 'inside',
         title: 'On The Inside',
         description: 'Edit Culture, Training, Lifestyle, and Growth blocks',
-        href: '/admin/inside',
+        href: '/user/inside',
         status: 'coming-soon'
       },
       {
         id: 'careers',
         title: 'Build Careers',
         description: 'Update career building content',
-        href: '/admin/careers',
+        href: '/user/careers',
         status: 'coming-soon'
       },
       {
         id: 'logos',
         title: 'Logo Banner',
         description: 'Manage rotating logo carousel',
-        href: '/admin/logos',
+        href: '/user/logos',
         status: 'coming-soon'
       }
     ]
@@ -77,14 +77,14 @@ const CMS_TABS: CMSTab[] = [
         id: 'incentives-manage',
         title: 'Manage Incentives',
         description: 'Create, edit, and delete incentive programs',
-        href: '/admin/incentives',
+        href: '/user/incentives',
         status: 'active'
       },
       {
         id: 'incentives-analytics',
         title: 'Incentive Analytics',
         description: 'View performance metrics and engagement stats',
-        href: '/admin/incentives/analytics',
+        href: '/user/incentives/analytics',
         status: 'coming-soon'
       }
     ]
@@ -97,14 +97,14 @@ const CMS_TABS: CMSTab[] = [
         id: 'reviews-manage',
         title: 'Manage Reviews',
         description: 'Upload, edit, and organize customer review videos',
-        href: '/admin/reviews',
+        href: '/user/reviews',
         status: 'active'
       },
       {
         id: 'reviews-moderation',
         title: 'Content Moderation',
         description: 'Review and approve submitted content',
-        href: '/admin/reviews/moderation',
+        href: '/user/reviews/moderation',
         status: 'coming-soon'
       }
     ]

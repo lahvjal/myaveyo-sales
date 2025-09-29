@@ -8,32 +8,32 @@ import Image from 'next/image'
 const navigationItems = [
   {
     id: 'dashboard',
-    href: '/admin/dashboard',
+    href: '/user/dashboard',
     icon: '/images/dashboard-icon.png',
     label: 'Dashboard',
     exact: true
   },
   {
     id: 'projects',
-    href: '/admin/projects',
+    href: '/user/projects',
     icon: '/images/projects-icon.png',
     label: 'Projects'
   },
   {
     id: 'leaderboard',
-    href: '/admin/leaderboard',
+    href: '/user/leaderboard',
     icon: '/images/leaderboard-icon.png',
     label: 'Leaderboard'
   },
   {
     id: 'incentives',
-    href: '/admin/incentives',
+    href: '/user/incentives',
     icon: '/images/incentives-icon.png',
     label: 'Incentives'
   },
   {
     id: 'edu',
-    href: '/admin/edu',
+    href: '/user/edu',
     icon: '/images/edu-icon.png',
     label: 'EDU'
   },
@@ -63,13 +63,13 @@ const navigationItems = [
   },
   {
     id: 'brand',
-    href: '/admin/brand',
+    href: '/user/brand',
     icon: '/images/Brand-icon.png',
     label: 'Brand'
   },
   {
     id: 'cms',
-    href: '/admin/cms/home',
+    href: '/user/cms/home',
     icon: '/images/cms-icon.png',
     label: 'CMS'
   }

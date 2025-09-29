@@ -34,9 +34,9 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
     title: 'CMS',
     icon: '/images/CMS-icon.png',
     tabs: [
-      { id: 'home', name: 'Home Page', href: '/admin/cms/home' },
-      { id: 'incentives', name: 'Incentives Page', href: '/admin/cms/incentives' },
-      { id: 'reviews', name: 'Reviews Page', href: '/admin/cms/reviews' }
+      { id: 'home', name: 'Home Page', href: '/user/cms/home' },
+      { id: 'incentives', name: 'Incentives Page', href: '/user/cms/incentives' },
+      { id: 'reviews', name: 'Reviews Page', href: '/user/cms/reviews' }
     ]
   },
   
@@ -103,9 +103,9 @@ export function getAdminPageConfig(pageKey: string): AdminPageConfig {
 }
 
 export function getPageKeyFromPath(pathname: string): string {
-  // Extract page key from pathname like /admin/incentives -> incentives
+  // Extract page key from pathname like /user/incentives -> incentives
   const segments = pathname.split('/').filter(Boolean)
-  if (segments.length >= 2 && segments[0] === 'admin') {
+  if (segments.length >= 2 && segments[0] === 'user') {
     return segments[1] || 'cms'
   }
   return 'cms'
