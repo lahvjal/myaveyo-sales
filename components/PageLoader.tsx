@@ -24,7 +24,7 @@ export default function PageLoader({ onComplete }: PageLoaderProps) {
     <AnimatePresence>
       {isLoading && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d0d0d]"
+          className="fixed inset-0 z-[500] flex items-center justify-center bg-[#0d0d0d]"
           exit={{ y: "-100%" }}
           transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
         >

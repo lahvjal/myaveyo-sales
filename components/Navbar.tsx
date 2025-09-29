@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 interface NavbarProps {
   className?: string
@@ -23,9 +23,23 @@ const navItems = [
 
 export default function Navbar({ className = '' }: NavbarProps) {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 0)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <nav className={`relative z-[100] px-4 sm:px-6 md:px-12 py-4 md:py-5 ${className}`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 w-full z-[100] px-4 sm:px-6 md:px-12 py-4 md:py-5 transition-colors ${
+        (scrolled || open)
+          ? 'bg-black/80 backdrop-blur supports-[backdrop-filter]:bg-black/60 border-b border-white/10'
+          : 'bg-transparent'
+      } ${className}`}
+    >
       <div className="mx-auto max-w-[1480px]">
         <div className="flex items-center md:justify-center justify-between md:gap-[20px]">
           {/* Left: Logo */}
