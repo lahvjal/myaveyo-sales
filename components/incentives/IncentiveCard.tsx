@@ -50,7 +50,20 @@ export default function IncentiveCard({
   }
 
   return (
-    <div className="rounded-[3px] relative h-full min-h-[600px] overflow-hidden">
+    <div
+      className="rounded-[3px] relative h-full min-h-[600px] overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+      role={onViewClick ? 'button' : undefined}
+      tabIndex={onViewClick ? 0 : -1}
+      onClick={onViewClick}
+      onKeyDown={(e) => {
+        if (!onViewClick) return
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onViewClick()
+        }
+      }}
+      aria-label={title ? `View details for ${title}` : 'View details'}
+    >
       {/* Background Media */}
       {backgroundVideo ? (
         <video

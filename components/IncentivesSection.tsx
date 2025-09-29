@@ -166,17 +166,22 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
                       itemAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                     }`}
                   >
-                    <IncentiveCard
-                      title={incentive.title}
-                      backgroundImage={incentive.background_image_url}
-                      backgroundVideo={incentive.background_video_url}
-                      liveStatus={incentive.live_status}
-                      category={incentive.category}
-                      categoryColor={incentive.category_color}
-                      startDate={incentive.start_date}
-                      endDate={incentive.end_date}
-                      variant={cardVariant}
-                    />
+                    <a
+                      href={`/incentives/${incentive.id}`}
+                      className="block rounded-[3px] overflow-hidden focus:outline-none focus:ring-2 focus:ring-white/50"
+                    >
+                      <IncentiveCard
+                        title={incentive.title}
+                        backgroundImage={incentive.background_image_url}
+                        backgroundVideo={incentive.background_video_url}
+                        liveStatus={incentive.live_status}
+                        category={incentive.category}
+                        categoryColor={incentive.category_color}
+                        startDate={incentive.start_date}
+                        endDate={incentive.end_date}
+                        variant={cardVariant}
+                      />
+                    </a>
                   </div>
                 )
               })}
@@ -200,7 +205,7 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
             buttonAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
           }`}
         >
-          <Button variant="primary">
+          <Button variant="primary" onClick={() => router.push('/incentives')}>
             EXPLORE INCENTIVES
           </Button>
         </div>
