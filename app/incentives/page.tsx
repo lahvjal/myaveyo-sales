@@ -196,7 +196,7 @@ export default function IncentivesPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredIncentives.map((incentive) => (
-                <div key={incentive.id} className="rounded-[3px] overflow-hidden">
+                <a key={incentive.id} href={`/incentives/${incentive.id}`} className="block rounded-[3px] overflow-hidden focus:outline-none focus:ring-2 focus:ring-white/50">
                   <IncentiveCard
                     title={incentive.title}
                     backgroundImage={incentive.background_image_url}
@@ -207,11 +207,8 @@ export default function IncentivesPage() {
                     startDate={incentive.start_date}
                     endDate={incentive.end_date}
                     variant="detailed"
-                    onViewClick={() => {
-                      window.location.href = `/incentives/${incentive.id}`
-                    }}
                   />
-                </div>
+                </a>
               ))}
             </div>
           )}
