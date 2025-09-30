@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useChat } from "./ChatProvider"
 import Button from "../Button"
 import Image from "next/image"
@@ -9,6 +9,14 @@ export default function ChatDock() {
   const { open, setOpen, messages, sendMessage } = useChat()
   const [value, setValue] = useState("")
   const inputRef = useRef<HTMLTextAreaElement | null>(null)
+  const listRef = useRef<HTMLDivElement | null>(null)
+
+  // Auto-scroll to bottom on new messages or when opening the dock
+  useEffect(() => {
+    const el = listRef.current
+    if (!el) return
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }, [messages.length, open])
 
   const handleSend = async () => {
     await sendMessage(value)
@@ -50,7 +58,11 @@ export default function ChatDock() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-6 py-2 space-y-3">
+          <div className="flex-1 overflow-y-auto px-6 py-2 space-y-3" ref={listRef} onScroll={(e) => {
+            const el = e.currentTarget as HTMLDivElement
+            if (el.scrollHeight - el.scrollTop === el.clientHeight) return
+            el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+          }}>
             {messages.map(m => {
               const nameColor = m.userName === 'You' ? '#F414D6' : (m.userRole === 'admin' ? '#E5780C' : '#259EFB')
               return (
