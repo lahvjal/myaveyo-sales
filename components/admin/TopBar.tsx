@@ -43,6 +43,7 @@ export default function TopBar({
 }: TopBarProps) {
   const [currentTab, setCurrentTab] = useState(activeTab)
   const { open: chatOpen, setOpen: setChatOpen, unread } = useChat()
+  const [loggingOut, setLoggingOut] = useState(false)
 
   const handleTabClick = (tabId: string) => {
     setCurrentTab(tabId)
@@ -179,20 +180,22 @@ export default function TopBar({
             </button>
             <button
               onClick={async () => {
+                if (loggingOut) return
+                setLoggingOut(true)
                 try {
                   await supabase.auth.signOut()
+                } catch {
+                  // noop
                 } finally {
-                  const params = new URLSearchParams(window.location.search)
-                  const redirect = params.get('redirect')
-                  const target = redirect || '/login'
-                  // Use absolute URL to ensure correct domain (esp. prod subdomain)
-                  const url = '/login'
-                  window.location.replace(url)
+                  const url = `/login`
+                  // Use hard navigation to ensure full cleanup and correct domain
+                  window.location.href = url
                 }
               }}
-              className="px-3 py-1.5 rounded-[4px] bg-white text-black text-sm font-telegraf hover:opacity-90 transition"
+              disabled={loggingOut}
+              className={`px-3 py-1.5 rounded-[4px] text-sm font-telegraf transition ${loggingOut ? 'opacity-60 cursor-not-allowed bg-white text-black' : 'bg-white text-black hover:opacity-90'}`}
             >
-              Logout
+              {loggingOut ? 'Logging out…' : 'Logout'}
             </button>
           </div>
         )}
