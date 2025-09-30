@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { supabase } from '@/lib/supabase-browser'
 
 interface NavbarProps {
@@ -57,12 +58,26 @@ export default function Navbar({ className = '' }: NavbarProps) {
     }
   }, [])
 
+  function Backdrop({ onClick }: { onClick: () => void }) {
+    if (typeof document === 'undefined') return null
+    return createPortal(
+      <div
+        className="fixed inset-0 z-[90] bg-black/50 backdrop-blur-md supports-[backdrop-filter]:backdrop-blur-md"
+        style={{ WebkitBackdropFilter: 'blur(12px)' }}
+        onClick={onClick}
+      />,
+      document.body
+    )
+  }
+
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 w-full z-[100] px-4 sm:px-6 md:px-12 py-4 md:py-5 transition-colors ${
-        (scrolled || open)
-          ? 'bg-black/80 backdrop-blur supports-[backdrop-filter]:bg-black/60 border-b border-white/10'
-          : 'bg-transparent'
+      className={`fixed top-0 left-0 right-0 w-[100vw] z-[100] px-4 sm:px-6 md:px-12 py-4 md:py-5 transition-colors isolate ${
+        open
+          ? 'bg-black/80' // solid nav when menu open; keep nav unblurred
+          : scrolled
+            ? 'bg-black/80 backdrop-blur supports-[backdrop-filter]:bg-black/60'
+            : 'bg-transparent'
       } ${className}`}
     >
       <div className="mx-auto max-w-[1480px]">
@@ -131,10 +146,7 @@ export default function Navbar({ className = '' }: NavbarProps) {
         {open && (
           <>
             {/* Backdrop */}
-            <div
-              className="fixed inset-0 z-[90] bg-black/50 pointer-events-auto"
-              onClick={() => setOpen(false)}
-            />
+            <Backdrop onClick={() => setOpen(false)} />
             {/* Menu panel anchored to navbar */}
             <div className="md:hidden absolute left-0 right-0 top-full z-[110] mt-2 px-4 pointer-events-auto">
               <div className="rounded-md border border-white/10 bg-black/80 backdrop-blur supports-[backdrop-filter]:bg-black/60 shadow-lg">

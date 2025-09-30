@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState } from "react"
 import Head from "next/head"
 import { createClient } from "@supabase/supabase-js"
+import Navbar from "@/components/Navbar"
+import AdminLayout from "@/components/admin/AdminLayout"
 
 export default function MapPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -238,29 +240,19 @@ export default function MapPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
-      <Head>
-        <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
-      </Head>
-      <div className="relative flex-1">
-        {/* The map container must always be in the DOM so the ref is attached */}
-        <div ref={mapContainerRef} className="w-full h-full" />
-
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-            <div className="text-white text-lg">Loading map…</div>
-          </div>
-        )}
-
-        {/* Simple stats overlay */}
-        {!loading && (
-          <div className="absolute top-4 left-4 bg-black/70 text-white text-xs px-3 py-2 rounded">
-            <div>Total: {stats.total}</div>
-            <div>Completed: {stats.completed}</div>
-            <div>In Progress: {stats.inProgress}</div>
-          </div>
-        )}
+    <AdminLayout
+      pageKey="map"
+      topBarTitle="Map"
+      breadcrumbs={[
+      ]}
+    >
+      <div className="min-h-screen flex items-center justify-center">
+        
+        <div className="text-center">
+          <h1 className="text-white text-4xl font-telegraf font-bold mb-3">Map</h1>
+          <p className="text-white/70 text-lg">Coming soon.</p>
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   )
 }

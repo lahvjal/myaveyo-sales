@@ -112,12 +112,14 @@ export default function HomeStatsPage() {
   if (loading) {
     return (
       <AdminLayout
-        pageKey="cms"
-        topBarTitle="CMS"
-        breadcrumbs={[
-          { name: 'Home Page', href: '/admin/cms/home' },
-          { name: 'Stats Section' }
-        ]}
+      pageKey="admin"
+      topBarTitle="Admin"
+      breadcrumbs={[
+        { name: 'Admin', href: '/admin' },
+        { name: 'CMS', href: '/admin/cms/home' },
+        { name: 'Home Page', href: '/admin/cms/home' },
+        { name: 'Stats Section' }
+      ]}
       >
         <div className="flex items-center justify-center h-64">
           <div className="text-white">Loading stats...</div>
@@ -128,9 +130,11 @@ export default function HomeStatsPage() {
 
   return (
     <AdminLayout
-      pageKey="cms"
-      topBarTitle="CMS"
+      pageKey="admin"
+      topBarTitle="Admin"
       breadcrumbs={[
+        { name: 'Admin', href: '/admin' },
+        { name: 'CMS', href: '/admin/cms' },
         { name: 'Home Page', href: '/admin/cms/home' },
         { name: 'Stats Section' }
       ]}

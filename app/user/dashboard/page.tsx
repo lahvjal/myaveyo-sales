@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import AdminLayout from "@/components/admin/AdminLayout"
+import { supabase } from '@/lib/supabase-browser'
 import Link from "next/link"
 import Button from "@/components/Button"
 import ProjectMilestoneCard from "@/components/projects/ProjectMilestoneCard"
@@ -9,6 +10,8 @@ import Top3Card from "@/components/leaderboard/Top3Card"
 import { fetchTopLeaders, LeaderboardEntry } from "@/lib/leaderboard"
 import UserRankRow from "@/components/leaderboard/UserRankRow"
 import IncentiveCard from "@/components/incentives/IncentiveCard"
+
+
 
 type Incentive = {
   id: string
@@ -86,6 +89,25 @@ export default function DashboardPage() {
   const [leaders, setLeaders] = useState<LeaderboardEntry[]>([])
   const [leadersLoading, setLeadersLoading] = useState(true)
   const [leadersError, setLeadersError] = useState<string | null>(null)
+  const [firstName, setFirstName] = useState<string>('')
+
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      const { data } = await supabase.auth.getUser()
+      const meta = (data.user?.user_metadata as any) || {}
+      if (mounted) setFirstName(meta.first_name || meta.given_name || '')
+    }
+    load()
+    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+      const meta = (session?.user?.user_metadata as any) || {}
+      setFirstName(meta.first_name || meta.given_name || '')
+    })
+    return () => {
+      mounted = false
+      sub.subscription.unsubscribe()
+    }
+  }, [])
 
   useEffect(() => {
     const fetchIncentives = async () => {
@@ -164,6 +186,12 @@ export default function DashboardPage() {
     <AdminLayout pageKey="dashboard">
       <div className="min-h-screen bg-[#0b0b0b] px-6 md:px-8 py-8">
         <div className="max-w-[1480px] mx-auto">
+          <h1 className="text-6xl font-telegraf font-bold mb-4">
+            Welcome{firstName ? `, ${firstName}` : ', Bro'}
+          </h1>
+          {/* <p className="text-gray-400 text-lg">
+            Management the CMS and applications submitted from the website.
+          </p> */}
           {/* My Projects */}
           <div className="mb-20 flex flex-col gap-[20px]">
             <SectionHeader title="My Projects" actionLabel="See Projects" actionHref="/user/projects" />

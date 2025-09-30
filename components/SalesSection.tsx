@@ -180,7 +180,7 @@ export default function SalesSection({ className = '', pageReady = true, onJoinC
 
         {/* Main Grid */}
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full"
+          className="grid md:auto-rows-[300px] sm:auto-rows-[200px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 w-full"
           initial="hidden"
           animate="visible"
           variants={{

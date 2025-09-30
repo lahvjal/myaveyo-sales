@@ -324,9 +324,13 @@ export default function AdminReviewsPage() {
   if (loading) {
     return (
       <AdminLayout
-        pageKey="cms"
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
+      pageKey="admin"
+      topBarTitle="Admin"
+      breadcrumbs={[
+        { name: 'Admin', href: '/admin' },
+        { name: 'CMS', href: '/admin/cms' },
+        { name: 'Reviews Page' }
+      ]}
       >
         <div className="flex items-center justify-center h-64">
           <div className="text-white">Loading reviews...</div>
@@ -337,9 +341,13 @@ export default function AdminReviewsPage() {
 
   return (
     <AdminLayout
-      pageKey="cms"
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
+    pageKey="admin"
+    topBarTitle="Admin"
+    breadcrumbs={[
+      { name: 'Admin', href: '/admin' },
+      { name: 'CMS', href: '/admin/cms' },
+      { name: 'Reviews Page' }
+    ]}
     >
       <div className="min-h-screen bg-[#0d0d0d] px-8 py-12">
         <div className="max-w-7xl mx-auto">

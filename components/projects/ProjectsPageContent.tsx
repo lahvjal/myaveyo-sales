@@ -110,7 +110,7 @@ export default function ProjectsPageContent() {
   return (
     <>
       {/* Top area: milestone summary grid */}
-      <section className="px-6 py-6">
+      <section className="pb-6">
         <div className="flex flex-row">
 
           {/* Milestones grid */}
@@ -132,7 +132,7 @@ export default function ProjectsPageContent() {
         </div>
       </section>
       {/* Projects list (filtered by selected stage) */}
-      <section className="px-6 pb-10">
+      <section className="pb-10">
         {loading ? (
           <div className="flex items-center justify-center h-40 text-gray-400">Loading projects...</div>
         ) : error ? (

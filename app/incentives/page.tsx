@@ -149,7 +149,7 @@ export default function IncentivesPage() {
   }
 
   return (
-    <div className="bg-[#0d0d0d] min-h-screen">
+    <div className="bg-[#0d0d0d] min-h-screen pt-[100px]">
       <Navbar />
       
       <div className="px-6 sm:px-8 md:px-10 lg:px-[50px] py-16 sm:py-20 lg:py-[130px]">
@@ -195,7 +195,12 @@ export default function IncentivesPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {filteredIncentives.map((incentive) => (
+              {[...filteredIncentives]
+                .sort((a, b) => {
+                  const rank = (s: Incentive['live_status']) => (s === 'live' ? 0 : s === 'coming_up' ? 1 : 2)
+                  return rank(a.live_status) - rank(b.live_status)
+                })
+                .map((incentive) => (
                 <a key={incentive.id} href={`/incentives/${incentive.id}`} className="block rounded-[3px] overflow-hidden focus:outline-none focus:ring-2 focus:ring-white/50">
                   <IncentiveCard
                     title={incentive.title}

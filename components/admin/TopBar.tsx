@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useChat } from '@/components/chat/ChatProvider'
 import Image from 'next/image'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase-browser'
@@ -41,6 +42,7 @@ export default function TopBar({
   breadcrumbs
 }: TopBarProps) {
   const [currentTab, setCurrentTab] = useState(activeTab)
+  const { open: chatOpen, setOpen: setChatOpen, unread } = useChat()
 
   const handleTabClick = (tabId: string) => {
     setCurrentTab(tabId)
@@ -142,6 +144,39 @@ export default function TopBar({
                 className="size-full rounded-full"
               />
             </div>
+            <button
+              onClick={() => setChatOpen(!chatOpen)}
+              aria-pressed={chatOpen}
+              title={chatOpen ? 'Hide chat' : 'Show chat'}
+              className={`
+                relative shrink-0 size-[45px] rounded-[8px] flex items-center justify-center
+                transition-all duration-200 ease-in-out group
+                ${chatOpen 
+                  ? 'bg-white/10 shadow-lg' 
+                  : 'hover:bg-white/5 hover:scale-105'
+                }
+              `}
+            >
+              <Image 
+                src="/images/msg-icon.png"
+                alt="Chat"
+                width={25}
+                height={25}
+                className={`
+                  transition-all duration-200
+                  ${chatOpen 
+                    ? 'opacity-100 scale-110' 
+                    : 'opacity-70 group-hover:opacity-100 group-hover:scale-105'
+                  }
+                `}
+              />
+              {!chatOpen && unread > 0 && (
+                <span className="absolute -top-1 -right-1 inline-block w-2.5 h-2.5 rounded-full bg-red-500" />
+              )}
+              {chatOpen && (
+                <div className="absolute -right-[3px] top-1/2 -translate-y-1/2 w-[3px] h-[20px] bg-white rounded-l-full" />
+              )}
+            </button>
             <button
               onClick={async () => {
                 try {

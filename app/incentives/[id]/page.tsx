@@ -103,7 +103,7 @@ export default async function IncentiveDetailPage({ params }: PageProps) {
           </div>
 
           {/* Right: Description / Details */}
-          <div className="w-full h-full bg-[#0d0d0d] flex flex-col">
+          <div className="w-full h-full bg-[#0d0d0d] flex flex-col pt-[100px]">
 
             {/* Scrollable content */}
             <div className="flex-1 overflow-auto p-[50px]">

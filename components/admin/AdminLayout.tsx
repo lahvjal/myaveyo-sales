@@ -1,6 +1,8 @@
 'use client'
 
 import { ReactNode } from 'react'
+import { ChatProvider } from '@/components/chat/ChatProvider'
+import ChatDock from '@/components/chat/ChatDock'
 import { usePathname } from 'next/navigation'
 import AdminSidebar from './AdminSidebar'
 import TopBar from './TopBar'
@@ -56,30 +58,34 @@ export default function AdminLayout({
   const finalTabs = topBarTabs || pageConfig.tabs
 
   return (
-    <div className="min-h-screen bg-black flex">
-      {/* Sidebar */}
-      <AdminSidebar />
-      
-      {/* Main Content */}
-      <main className={`flex-1 flex flex-col ${className}`}>
-        {/* Top Bar */}
-        {showTopBar && (
-          <TopBar 
-            title={finalTitle}
-            icon={finalIcon}
-            tabs={finalTabs}
-            activeTab={activeTab}
-            onTabChange={onTabChange}
-            showProfile={showProfile}
-            breadcrumbs={breadcrumbs}
-          />
-        )}
+    <ChatProvider>
+      <div className="min-h-screen bg-black flex">
+        {/* Sidebar */}
+        <AdminSidebar />
         
-        {/* Page Content */}
-        <div className="flex-1 flex flex-col">
-          {children}
-        </div>
-      </main>
-    </div>
+        {/* Main Content */}
+        <main className={`flex-1 flex flex-col ${className}`}>
+          {/* Top Bar */}
+          {showTopBar && (
+            <TopBar 
+              title={finalTitle}
+              icon={finalIcon}
+              tabs={finalTabs}
+              activeTab={activeTab}
+              onTabChange={onTabChange}
+              showProfile={showProfile}
+              breadcrumbs={breadcrumbs}
+            />
+          )}
+          
+          {/* Page Content */}
+          <div className="flex-1 flex flex-col">
+            {children}
+          </div>
+        </main>
+        {/* Chat Dock (desktop) */}
+        <ChatDock />
+      </div>
+    </ChatProvider>
   )
 }

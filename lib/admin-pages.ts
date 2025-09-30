@@ -39,7 +39,15 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
       { id: 'reviews', name: 'Reviews Page', href: '/admin/cms/reviews' }
     ]
   },
-  
+  // Main CMS Dashboard
+  'admin': {
+    title: 'Admin',
+    icon: '/images/admin-icon.png',
+    tabs: [
+      { id: 'cms', name: 'CMS', href: '/admin/cms' },
+      { id: 'applications', name: 'Applications', href: '/admin/applications' }
+    ]
+  },
   // Incentives Management
   'incentives': {
     title: 'Incentives',

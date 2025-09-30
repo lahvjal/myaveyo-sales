@@ -51,7 +51,7 @@ const navigationItems = [
   },
   {
     id: 'map',
-    href: '/map',
+    href: '/user/map',
     icon: '/images/map-icon.png',
     label: 'Map'
   },
@@ -68,10 +68,10 @@ const navigationItems = [
     label: 'Brand'
   },
   {
-    id: 'cms',
-    href: '/admin/cms/home',
-    icon: '/images/CMS-icon.png',
-    label: 'CMS'
+    id: 'admin',
+    href: '/admin',
+    icon: '/images/admin-icon.png',
+    label: 'Admin'
   }
 ]
 

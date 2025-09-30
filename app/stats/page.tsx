@@ -106,7 +106,7 @@ export default function StatsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white pt-[50px] md:pt-[150px] overflow-x-hidden">
       <Navbar />
       
       {/* Loading Overlay */}
@@ -457,7 +457,7 @@ export default function StatsPage() {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 items-stretch relative w-full md:h-[200px] h-[340px]">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch relative w-full md:h-[200px] h-[340px]">
               <div className="basis-0 bg-gradient-to-t box-border content-stretch flex flex-col from-[#121212] grow h-full items-center justify-between min-h-px min-w-px overflow-clip p-[20px] relative rounded-[3px] shrink-0 to-[#37414f]">
                 <div className="basis-0 content-stretch flex flex-col gap-[15px] grow items-center justify-center leading-[0] min-h-px min-w-px not-italic relative shrink-0 text-nowrap text-white w-full">
                   <div className="content-stretch flex font-telegraf font-black gap-[7px] items-start justify-center relative shrink-0">

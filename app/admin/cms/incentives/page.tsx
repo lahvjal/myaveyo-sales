@@ -190,9 +190,13 @@ export default function AdminIncentivesPage() {
 
   return (
     <AdminLayout
-      pageKey="cms"
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
+    pageKey="admin"
+    topBarTitle="Admin"
+    breadcrumbs={[
+      { name: 'Admin', href: '/admin' },
+      { name: 'CMS', href: '/admin/cms' },
+      { name: 'Incentives Page' }
+    ]}
     >
       <div className="min-h-screen bg-[#0d0d0d] px-8 py-12">
         <div className="max-w-7xl mx-auto">

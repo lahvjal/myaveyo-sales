@@ -120,12 +120,14 @@ export default function SalesSectionCMS() {
   if (loading) {
     return (
       <AdminLayout
-        pageKey="cms"
-        topBarTitle="CMS"
-        breadcrumbs={[
-          { name: 'Home Page', href: '/admin/cms/home' },
-          { name: 'Sales Section' }
-        ]}
+      pageKey="admin"
+      topBarTitle="Admin"
+      breadcrumbs={[
+        { name: 'Admin', href: '/admin' },
+        { name: 'CMS', href: '/admin/cms/home' },
+        { name: 'Home Page', href: '/admin/cms/home' },
+        { name: 'Sales Section' }
+      ]}
       >
         <div className="p-8">
           <div className="text-white">Loading...</div>
@@ -138,12 +140,14 @@ export default function SalesSectionCMS() {
 
   return (
     <AdminLayout
-      pageKey="cms"
-      topBarTitle="CMS"
-      breadcrumbs={[
-        { name: 'Home Page', href: '/admin/cms/home' },
-        { name: 'Sales Section' }
-      ]}
+    pageKey="admin"
+    topBarTitle="Admin"
+    breadcrumbs={[
+      { name: 'Admin', href: '/admin' },
+      { name: 'CMS', href: '/admin/cms/home' },
+      { name: 'Home Page', href: '/admin/cms/home' },
+      { name: 'Sales Section' }
+    ]}
     >
       <div className="p-8">
         <div className='max-w-7xl mx-auto'>
