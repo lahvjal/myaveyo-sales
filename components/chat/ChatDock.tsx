@@ -58,11 +58,7 @@ export default function ChatDock() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-6 py-2 space-y-3" ref={listRef} onScroll={(e) => {
-            const el = e.currentTarget as HTMLDivElement
-            if (el.scrollHeight - el.scrollTop === el.clientHeight) return
-            el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-          }}>
+          <div className="flex-1 overflow-y-auto px-6 py-2 space-y-3" ref={listRef}>
             {messages.map(m => {
               const nameColor = m.userName === 'You' ? '#F414D6' : (m.userRole === 'admin' ? '#E5780C' : '#259EFB')
               return (

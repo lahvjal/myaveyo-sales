@@ -93,15 +93,75 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let mounted = true
+    const nameFromRep = (repName?: string | null) => {
+      if (!repName) return ''
+      const parts = String(repName).trim().split(/\s+/)
+      return parts[0] || ''
+    }
     const load = async () => {
       const { data } = await supabase.auth.getUser()
+      const uid = data.user?.id
       const meta = (data.user?.user_metadata as any) || {}
-      if (mounted) setFirstName(meta.first_name || meta.given_name || '')
+      try {
+        if (!uid) {
+          if (mounted) setFirstName(meta.first_name || meta.given_name || '')
+          return
+        }
+        // Get user's email from public.users
+        const { data: urow } = await supabase
+          .from('users')
+          .select('email')
+          .eq('id', uid)
+          .limit(1)
+          .single()
+        const email = (urow as any)?.email as string | undefined
+        if (email) {
+          const { data: rep } = await supabase
+            .from('sales_reps')
+            .select('rep_name, rep_email')
+            .eq('rep_email', email)
+            .limit(1)
+            .single()
+          const fn = nameFromRep((rep as any)?.rep_name)
+          if (mounted) setFirstName(fn || meta.first_name || meta.given_name || '')
+        } else {
+          if (mounted) setFirstName(meta.first_name || meta.given_name || '')
+        }
+      } catch {
+        if (mounted) setFirstName(meta.first_name || meta.given_name || '')
+      }
     }
     load()
-    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_evt, session) => {
+      const uid = session?.user?.id
       const meta = (session?.user?.user_metadata as any) || {}
-      setFirstName(meta.first_name || meta.given_name || '')
+      if (!uid) {
+        setFirstName(meta.first_name || meta.given_name || '')
+        return
+      }
+      try {
+        const { data: urow } = await supabase
+          .from('users')
+          .select('email')
+          .eq('id', uid)
+          .limit(1)
+          .single()
+        const email = (urow as any)?.email as string | undefined
+        if (email) {
+          const { data: rep } = await supabase
+            .from('sales_reps')
+            .select('rep_name, rep_email')
+            .eq('rep_email', email)
+            .limit(1)
+            .single()
+          const fn = nameFromRep((rep as any)?.rep_name)
+          setFirstName(fn || meta.first_name || meta.given_name || '')
+        } else {
+          setFirstName(meta.first_name || meta.given_name || '')
+        }
+      } catch {
+        setFirstName(meta.first_name || meta.given_name || '')
+      }
     })
     return () => {
       mounted = false
@@ -181,7 +241,7 @@ export default function DashboardPage() {
     }
     loadProjects()
   }, [])
-
+  
   return (
     <AdminLayout pageKey="dashboard">
       <div className="min-h-screen bg-[#0b0b0b] px-6 md:px-8 py-8">
