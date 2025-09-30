@@ -11,26 +11,37 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Find General conversation
-    const { data: conv } = await supabaseAdmin
+    // Prefer RLS-safe fetch of General using the user's session
+    const { data: convViaRls, error: convErr } = await supabase
       .from('conversations')
       .select('id')
       .eq('title', 'General')
       .limit(1)
       .single()
 
-    if (!conv?.id) {
-      return NextResponse.json({ error: 'General conversation missing' }, { status: 500 })
+    if (convViaRls?.id) {
+      // Membership is not required for General (RLS opened). Return id.
+      return NextResponse.json({ conversationId: convViaRls.id })
     }
 
-    // Ensure membership
-    await supabaseAdmin
-      .from('conversation_members')
-      .upsert({ conversation_id: conv.id, user_id: authData.user.id }, { onConflict: 'conversation_id,user_id' })
+    // If not found via RLS, optionally create via admin (service role) if configured
+    const hasServiceRole = !!process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!hasServiceRole) {
+      return NextResponse.json({ error: 'General conversation missing and no service key to create it' }, { status: 500 })
+    }
 
-    return NextResponse.json({ conversationId: conv.id })
+    const { data: convAdmin } = await supabaseAdmin
+      .from('conversations')
+      .upsert({ title: 'General' }, { onConflict: 'title' })
+      .select('id')
+      .single()
+
+    if (!convAdmin?.id) {
+      return NextResponse.json({ error: 'Failed to create General conversation' }, { status: 500 })
+    }
+
+    return NextResponse.json({ conversationId: convAdmin.id })
   } catch (e: any) {
-    console.error('[chat/bootstrap] error', e)
     return NextResponse.json({ error: e?.message || 'Unexpected error' }, { status: 500 })
   }
 }
