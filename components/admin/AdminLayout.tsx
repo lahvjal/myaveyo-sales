@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import { ChatProvider } from '@/components/chat/ChatProvider'
 import ChatDock from '@/components/chat/ChatDock'
 import { usePathname } from 'next/navigation'
@@ -47,6 +47,7 @@ export default function AdminLayout({
   showProfile = true
 }: AdminLayoutProps) {
   const pathname = usePathname()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   
   // Get page configuration based on pageKey or pathname
   const resolvedPageKey = pageKey || getPageKeyFromPath(pathname)
@@ -61,10 +62,25 @@ export default function AdminLayout({
     <ChatProvider>
       <div className="min-h-screen bg-black flex">
         {/* Sidebar */}
-        <AdminSidebar />
+        <div className="hidden sm:block">
+          <AdminSidebar />
+        </div>
+        {/* Mobile overlay sidebar */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-50 sm:hidden">
+            <div
+              className="absolute inset-0 bg-black/60"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-hidden
+            />
+            <div className="absolute inset-y-0 left-0 w-[80vw] max-w-[320px] bg-[#0d0d0d] shadow-xl">
+              <AdminSidebar expanded />
+            </div>
+          </div>
+        )}
         
         {/* Main Content */}
-        <main className={`flex-1 flex flex-col ${className}`}>
+        <main className={`md:flex-1 flex flex-col max-w-[100vw] md:max-w-[1480px] lg:max-w-[1920px] ${className}`}>
           {/* Top Bar */}
           {showTopBar && (
             <TopBar 
@@ -75,6 +91,7 @@ export default function AdminLayout({
               onTabChange={onTabChange}
               showProfile={showProfile}
               breadcrumbs={breadcrumbs}
+              onMenuToggle={() => setMobileMenuOpen(v => !v)}
             />
           )}
           

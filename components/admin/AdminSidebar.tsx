@@ -77,9 +77,10 @@ const navigationItems = [
 
 interface AdminSidebarProps {
   className?: string
+  expanded?: boolean
 }
 
-export default function AdminSidebar({ className = '' }: AdminSidebarProps) {
+export default function AdminSidebar({ className = '', expanded = false }: AdminSidebarProps) {
   const pathname = usePathname()
 
   const isActive = (item: typeof navigationItems[0]) => {
@@ -91,24 +92,24 @@ export default function AdminSidebar({ className = '' }: AdminSidebarProps) {
 
   return (
     <div 
-      className={`bg-[#0d0d0d] box-border content-stretch flex flex-col gap-[20px] items-center justify-start px-0 py-[18px] relative w-[98px] h-[100vh] border-r border-[#121212] sticky top-0 ${className}`}
+      className={`bg-[#0d0d0d] box-border content-stretch flex flex-col gap-[20px] ${expanded ? 'items-stretch w-full' : 'items-center w-[98px]'} justify-start ${expanded ? 'px-3' : 'px-0'} py-[18px] relative h-[100vh] border-r border-[#121212] sticky top-0 ${className}`}
       data-name="AdminSidebar"
     >
       {/* Logo */}
-      <div className="relative shrink-0 size-[62px]">
+      <div className={`relative shrink-0 ${expanded ? 'h-[40px] w-auto px-1' : 'size-[62px]'}`}>
         <Link href="/" className="block size-full">
           <Image 
             src="/images/ad74dd0d12ffb7ab020f4e777da35f195b9778af.svg"
             alt="Aveyo Logo"
-            width={62}
-            height={62}
-            className="size-full"
+            width={expanded ? 70 : 62}
+            height={expanded ? 70 : 62}
+            className="object-contain h-full w-auto"
           />
         </Link>
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex flex-col gap-[20px] items-center">
+      <nav className={`flex flex-col gap-[10px] ${expanded ? 'items-stretch' : 'items-center'}`}>
         {navigationItems.map((item) => {
           const active = isActive(item)
           
@@ -117,7 +118,7 @@ export default function AdminSidebar({ className = '' }: AdminSidebarProps) {
               key={item.id}
               href={item.href}
               className={`
-                relative shrink-0 size-[45px] rounded-[8px] flex items-center justify-center
+                relative shrink-0 rounded-[8px] flex ${expanded ? 'gap-3 items-center justify-start px-3 py-2' : 'items-center justify-center size-[45px]'}
                 transition-all duration-200 ease-in-out group
                 ${active 
                   ? 'bg-white/10 shadow-lg' 
@@ -139,9 +140,14 @@ export default function AdminSidebar({ className = '' }: AdminSidebarProps) {
                   }
                 `}
               />
+              {expanded && (
+                <span className={`text-sm font-telegraf ${active ? 'text-white' : 'text-white/80'}`}>
+                  {item.label}
+                </span>
+              )}
               
               {/* Active indicator */}
-              {active && (
+              {!expanded && active && (
                 <div className="absolute -right-[3px] top-1/2 -translate-y-1/2 w-[3px] h-[20px] bg-white rounded-l-full" />
               )}
             </Link>

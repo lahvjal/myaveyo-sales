@@ -27,6 +27,7 @@ interface TopBarProps {
   showProfile?: boolean
   className?: string
   breadcrumbs?: BreadcrumbItem[]
+  onMenuToggle?: () => void
 }
 
 // No default tabs; tabs are opt-in per page (e.g., CMS)
@@ -39,7 +40,8 @@ export default function TopBar({
   onTabChange,
   showProfile = true,
   className = '',
-  breadcrumbs
+  breadcrumbs,
+  onMenuToggle
 }: TopBarProps) {
   const [currentTab, setCurrentTab] = useState(activeTab)
   const { open: chatOpen, setOpen: setChatOpen, unread } = useChat()
@@ -54,9 +56,14 @@ export default function TopBar({
       <div className="basis-0 box-border content-stretch flex grow items-center justify-between min-h-px min-w-px px-0 py-[14px] relative shrink-0">
         {/* Left side - Title and navigation */}
         <div className="content-stretch flex gap-[30px] items-center justify-start relative shrink-0">
-          {/* Title with icon */}
+          {/* Title with icon (icon is a button on mobile to toggle sidebar) */}
           <div className="content-stretch flex gap-[10px] items-center justify-start relative shrink-0">
-            <div className="h-[23.905px] relative shrink-0 w-[24px]">
+            <button
+              type="button"
+              onClick={() => onMenuToggle?.()}
+              className="h-[24px] w-[24px] relative shrink-0 sm:pointer-events-none"
+              aria-label="Toggle menu"
+            >
               <Image 
                 src={icon}
                 alt={`${title} Icon`}
@@ -64,7 +71,7 @@ export default function TopBar({
                 height={50}
                 className="size-full"
               />
-            </div>
+            </button>
             <div className="font-black leading-[0] not-italic relative shrink-0 text-[40px] text-nowrap text-white font-inter">
               {title}
             </div>
@@ -135,7 +142,7 @@ export default function TopBar({
         {/* Right side - Profile / Actions */}
         {showProfile && (
           <div className="flex items-center gap-3">
-            <div className="relative shrink-0 size-[30px]">
+            {/* <div className="relative shrink-0 size-[30px]">
               <Image 
                 src="/images/c75767911e539a98cf3080c76af0df77e6a62117.png"
                 alt="Profile"
@@ -143,7 +150,7 @@ export default function TopBar({
                 height={30}
                 className="size-full rounded-full"
               />
-            </div>
+            </div> */}
             <button
               onClick={() => setChatOpen(!chatOpen)}
               aria-pressed={chatOpen}

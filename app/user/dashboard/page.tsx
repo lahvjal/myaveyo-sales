@@ -217,7 +217,7 @@ export default function DashboardPage() {
           <div className="mb-20 flex flex-col gap-[20px]">
             <SectionHeader title="Leaderboard" actionLabel="View Leaderboard" actionHref="/user/leaderboard" />
             {/* Current user rank row */}
-            <UserRankRow rank={67} name="Johnny Ives" tsi={164} tss={286} withLabels/>
+            {/* <UserRankRow rank={67} name="Johnny Ives" tsi={164} tss={286} withLabels/> */}
             {/* Top 3 */}
             {leadersLoading ? (
               <div className="text-gray-400">Loading leaderboard...</div>
