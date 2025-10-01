@@ -125,7 +125,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     let unsubscribeStatus: (() => void) | null = null
     let unsubscribeAuth: (() => void) | null = null
     
-    const waitForSession = async (timeoutMs = 2000) => {
+    const isProd = process.env.NODE_ENV === 'production'
+    const waitForSession = async (timeoutMs = isProd ? 4000 : 2000) => {
       // Ensure we have a valid access token before attempting realtime handshake
       const { data: sess } = await supabase.auth.getSession()
       if (sess.session?.access_token) return true
@@ -243,13 +244,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           const realtimeUrl = supa ? supa.replace(/^http/, 'ws') + '/realtime/v1' : '(missing)'
           console.info('[chat] subscribing to realtime (singleton)', { conversationId, expectedRealtimeWs: realtimeUrl })
         }
-        const hasSession = await waitForSession(2500)
+        const hasSession = await waitForSession(isProd ? 4000 : 2500)
         if (typeof window !== 'undefined' && !hasSession) {
           console.warn('[chat] proceeding without confirmed session (may delay SUBSCRIBED)')
         }
         const ok = await (async () => {
           try {
-            const r = await (await import('@/lib/chat-realtime')).connectAndWait(conversationId, 7000)
+            const r = await (await import('@/lib/chat-realtime')).connectAndWait(conversationId, isProd ? 9000 : 7000)
             return r !== false
           } catch {
             return false
@@ -289,7 +290,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         if (conversationId) {
           if (typeof window !== 'undefined') console.info('[chat] auth event -> reconnect', event)
           const { connectAndWait } = await import('@/lib/chat-realtime')
-          await connectAndWait(conversationId, 6000)
+          await connectAndWait(conversationId, isProd ? 8000 : 6000)
         }
       }
     })
