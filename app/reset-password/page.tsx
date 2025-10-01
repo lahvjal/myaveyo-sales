@@ -13,9 +13,11 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     const url = new URL(window.location.href)
     const qpCode = url.searchParams.get('code')
-    // Some providers put params in hash during redirects, handle both
+    // Supabase often places tokens in the hash for recovery/magic links
     const hash = new URLSearchParams((window.location.hash || '').replace(/^#/, ''))
     const hashCode = hash.get('code')
+    const access_token = hash.get('access_token')
+    const refresh_token = hash.get('refresh_token')
     const code = qpCode || hashCode
 
     const ensureSession = async () => {
@@ -25,6 +27,15 @@ export default function ResetPasswordPage() {
         setCanReset(true)
         return
       }
+      // 1) If tokens are present in the hash, set session directly
+      if (access_token && refresh_token) {
+        const { error } = await supabase.auth.setSession({ access_token, refresh_token })
+        if (!error) {
+          setCanReset(true)
+          return
+        }
+      }
+      // 2) Fallback to code exchange flows
       if (code) {
         // Support both signatures across versions: ({ code }) and (code)
         const authAny: any = supabase.auth as any
