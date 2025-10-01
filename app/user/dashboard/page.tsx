@@ -200,7 +200,13 @@ export default function DashboardPage() {
           <div className="mb-20 flex flex-col gap-[20px]">
             <SectionHeader title="My Projects" actionLabel="See Projects" actionHref="/user/projects" />
             {projLoading ? (
-              <div className="flex items-center justify-center h-24 text-gray-400">Loading projects...</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <div key={idx} className="relative min-h-[180px] rounded-[3px] bg-[#111111] overflow-hidden skeleton">
+                    
+                  </div>
+                ))}
+              </div>
             ) : projError ? (
               <div className="flex items-center justify-center h-24 text-red-400">{projError}</div>
             ) : (
@@ -220,7 +226,12 @@ export default function DashboardPage() {
             {/* <UserRankRow rank={67} name="Johnny Ives" tsi={164} tss={286} withLabels/> */}
             {/* Top 3 */}
             {leadersLoading ? (
-              <div className="text-gray-400">Loading leaderboard...</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                {Array.from({ length: 3 }).map((_, idx) => (
+                  <div key={idx} className="bg-gradient-to-t from-[#0d0d0d] to-[#171717] rounded-[3px] h-[180px] relative flex items-start justify-between overflow-clip skeleton">
+                  </div>
+                ))}
+              </div>
             ) : leadersError ? (
               <div className="text-red-400">{leadersError}</div>
             ) : (
@@ -239,7 +250,13 @@ export default function DashboardPage() {
           <div className="mb-20 flex flex-col gap-[20px]">
             <SectionHeader title="Incentives" actionLabel="View All Incentives" actionHref="/user/incentives" />
             {loadingIncentives ? (
-              <div className="flex justify-center items-center h-[220px] text-[rgba(255,255,255,0.6)]">Loading incentives...</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+                {Array.from({ length: 3 }).map((_, idx) => (
+                  <div key={idx}
+        className="rounded-[3px] relative h-full min-h-[600px] overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 skeleton">
+                  </div>
+                ))}
+              </div>
             ) : incentivesError ? (
               <div className="flex justify-center items-center h-[220px] text-red-400">{incentivesError}</div>
             ) : (
