@@ -121,6 +121,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true
     let channel: ReturnType<typeof supabase.channel> | null = null
+    let subscribed = false
+    let subscribeAttempts = 0
     const init = async () => {
       try {
         // Ensure membership and get conversation ID
@@ -135,7 +137,19 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         setConversationId(conversationId)
         // Debug: log conversation context (client)
         if (typeof window !== 'undefined') {
-          console.info('[chat] bootstrap conversation', { id: conversationId, title: conversationTitle })
+          const supa = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '')
+          const realtimeUrl = supa ? supa.replace(/^http/, 'ws') + '/realtime/v1' : '(missing)'
+          const isHttps = window.location.protocol === 'https:'
+          console.info('[chat] bootstrap conversation', {
+            id: conversationId,
+            title: conversationTitle,
+            host: window.location.host,
+            protocol: window.location.protocol,
+            online: navigator.onLine,
+            supabaseUrl: supa,
+            expectedRealtimeWs: realtimeUrl,
+            mixedContentRisk: !isHttps && realtimeUrl.startsWith('wss:'),
+          })
         }
 
         // Load last messages
@@ -199,8 +213,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         })) as ChatMessage[]
         if (mounted) setMessages(mapped)
 
-        // Subscribe
-        channel = supabase
+        // Subscribe (with retry + status logs)
+        const subscribeToChannel = () => {
+          subscribeAttempts++
+          if (typeof window !== 'undefined') {
+            const supa = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '')
+            const realtimeUrl = supa ? supa.replace(/^http/, 'ws') + '/realtime/v1' : '(missing)'
+            console.info('[chat] subscribing to realtime', { conversationId, attempt: subscribeAttempts, expectedRealtimeWs: realtimeUrl })
+          }
+          channel = supabase
           .channel(`messages:${conversationId}`)
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
             const m: any = payload.new
@@ -221,7 +242,36 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             if (typeof window !== 'undefined') {
               console.info('[chat] realtime status', status, 'for', conversationId)
             }
+            if (status === 'SUBSCRIBED') {
+              subscribed = true
+            }
+            if (status === 'TIMED_OUT' || status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+              // Simple retry once after small delay
+              if (subscribeAttempts < 2 && mounted) {
+                setTimeout(() => {
+                  channel?.unsubscribe()
+                  subscribeToChannel()
+                }, 1200)
+              }
+            }
           })
+        }
+        subscribeToChannel()
+
+        // If not subscribed within 4s, log diagnostics
+        setTimeout(() => {
+          if (!mounted) return
+          if (!subscribed) {
+            if (typeof window !== 'undefined') {
+              console.warn('[chat] realtime not SUBSCRIBED within 4s', {
+                attempt: subscribeAttempts,
+                host: window.location.host,
+                online: navigator.onLine,
+                supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+              })
+            }
+          }
+        }, 4000)
       } catch (e) {
         // noop
       }
