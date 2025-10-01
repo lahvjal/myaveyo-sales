@@ -93,15 +93,35 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let mounted = true
+    const resolveName = async (email?: string | null) => {
+      if (!email) return ''
+      const { data: rep } = await supabase
+        .from('sales_reps')
+        .select('rep_name, rep_email')
+        .eq('rep_email', email)
+        .limit(1)
+        .single()
+      const full = (rep as any)?.rep_name as string | undefined
+      if (!full) return ''
+      const first = full.trim().split(/\s+/)[0] || ''
+      return first
+    }
+
     const load = async () => {
       const { data } = await supabase.auth.getUser()
+      const email = data.user?.email
       const meta = (data.user?.user_metadata as any) || {}
-      if (mounted) setFirstName(meta.first_name || meta.given_name || '')
+      const fallback = meta.first_name || meta.given_name || ''
+      const fromReps = await resolveName(email)
+      if (mounted) setFirstName(fromReps || fallback)
     }
     load()
-    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_evt, session) => {
+      const email = session?.user?.email
       const meta = (session?.user?.user_metadata as any) || {}
-      setFirstName(meta.first_name || meta.given_name || '')
+      const fallback = meta.first_name || meta.given_name || ''
+      const fromReps = await resolveName(email)
+      setFirstName(fromReps || fallback)
     })
     return () => {
       mounted = false
