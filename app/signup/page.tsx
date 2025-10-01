@@ -7,6 +7,7 @@ import { siteUrl } from '@/lib/siteUrl'
 export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [repId, setRepId] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -22,15 +23,22 @@ export default function SignupPage() {
     e.preventDefault()
     setLoading(true)
     setMessage(null)
-    const redirectTo = `${siteUrl}/auth/callback`
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: redirectTo },
-    })
-    setLoading(false)
-    if (error) return setMessage(error.message)
-    setMessage('Check your email to confirm your account.')
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, rep_id: repId.trim() }),
+      })
+      setLoading(false)
+      const data = await res.json().catch(() => null)
+      if (!res.ok) {
+        return setMessage(data?.error || 'Failed to sign up')
+      }
+      setMessage(data?.message || 'Check your email to confirm your account.')
+    } catch (err: any) {
+      setLoading(false)
+      setMessage(err?.message || 'Failed to sign up')
+    }
   }
 
   return (
@@ -39,6 +47,14 @@ export default function SignupPage() {
       <div className="max-w-md mx-auto px-6 py-16">
         <h1 className="text-3xl font-telegraf font-bold mb-6">Sign up</h1>
         <form onSubmit={signUp} className="space-y-4">
+          <input
+            type="text"
+            value={repId}
+            onChange={(e) => setRepId(e.target.value)}
+            placeholder="Rep ID"
+            className="w-full px-4 py-3 rounded-[3px] bg-[#171717] border border-[#262626] focus:outline-none"
+            required
+          />
           <input
             type="email"
             value={email}

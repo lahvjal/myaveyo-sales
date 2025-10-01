@@ -84,12 +84,12 @@ export default function LoginPage() {
           <div className="border-t border-white/10 flex-1" />
         </div>
 
-        <button onClick={sendMagicLink} disabled={loading || !email} className="w-full px-4 py-3 bg-gradient-to-b from-[#232323] to-[#171717] text-white rounded-[3px] font-telegraf font-semibold disabled:opacity-60 mb-3">
+        {/* <button onClick={sendMagicLink} disabled={loading || !email} className="w-full px-4 py-3 bg-gradient-to-b from-[#232323] to-[#171717] text-white rounded-[3px] font-telegraf font-semibold disabled:opacity-60 mb-3">
           Send magic link
         </button>
         <button onClick={signInWithGoogle} disabled={loading} className="w-full px-4 py-3 bg-gradient-to-b from-[#232323] to-[#171717] text-white rounded-[3px] font-telegraf font-semibold disabled:opacity-60">
           Continue with Google
-        </button>
+        </button> */}
 
         <div className="mt-6 text-sm text-white/80">
           <a href="/signup" className="underline">Create account</a>

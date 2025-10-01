@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
 
 
     // Compose email via Resend
-    const from = process.env.RESEND_FROM || 'no-reply@aveyosales.com'
+    // Use RESEND_FROM if provided; otherwise let lib/email.ts default to onboarding@resend.dev
+    const from = process.env.RESEND_FROM || undefined
     const html = `
       <div style="font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#111">
         <h2>Reset your Aveyo Sales password</h2>
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
         <p style="word-break:break-all"><a href="${actionLink}">${actionLink}</a></p>
       </div>
     `
-    await sendEmail({ to: email, subject: 'Reset your Aveyo Sales password', html, from })
+    await sendEmail({ to: email, subject: 'Reset your Aveyo Sales password', html, ...(from ? { from } : {}) })
 
     return NextResponse.json({ ok: true })
   } catch (e: any) {
