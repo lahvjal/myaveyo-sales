@@ -2,7 +2,6 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { supabase } from '@/lib/supabase-browser'
-import { connect as rtConnect, onInsert as rtOnInsert, onStatus as rtOnStatus } from '@/lib/chat-realtime'
 
 export type ChatMessage = {
   id: string
@@ -118,36 +117,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [conversationId])
 
-  // Bootstrap + load + subscribe (via singleton channel)
+  // Bootstrap + load + subscribe
   useEffect(() => {
     let mounted = true
-    let unsubscribeInsert: (() => void) | null = null
-    let unsubscribeStatus: (() => void) | null = null
-    let unsubscribeAuth: (() => void) | null = null
-    
-    const isProd = process.env.NODE_ENV === 'production'
-    const waitForSession = async (timeoutMs = isProd ? 4000 : 2000) => {
-      // Ensure we have a valid access token before attempting realtime handshake
-      const { data: sess } = await supabase.auth.getSession()
-      if (sess.session?.access_token) return true
-      return await new Promise<boolean>((resolve) => {
-        let done = false
-        const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
-          if (done) return
-          if (session?.access_token || session?.user) {
-            done = true
-            sub.subscription.unsubscribe()
-            resolve(true)
-          }
-        })
-        setTimeout(() => {
-          if (done) return
-          done = true
-          sub.subscription.unsubscribe()
-          resolve(false)
-        }, timeoutMs)
-      })
-    }
+    let channel: ReturnType<typeof supabase.channel> | null = null
     const init = async () => {
       try {
         // Ensure membership and get conversation ID
@@ -157,25 +130,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           setLastError('Chat bootstrap failed')
           return
         }
-        const { conversationId, conversationTitle } = await res.json()
+        const { conversationId } = await res.json()
         if (!mounted) return
         setConversationId(conversationId)
-        // Debug: log conversation context (client)
-        if (typeof window !== 'undefined') {
-          const supa = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '')
-          const realtimeUrl = supa ? supa.replace(/^http/, 'ws') + '/realtime/v1' : '(missing)'
-          const isHttps = window.location.protocol === 'https:'
-          console.info('[chat] bootstrap conversation', {
-            id: conversationId,
-            title: conversationTitle,
-            host: window.location.host,
-            protocol: window.location.protocol,
-            online: navigator.onLine,
-            supabaseUrl: supa,
-            expectedRealtimeWs: realtimeUrl,
-            mixedContentRisk: !isHttps && realtimeUrl.startsWith('wss:'),
-          })
-        }
+        
 
         // Load last messages
         const { data, error: loadErr } = await supabase
@@ -238,69 +196,33 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         })) as ChatMessage[]
         if (mounted) setMessages(mapped)
 
-        // Subscribe using singleton channel (after session is ready)
-        if (typeof window !== 'undefined') {
-          const supa = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '')
-          const realtimeUrl = supa ? supa.replace(/^http/, 'ws') + '/realtime/v1' : '(missing)'
-          console.info('[chat] subscribing to realtime (singleton)', { conversationId, expectedRealtimeWs: realtimeUrl })
-        }
-        const hasSession = await waitForSession(isProd ? 4000 : 2500)
-        if (typeof window !== 'undefined' && !hasSession) {
-          console.warn('[chat] proceeding without confirmed session (may delay SUBSCRIBED)')
-        }
-        const ok = await (async () => {
-          try {
-            const r = await (await import('@/lib/chat-realtime')).connectAndWait(conversationId, isProd ? 9000 : 7000)
-            return r !== false
-          } catch {
-            return false
-          }
-        })()
-        if (typeof window !== 'undefined') {
-          console.info('[chat] connectAndWait result', ok)
-        }
-        unsubscribeStatus = rtOnStatus((status) => {
-          if (typeof window !== 'undefined') console.info('[chat] realtime status', status, 'for', conversationId)
-        })
-        unsubscribeInsert = rtOnInsert((payload) => {
-          const m: any = payload.new
-          if (m?.conversation_id !== conversationId) return
-          const role = m.user_is_admin ? 'admin' : (roleCache.current.get(m.user_id))
-          const msg: ChatMessage = {
-            id: m.id,
-            userId: m.user_id,
-            userName: m.user_id === (myIdRef.current || '') ? 'You' : (m.user_display_name || 'Member'),
-            content: m.content,
-            createdAt: m.created_at,
-            userRole: role,
-          }
-          setMessages(prev => [...prev, msg])
-          if (!open && m.user_id !== myId) setUnread(u => u + 1)
-        })
+        // Subscribe
+        channel = supabase
+          .channel(`messages:${conversationId}`)
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+            const m: any = payload.new
+            if (m?.conversation_id !== conversationId) return
+            const role = m.user_is_admin ? 'admin' : (roleCache.current.get(m.user_id))
+            const msg: ChatMessage = {
+              id: m.id,
+              userId: m.user_id,
+              userName: m.user_id === (myIdRef.current || '') ? 'You' : (m.user_display_name || 'Member'),
+              content: m.content,
+              createdAt: m.created_at,
+              userRole: role,
+            }
+            setMessages(prev => [...prev, msg])
+            if (!open && m.user_id !== myId) setUnread(u => u + 1)
+          })
+          .subscribe()
       } catch (e) {
         // noop
       }
     }
     init()
-    
-    // Re-subscribe on auth token changes
-    const authListener = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return
-      if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
-        if (conversationId) {
-          if (typeof window !== 'undefined') console.info('[chat] auth event -> reconnect', event)
-          const { connectAndWait } = await import('@/lib/chat-realtime')
-          await connectAndWait(conversationId, isProd ? 8000 : 6000)
-        }
-      }
-    })
-    unsubscribeAuth = () => authListener.data.subscription.unsubscribe()
     return () => {
       mounted = false
-      // Keep the singleton channel alive globally; just remove handlers here
-      try { unsubscribeInsert?.() } catch {}
-      try { unsubscribeStatus?.() } catch {}
-      try { unsubscribeAuth?.() } catch {}
+      channel?.unsubscribe()
     }
   }, [])
 

@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useChat } from '@/components/chat/ChatProvider'
 import Image from 'next/image'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase-browser'
 import { siteUrl } from '@/lib/siteUrl'
-import { onStatus as rtOnStatus, isConnected as rtIsConnected, getConversationId as rtGetConvId } from '@/lib/chat-realtime'
 
 interface TopBarTab {
   id: string
@@ -44,26 +43,6 @@ export default function TopBar({
 }: TopBarProps) {
   const [currentTab, setCurrentTab] = useState(activeTab)
   const { open: chatOpen, setOpen: setChatOpen, unread } = useChat()
-  const [loggingOut, setLoggingOut] = useState(false)
-  const [rtStatus, setRtStatus] = useState<string>('')
-  const [showRtBadge, setShowRtBadge] = useState<boolean>(false)
-
-  // Minimal realtime status badge logic
-  useEffect(() => {
-    // Listen to realtime status changes
-    const off = rtOnStatus((status) => {
-      setRtStatus(status)
-      if (status === 'SUBSCRIBED') setShowRtBadge(false)
-    })
-    // After ~7s from mount/show, if not connected, show badge
-    const t = setTimeout(() => {
-      if (!rtIsConnected()) setShowRtBadge(true)
-    }, 7000)
-    return () => {
-      off?.()
-      clearTimeout(t)
-    }
-  }, [])
 
   const handleTabClick = (tabId: string) => {
     setCurrentTab(tabId)
@@ -156,24 +135,6 @@ export default function TopBar({
         {/* Right side - Profile / Actions */}
         {showProfile && (
           <div className="flex items-center gap-3">
-            {showRtBadge && (
-              <div className="flex items-center gap-2 px-2 py-1 rounded bg-[#2a2a2a] text-xs text-white/80">
-                <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-                <span>Realtime: disconnected</span>
-                <button
-                  onClick={async () => {
-                    try {
-                      const { connectAndWait } = await import('@/lib/chat-realtime')
-                      const convId = rtGetConvId()
-                      await connectAndWait(convId || '', 6000)
-                    } catch {}
-                  }}
-                  className="ml-1 px-2 py-0.5 rounded bg-white text-black hover:opacity-90"
-                >
-                  Retry
-                </button>
-              </div>
-            )}
             <div className="relative shrink-0 size-[30px]">
               <Image 
                 src="/images/c75767911e539a98cf3080c76af0df77e6a62117.png"
@@ -218,22 +179,20 @@ export default function TopBar({
             </button>
             <button
               onClick={async () => {
-                if (loggingOut) return
-                setLoggingOut(true)
                 try {
                   await supabase.auth.signOut()
-                } catch {
-                  // noop
                 } finally {
-                  const url = `/login`
-                  // Use hard navigation to ensure full cleanup and correct domain
-                  window.location.href = url
+                  const params = new URLSearchParams(window.location.search)
+                  const redirect = params.get('redirect')
+                  const target = redirect || '/login'
+                  // Use absolute URL to ensure correct domain (esp. prod subdomain)
+                  const url = '/login'
+                  window.location.replace(url)
                 }
               }}
-              disabled={loggingOut}
-              className={`px-3 py-1.5 rounded-[4px] text-sm font-telegraf transition ${loggingOut ? 'opacity-60 cursor-not-allowed bg-white text-black' : 'bg-white text-black hover:opacity-90'}`}
+              className="px-3 py-1.5 rounded-[4px] bg-white text-black text-sm font-telegraf hover:opacity-90 transition"
             >
-              {loggingOut ? 'Logging out…' : 'Logout'}
+              Logout
             </button>
           </div>
         )}
