@@ -98,6 +98,27 @@ export default function DashboardPage() {
       const parts = String(repName).trim().split(/\s+/)
       return parts[0] || ''
     }
+    const waitForSession = async (timeoutMs = 2000) => {
+      const { data } = await supabase.auth.getSession()
+      if (data.session?.access_token) return true
+      return await new Promise<boolean>((resolve) => {
+        let done = false
+        const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+          if (done) return
+          if (session?.access_token || session?.user) {
+            done = true
+            sub.subscription.unsubscribe()
+            resolve(true)
+          }
+        })
+        setTimeout(() => {
+          if (done) return
+          done = true
+          sub.subscription.unsubscribe()
+          resolve(false)
+        }, timeoutMs)
+      })
+    }
     const load = async () => {
       const { data } = await supabase.auth.getUser()
       const uid = data.user?.id
@@ -107,6 +128,8 @@ export default function DashboardPage() {
           if (mounted) setFirstName(meta.first_name || meta.given_name || '')
           return
         }
+        // Ensure session token is ready after hard refresh
+        await waitForSession(2000)
         // Get user's email from public.users
         const { data: urow } = await supabase
           .from('users')

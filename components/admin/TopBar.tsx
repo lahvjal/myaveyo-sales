@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useChat } from '@/components/chat/ChatProvider'
 import Image from 'next/image'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase-browser'
 import { siteUrl } from '@/lib/siteUrl'
+import { onStatus as rtOnStatus, isConnected as rtIsConnected, getConversationId as rtGetConvId } from '@/lib/chat-realtime'
 
 interface TopBarTab {
   id: string
@@ -44,6 +45,25 @@ export default function TopBar({
   const [currentTab, setCurrentTab] = useState(activeTab)
   const { open: chatOpen, setOpen: setChatOpen, unread } = useChat()
   const [loggingOut, setLoggingOut] = useState(false)
+  const [rtStatus, setRtStatus] = useState<string>('')
+  const [showRtBadge, setShowRtBadge] = useState<boolean>(false)
+
+  // Minimal realtime status badge logic
+  useEffect(() => {
+    // Listen to realtime status changes
+    const off = rtOnStatus((status) => {
+      setRtStatus(status)
+      if (status === 'SUBSCRIBED') setShowRtBadge(false)
+    })
+    // After ~7s from mount/show, if not connected, show badge
+    const t = setTimeout(() => {
+      if (!rtIsConnected()) setShowRtBadge(true)
+    }, 7000)
+    return () => {
+      off?.()
+      clearTimeout(t)
+    }
+  }, [])
 
   const handleTabClick = (tabId: string) => {
     setCurrentTab(tabId)
@@ -136,6 +156,24 @@ export default function TopBar({
         {/* Right side - Profile / Actions */}
         {showProfile && (
           <div className="flex items-center gap-3">
+            {showRtBadge && (
+              <div className="flex items-center gap-2 px-2 py-1 rounded bg-[#2a2a2a] text-xs text-white/80">
+                <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
+                <span>Realtime: disconnected</span>
+                <button
+                  onClick={async () => {
+                    try {
+                      const { connectAndWait } = await import('@/lib/chat-realtime')
+                      const convId = rtGetConvId()
+                      await connectAndWait(convId || '', 6000)
+                    } catch {}
+                  }}
+                  className="ml-1 px-2 py-0.5 rounded bg-white text-black hover:opacity-90"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
             <div className="relative shrink-0 size-[30px]">
               <Image 
                 src="/images/c75767911e539a98cf3080c76af0df77e6a62117.png"

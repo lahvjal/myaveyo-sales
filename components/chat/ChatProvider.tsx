@@ -123,6 +123,30 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     let mounted = true
     let unsubscribeInsert: (() => void) | null = null
     let unsubscribeStatus: (() => void) | null = null
+    let unsubscribeAuth: (() => void) | null = null
+    
+    const waitForSession = async (timeoutMs = 2000) => {
+      // Ensure we have a valid access token before attempting realtime handshake
+      const { data: sess } = await supabase.auth.getSession()
+      if (sess.session?.access_token) return true
+      return await new Promise<boolean>((resolve) => {
+        let done = false
+        const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+          if (done) return
+          if (session?.access_token || session?.user) {
+            done = true
+            sub.subscription.unsubscribe()
+            resolve(true)
+          }
+        })
+        setTimeout(() => {
+          if (done) return
+          done = true
+          sub.subscription.unsubscribe()
+          resolve(false)
+        }, timeoutMs)
+      })
+    }
     const init = async () => {
       try {
         // Ensure membership and get conversation ID
@@ -213,11 +237,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         })) as ChatMessage[]
         if (mounted) setMessages(mapped)
 
-        // Subscribe using singleton channel
+        // Subscribe using singleton channel (after session is ready)
         if (typeof window !== 'undefined') {
           const supa = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '')
           const realtimeUrl = supa ? supa.replace(/^http/, 'ws') + '/realtime/v1' : '(missing)'
           console.info('[chat] subscribing to realtime (singleton)', { conversationId, expectedRealtimeWs: realtimeUrl })
+        }
+        const hasSession = await waitForSession(2500)
+        if (typeof window !== 'undefined' && !hasSession) {
+          console.warn('[chat] proceeding without confirmed session (may delay SUBSCRIBED)')
         }
         const ok = await (async () => {
           try {
@@ -253,11 +281,25 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       }
     }
     init()
+    
+    // Re-subscribe on auth token changes
+    const authListener = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return
+      if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+        if (conversationId) {
+          if (typeof window !== 'undefined') console.info('[chat] auth event -> reconnect', event)
+          const { connectAndWait } = await import('@/lib/chat-realtime')
+          await connectAndWait(conversationId, 6000)
+        }
+      }
+    })
+    unsubscribeAuth = () => authListener.data.subscription.unsubscribe()
     return () => {
       mounted = false
       // Keep the singleton channel alive globally; just remove handlers here
       try { unsubscribeInsert?.() } catch {}
       try { unsubscribeStatus?.() } catch {}
+      try { unsubscribeAuth?.() } catch {}
     }
   }, [])
 
