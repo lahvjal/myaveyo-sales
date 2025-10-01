@@ -12,11 +12,22 @@ export async function GET() {
     }
 
     // 2) Authorize: require admin role in users table
-    const { data: userRow, error: userErr } = await supabaseAdmin
+    // Note: public.users uses primary key 'id' that FK's to auth.users.id
+    let { data: userRow, error: userErr } = await supabaseAdmin
       .from('users')
       .select('role')
-      .eq('auth_user_id', authData.user.id)
-      .single()
+      .eq('id', authData.user.id)
+      .maybeSingle()
+
+    // Fallback by email if needed
+    if ((!userRow || userRow.role == null) && authData.user.email) {
+      const { data: byEmail } = await supabaseAdmin
+        .from('users')
+        .select('role')
+        .ilike('email', authData.user.email)
+        .maybeSingle()
+      userRow = byEmail || userRow
+    }
 
     if (userErr) {
       console.error('[join_requests] users lookup error:', userErr)
