@@ -115,7 +115,7 @@ export default function ProjectsPageContent() {
 
           {/* Milestones grid */}
           <div className="w-full flex flex-row gap-[14px]">
-            <div className="flex flex-row gap-[14px] w-full">
+            <div className="flex flex-col md:flex-row gap-[14px] w-full">
               {stages.map((s) => (
                 <ProjectMilestoneCard
                   key={s.label}

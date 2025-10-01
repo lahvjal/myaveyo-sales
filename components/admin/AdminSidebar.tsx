@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -82,6 +83,43 @@ interface AdminSidebarProps {
 
 export default function AdminSidebar({ className = '', expanded = false }: AdminSidebarProps) {
   const pathname = usePathname()
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      try {
+        // Prefer centralized me endpoint
+        const res = await fetch('/api/me', { cache: 'no-store' })
+        if (res.ok) {
+          const me = await res.json()
+          const centralAdmin = Boolean(me?.isAdmin || me?.role === 'admin')
+          if (mounted && centralAdmin) {
+            setIsAdmin(true)
+            return
+          }
+        }
+        // Fallback: local session metadata
+        // const { data } = await supabase.auth.getUser()
+        // const metaAdmin = Boolean(data.user?.user_metadata?.isAdmin)
+        // if (metaAdmin && mounted) {
+        //   setIsAdmin(true)
+        //   return
+        // }
+        // Last resort: public.users.role
+        // const email = data.user?.email
+        // if (!email) return
+        // const { data: rows } = await supabase
+        //   .from('users')
+        //   .select('role')
+        //   .ilike('email', email)
+        //   .limit(1)
+        // if (mounted && rows && rows[0]?.role === 'admin') setIsAdmin(true)
+      } catch {}
+    }
+    load()
+    return () => { mounted = false }
+  }, [])
 
   const isActive = (item: typeof navigationItems[0]) => {
     if (item.exact) {
@@ -111,6 +149,7 @@ export default function AdminSidebar({ className = '', expanded = false }: Admin
       {/* Navigation Items */}
       <nav className={`flex flex-col gap-[10px] ${expanded ? 'items-stretch' : 'items-center'}`}>
         {navigationItems.map((item) => {
+          if (item.id === 'admin' && !isAdmin) return null
           const active = isActive(item)
           
           return (

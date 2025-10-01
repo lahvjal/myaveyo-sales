@@ -49,7 +49,7 @@ export default function ChatDock() {
           className="text-white/60 hover:text-white"
           aria-label="Close chat"
         >
-          ×
+          <Image src="/images/x-icon.png" alt="Close Icon" width={24} height={24} />
         </button>
       </div>
 
