@@ -14,7 +14,7 @@ export async function GET() {
     // Find General conversation
     const { data: conv } = await supabaseAdmin
       .from('conversations')
-      .select('id')
+      .select('id, title')
       .eq('title', 'General')
       .limit(1)
       .single()
@@ -28,7 +28,10 @@ export async function GET() {
       .from('conversation_members')
       .upsert({ conversation_id: conv.id, user_id: authData.user.id }, { onConflict: 'conversation_id,user_id' })
 
-    return NextResponse.json({ conversationId: conv.id })
+    // Debug: log conversation context (server)
+    console.log('[chat/bootstrap] conversation', { id: conv.id, title: conv.title, userId: authData.user.id })
+
+    return NextResponse.json({ conversationId: conv.id, conversationTitle: conv.title })
   } catch (e: any) {
     console.error('[chat/bootstrap] error', e)
     return NextResponse.json({ error: e?.message || 'Unexpected error' }, { status: 500 })

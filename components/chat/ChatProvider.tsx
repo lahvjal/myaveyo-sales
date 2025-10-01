@@ -130,10 +130,13 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           setLastError('Chat bootstrap failed')
           return
         }
-        const { conversationId } = await res.json()
+        const { conversationId, conversationTitle } = await res.json()
         if (!mounted) return
         setConversationId(conversationId)
-        
+        // Debug: log conversation context (client)
+        if (typeof window !== 'undefined') {
+          console.info('[chat] bootstrap conversation', { id: conversationId, title: conversationTitle })
+        }
 
         // Load last messages
         const { data, error: loadErr } = await supabase
@@ -214,7 +217,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             setMessages(prev => [...prev, msg])
             if (!open && m.user_id !== myId) setUnread(u => u + 1)
           })
-          .subscribe()
+          .subscribe((status) => {
+            if (typeof window !== 'undefined') {
+              console.info('[chat] realtime status', status, 'for', conversationId)
+            }
+          })
       } catch (e) {
         // noop
       }
