@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase-browser'
 import Navbar from '@/components/Navbar'
 
 export default function ResetPasswordPage() {
@@ -11,10 +11,39 @@ export default function ResetPasswordPage() {
   const [canReset, setCanReset] = useState(false)
 
   useEffect(() => {
-    // Ensure we have a recovery session (arrives via /auth/callback?type=recovery)
-    supabase.auth.getSession().then(({ data }) => {
-      setCanReset(Boolean(data.session))
-    })
+    const url = new URL(window.location.href)
+    const qpCode = url.searchParams.get('code')
+    // Some providers put params in hash during redirects, handle both
+    const hash = new URLSearchParams((window.location.hash || '').replace(/^#/, ''))
+    const hashCode = hash.get('code')
+    const code = qpCode || hashCode
+
+    const ensureSession = async () => {
+      // If we already have a session, allow reset
+      const { data } = await supabase.auth.getSession()
+      if (data.session) {
+        setCanReset(true)
+        return
+      }
+      if (code) {
+        // Support both signatures across versions: ({ code }) and (code)
+        const authAny: any = supabase.auth as any
+        let error: any = null
+        try {
+          const res = await authAny.exchangeCodeForSession({ code })
+          error = res?.error || null
+        } catch {
+          const res = await authAny.exchangeCodeForSession(code)
+          error = res?.error || null
+        }
+        if (!error) {
+          setCanReset(true)
+          return
+        }
+      }
+      setCanReset(false)
+    }
+    ensureSession()
   }, [])
 
   const onSubmit = async (e: React.FormEvent) => {

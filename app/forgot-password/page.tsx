@@ -1,8 +1,6 @@
 "use client"
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase-browser'
 import Navbar from '@/components/Navbar'
-import { siteUrl } from '@/lib/siteUrl'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -13,11 +11,22 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
     setLoading(true)
     setMessage(null)
-    const redirectTo = `${siteUrl}/auth/callback?type=recovery`
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
-    setLoading(false)
-    if (error) return setMessage(error.message)
-    setMessage('Password reset email sent. Check your inbox.')
+    try {
+      const res = await fetch('/api/auth/request-password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      setLoading(false)
+      if (!res.ok) {
+        const err = await res.json().catch(() => null)
+        return setMessage(err?.error || 'Failed to send reset email')
+      }
+      setMessage('Password reset email sent. Check your inbox.')
+    } catch (err: any) {
+      setLoading(false)
+      setMessage(err?.message || 'Failed to send reset email')
+    }
   }
 
   return (
