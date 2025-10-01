@@ -2,6 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { supabase } from '@/lib/supabase-browser'
+import { connect as rtConnect, onInsert as rtOnInsert, onStatus as rtOnStatus } from '@/lib/chat-realtime'
 
 export type ChatMessage = {
   id: string
@@ -117,12 +118,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [conversationId])
 
-  // Bootstrap + load + subscribe
+  // Bootstrap + load + subscribe (via singleton channel)
   useEffect(() => {
     let mounted = true
-    let channel: ReturnType<typeof supabase.channel> | null = null
-    let subscribed = false
-    let subscribeAttempts = 0
+    let unsubscribeInsert: (() => void) | null = null
+    let unsubscribeStatus: (() => void) | null = null
     const init = async () => {
       try {
         // Ensure membership and get conversation ID
@@ -213,65 +213,31 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         })) as ChatMessage[]
         if (mounted) setMessages(mapped)
 
-        // Subscribe (with retry + status logs)
-        const subscribeToChannel = () => {
-          subscribeAttempts++
-          if (typeof window !== 'undefined') {
-            const supa = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '')
-            const realtimeUrl = supa ? supa.replace(/^http/, 'ws') + '/realtime/v1' : '(missing)'
-            console.info('[chat] subscribing to realtime', { conversationId, attempt: subscribeAttempts, expectedRealtimeWs: realtimeUrl })
-          }
-          channel = supabase
-          .channel(`messages:${conversationId}`)
-          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
-            const m: any = payload.new
-            if (m?.conversation_id !== conversationId) return
-            const role = m.user_is_admin ? 'admin' : (roleCache.current.get(m.user_id))
-            const msg: ChatMessage = {
-              id: m.id,
-              userId: m.user_id,
-              userName: m.user_id === (myIdRef.current || '') ? 'You' : (m.user_display_name || 'Member'),
-              content: m.content,
-              createdAt: m.created_at,
-              userRole: role,
-            }
-            setMessages(prev => [...prev, msg])
-            if (!open && m.user_id !== myId) setUnread(u => u + 1)
-          })
-          .subscribe((status) => {
-            if (typeof window !== 'undefined') {
-              console.info('[chat] realtime status', status, 'for', conversationId)
-            }
-            if (status === 'SUBSCRIBED') {
-              subscribed = true
-            }
-            if (status === 'TIMED_OUT' || status === 'CHANNEL_ERROR' || status === 'CLOSED') {
-              // Simple retry once after small delay
-              if (subscribeAttempts < 2 && mounted) {
-                setTimeout(() => {
-                  channel?.unsubscribe()
-                  subscribeToChannel()
-                }, 1200)
-              }
-            }
-          })
+        // Subscribe using singleton channel
+        if (typeof window !== 'undefined') {
+          const supa = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '')
+          const realtimeUrl = supa ? supa.replace(/^http/, 'ws') + '/realtime/v1' : '(missing)'
+          console.info('[chat] subscribing to realtime (singleton)', { conversationId, expectedRealtimeWs: realtimeUrl })
         }
-        subscribeToChannel()
-
-        // If not subscribed within 4s, log diagnostics
-        setTimeout(() => {
-          if (!mounted) return
-          if (!subscribed) {
-            if (typeof window !== 'undefined') {
-              console.warn('[chat] realtime not SUBSCRIBED within 4s', {
-                attempt: subscribeAttempts,
-                host: window.location.host,
-                online: navigator.onLine,
-                supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-              })
-            }
+        await rtConnect(conversationId)
+        unsubscribeStatus = rtOnStatus((status) => {
+          if (typeof window !== 'undefined') console.info('[chat] realtime status', status, 'for', conversationId)
+        })
+        unsubscribeInsert = rtOnInsert((payload) => {
+          const m: any = payload.new
+          if (m?.conversation_id !== conversationId) return
+          const role = m.user_is_admin ? 'admin' : (roleCache.current.get(m.user_id))
+          const msg: ChatMessage = {
+            id: m.id,
+            userId: m.user_id,
+            userName: m.user_id === (myIdRef.current || '') ? 'You' : (m.user_display_name || 'Member'),
+            content: m.content,
+            createdAt: m.created_at,
+            userRole: role,
           }
-        }, 4000)
+          setMessages(prev => [...prev, msg])
+          if (!open && m.user_id !== myId) setUnread(u => u + 1)
+        })
       } catch (e) {
         // noop
       }
@@ -279,7 +245,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     init()
     return () => {
       mounted = false
-      channel?.unsubscribe()
+      // Keep the singleton channel alive globally; just remove handlers here
+      try { unsubscribeInsert?.() } catch {}
+      try { unsubscribeStatus?.() } catch {}
     }
   }, [])
 
