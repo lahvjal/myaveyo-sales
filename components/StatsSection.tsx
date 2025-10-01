@@ -72,7 +72,12 @@ export default function StatsSection({ className = '', pageReady = true }: Stats
             suffix: stat.suffix || undefined,
             label: stat.title
           }))
-          setStats(formattedStats)
+          // Normalize to exactly 4 items to keep hook count stable
+          const normalized = formattedStats.slice(0, 4)
+          while (normalized.length < 4) {
+            normalized.push({ value: '0', label: '', prefix: undefined, suffix: undefined })
+          }
+          setStats(normalized)
         }
       } catch (error) {
         console.error('Failed to fetch home stats:', error)

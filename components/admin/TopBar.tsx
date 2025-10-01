@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase-browser'
 import { siteUrl } from '@/lib/siteUrl'
+import Button from '../Button'
 
 interface TopBarTab {
   id: string
@@ -184,7 +185,7 @@ export default function TopBar({
                 <div className="absolute -right-[3px] top-1/2 -translate-y-1/2 w-[3px] h-[20px] bg-white rounded-l-full" />
               )}
             </button>
-            <button
+            <Button
               onClick={async () => {
                 try {
                   await supabase.auth.signOut()
@@ -197,10 +198,10 @@ export default function TopBar({
                   window.location.replace(url)
                 }
               }}
-              className="px-3 py-1.5 rounded-[4px] bg-white text-black text-sm font-telegraf hover:opacity-90 transition"
+              
             >
               Logout
-            </button>
+            </Button>
           </div>
         )}
       </div>
