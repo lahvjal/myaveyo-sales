@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 3) Generate a signup confirmation link (lets us send via Resend)
-    const redirectTo = 'https://my.aveyosales.com/auth/callback'
+    const redirectTo = 'https://my.aveyosales.com/login?confirmed=1'
     const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
       type: 'signup',
       email,

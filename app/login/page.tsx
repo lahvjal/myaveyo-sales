@@ -9,20 +9,23 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [message, setMessage] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [confirmed, setConfirmed] = useState(false)
 
   useEffect(() => {
-    // If already logged in, redirect to /user
+    // If already logged in, redirect
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
         window.location.replace('/user')
       }
     })
+    // Show success banner after email confirmation
+    const sp = new URLSearchParams(window.location.search)
+    setConfirmed(sp.get('confirmed') === '1')
   }, [])
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setMessage(null)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
     if (error) return setMessage(error.message)
@@ -53,6 +56,9 @@ export default function LoginPage() {
       <Navbar />
       <div className="max-w-md mx-auto px-6 py-16">
         <h1 className="text-3xl font-telegraf font-bold mb-6">Log in</h1>
+        {confirmed && (
+          <div className="mb-4 text-sm text-green-400">Email confirmed. Please sign in.</div>
+        )}
         <form onSubmit={signIn} className="space-y-4">
           <input
             type="email"
