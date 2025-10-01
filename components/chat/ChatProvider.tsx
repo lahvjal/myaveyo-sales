@@ -219,7 +219,17 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           const realtimeUrl = supa ? supa.replace(/^http/, 'ws') + '/realtime/v1' : '(missing)'
           console.info('[chat] subscribing to realtime (singleton)', { conversationId, expectedRealtimeWs: realtimeUrl })
         }
-        await rtConnect(conversationId)
+        const ok = await (async () => {
+          try {
+            const r = await (await import('@/lib/chat-realtime')).connectAndWait(conversationId, 7000)
+            return r !== false
+          } catch {
+            return false
+          }
+        })()
+        if (typeof window !== 'undefined') {
+          console.info('[chat] connectAndWait result', ok)
+        }
         unsubscribeStatus = rtOnStatus((status) => {
           if (typeof window !== 'undefined') console.info('[chat] realtime status', status, 'for', conversationId)
         })

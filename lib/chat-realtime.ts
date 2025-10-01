@@ -7,11 +7,16 @@ let statusHandlers: Array<(status: string) => void> = []
 let insertHandlers: Array<(payload: any) => void> = []
 let subscribed = false
 let connecting = false
+let waiters: Array<(ok: boolean) => void> = []
+let retryCount = 0
 
 const notifyStatus = (s: string) => {
   statusHandlers.forEach((cb) => {
     try { cb(s) } catch {}
   })
+  if (s === 'SUBSCRIBED') {
+    waiters.splice(0).forEach((res) => { try { res(true) } catch {} })
+  }
 }
 
 export const isConnected = () => subscribed
@@ -40,17 +45,19 @@ export async function connect(conversationId: string) {
         })
       })
       .subscribe((status) => {
-        if (status === 'SUBSCRIBED') subscribed = true
-        if (status === 'CLOSED' || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') subscribed = false
+        if (status === 'SUBSCRIBED') { subscribed = true; retryCount = 0 }
+        if (status === 'CLOSED' || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') { subscribed = false }
         notifyStatus(status)
       })
 
-    // Failsafe: after 3s, if not subscribed, try once more
-    setTimeout(async () => {
-      if (!subscribed && currentConversationId === conversationId) {
-        try {
-          await channel?.unsubscribe()
-        } catch {}
+    // Progressive backoff retry if not subscribed
+    const scheduleRetry = async () => {
+      if (subscribed || currentConversationId !== conversationId) return
+      retryCount += 1
+      const delay = Math.min(5000, 800 * Math.pow(1.8, retryCount - 1))
+      setTimeout(async () => {
+        if (subscribed || currentConversationId !== conversationId) return
+        try { await channel?.unsubscribe() } catch {}
         channel = supabase
           .channel(`messages:${conversationId}`)
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
@@ -59,17 +66,35 @@ export async function connect(conversationId: string) {
             })
           })
           .subscribe((status) => {
-            if (status === 'SUBSCRIBED') subscribed = true
-            if (status === 'CLOSED' || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') subscribed = false
+            if (status === 'SUBSCRIBED') { subscribed = true; retryCount = 0 }
+            if (status === 'CLOSED' || status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') { subscribed = false }
             notifyStatus(status)
           })
-      }
-    }, 3000)
+        scheduleRetry()
+      }, delay)
+    }
+    scheduleRetry()
 
     return channel
   } finally {
     connecting = false
   }
+}
+
+export async function connectAndWait(conversationId: string, timeoutMs = 6000) {
+  if (subscribed && currentConversationId === conversationId) return
+  await connect(conversationId)
+  if (subscribed) return
+  const ok = await new Promise<boolean>((resolve) => {
+    waiters.push(resolve)
+    setTimeout(() => {
+      // timeout resolve false
+      const idx = waiters.indexOf(resolve)
+      if (idx >= 0) waiters.splice(idx, 1)
+      resolve(false)
+    }, timeoutMs)
+  })
+  return ok
 }
 
 export function onStatus(cb: (status: string) => void) {
