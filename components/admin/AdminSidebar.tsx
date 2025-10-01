@@ -76,6 +76,13 @@ const navigationItems = [
   }
 ]
 
+const profile = {
+  id: 'profile',
+  href: '/user/profile',
+  icon: '/images/user-icon.png',
+  label: 'Profile'
+}
+
 interface AdminSidebarProps {
   className?: string
   expanded?: boolean
@@ -193,6 +200,44 @@ export default function AdminSidebar({ className = '', expanded = false }: Admin
           )
         })}
       </nav>
+
+      <Link
+        key="profile"
+        href="/user/profile"
+        className={`
+          absolute bottom-[20px] shrink-0 rounded-[8px] flex ${expanded ? 'gap-3 items-center justify-start px-3 py-2' : 'items-center justify-center size-[45px]'}
+          transition-all duration-200 ease-in-out group
+          ${isActive(profile) 
+            ? 'bg-white/10 shadow-lg' 
+            : 'hover:bg-white/5 hover:scale-105'
+          }
+        `}
+        title="Profile"
+      >
+        <Image 
+          src="/images/user-icon.png"
+          alt="Profile"
+          width={25}
+          height={25}
+          className={`
+            transition-all duration-200 bg-[#121212] rounded-full border-solid border-[1px] border-[#ffffff]
+            ${isActive(profile) 
+              ? 'opacity-100 scale-110' 
+              : 'opacity-70 group-hover:opacity-100 group-hover:scale-105'
+            }
+          `}
+        />
+        {expanded && (
+          <span className={`text-sm font-telegraf ${isActive(profile) ? 'text-white' : 'text-white/80'}`}>
+            Profile
+          </span>
+        )}
+        
+        {/* Active indicator */}
+        {!expanded && isActive(profile) && (
+          <div className="absolute -right-[3px] top-1/2 -translate-y-1/2 w-[3px] h-[20px] bg-white rounded-l-full" />
+        )}
+      </Link>
     </div>
   )
 }
