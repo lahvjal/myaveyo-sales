@@ -7,7 +7,7 @@ import Link from "next/link"
 import Button from "@/components/Button"
 import ProjectMilestoneCard from "@/components/projects/ProjectMilestoneCard"
 import Top3Card from "@/components/leaderboard/Top3Card"
-import { fetchTopLeaders, LeaderboardEntry } from "@/lib/leaderboard"
+import { fetchTopLeaders, LeaderboardEntry } from "@/lib/client/leaderboard"
 import UserRankRow from "@/components/leaderboard/UserRankRow"
 import IncentiveCard from "@/components/incentives/IncentiveCard"
 
@@ -93,15 +93,19 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let mounted = true
-    const load = async () => {
-      const { data } = await supabase.auth.getUser()
-      const meta = (data.user?.user_metadata as any) || {}
-      if (mounted) setFirstName(meta.first_name || meta.given_name || '')
+    const loadMe = async () => {
+      try {
+        const res = await fetch('/api/me', { cache: 'no-store' })
+        if (!res.ok) return
+        const me = await res.json()
+        const repName: string | undefined = me?.rep_name || undefined
+        const first = repName ? String(repName).trim().split(/\s+/)[0] : ''
+        if (mounted) setFirstName(first)
+      } catch {}
     }
-    load()
-    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
-      const meta = (session?.user?.user_metadata as any) || {}
-      setFirstName(meta.first_name || meta.given_name || '')
+    loadMe()
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      loadMe()
     })
     return () => {
       mounted = false

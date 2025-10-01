@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { fetchLeaderboardFull, LeaderboardEntry, LeaderboardStats } from "@/lib/client/leaderboard"
 import AdminLayout from "@/components/admin/AdminLayout"
 
 // Helper functions copied from public leaderboard for consistent formatting
@@ -33,17 +34,11 @@ const formatTimeLabel = (time: string): string => {
   }
 }
 
-interface LeaderboardEntry {
-  rank: number
-  name: string
-  tss: number
-  tsi: number
-  role?: "all" | "closer" | "setter"
-}
+// Uses shared client types
 
 export default function AdminLeaderboardPage() {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([])
-  const [totalStats, setTotalStats] = useState({ totalReps: 0, totalTSS: 0, totalTSI: 0, avgTSS: 0 })
+  const [totalStats, setTotalStats] = useState<LeaderboardStats>({ totalReps: 0, totalTSS: 0, totalTSI: 0, avgTSS: 0 })
   const [loading, setLoading] = useState(true)
   const [roleFilter, setRoleFilter] = useState<"all" | "closer" | "setter">("all")
   const [timeFilter, setTimeFilter] = useState<"ytd" | "mtd">("ytd")
@@ -54,23 +49,9 @@ export default function AdminLeaderboardPage() {
   const fetchLeaderboard = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/leaderboard?role=${roleFilter}&time=${timeFilter}&metric=${metricFilter}`)
-      if (!response.ok) throw new Error("Failed to fetch leaderboard data")
-      const data = await response.json()
-      if (data.leaderboard && data.totalStats) {
-        setLeaderboardData(data.leaderboard || [])
-        setTotalStats(data.totalStats)
-      } else {
-        setLeaderboardData(data || [])
-        setTotalStats({
-          totalReps: data?.length || 0,
-          totalTSS: data?.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.tss, 0) || 0,
-          totalTSI: data?.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.tsi, 0) || 0,
-          avgTSS: Math.round(
-            (data?.reduce((sum: number, entry: LeaderboardEntry) => sum + entry.tss, 0) || 0) / (data?.length || 1)
-          ),
-        })
-      }
+      const { leaderboard, totalStats } = await fetchLeaderboardFull({ role: roleFilter, time: timeFilter, metric: metricFilter })
+      setLeaderboardData(leaderboard)
+      setTotalStats(totalStats)
     } catch (error) {
       console.error("Error fetching leaderboard:", error)
       setLeaderboardData([])
@@ -89,7 +70,7 @@ export default function AdminLeaderboardPage() {
     entry.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
   // Keep global ranking order when filtering so ranks remain accurate
-  const filteredDataSorted = [...filteredData].sort((a, b) => a.rank - b.rank)
+  const filteredDataSorted = [...filteredData].sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0))
 
   const getRankIconFromRank = (rank: number) => {
     if (rank === 1) return "🥇"
@@ -206,7 +187,7 @@ export default function AdminLeaderboardPage() {
                             : "from-[#232323] to-[#171717]"
                         }`}
                       >
-                        <div className="text-2xl">{entry.rank === 1 || entry.rank === 2 || entry.rank === 3 ? getRankIconFromRank(entry.rank) : ''}</div>
+                        <div className="text-2xl">{entry.rank === 1 || entry.rank === 2 || entry.rank === 3 ? getRankIconFromRank(entry.rank ?? 0) : ''}</div>
                         <div className="text-white text-[14px] font-telegraf font-black">#{entry.rank}</div>
                       </div>
                       <div className="flex flex-col items-center justify-center gap-[10px] px-2 grow h-full">
@@ -240,7 +221,7 @@ export default function AdminLeaderboardPage() {
                       style={{ gridTemplateColumns: "80px 1fr 1fr 1fr" }}
                     >
                       <div className="flex items-center">
-                        <span className="text-white text-[18px] font-telegraf font-bold">{getRankIconFromRank(entry.rank)}</span>
+                        <span className="text-white text-[18px] font-telegraf font-bold">{getRankIconFromRank(entry.rank ?? 0)}</span>
                       </div>
                       <div className="flex flex-col">
                         <span className="text-white text-[16px] font-telegraf font-semibold">{entry.name}</span>
