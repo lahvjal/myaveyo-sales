@@ -25,6 +25,12 @@ export default function CMSHomePage() {
       description: 'Click to manage',
       status: 'active' as const,
       href: '/admin/cms/reviews'
+    },
+    {
+      title: 'Stats Page',
+      description: 'Click to manage',
+      status: 'active' as const,
+      href: '/admin/cms/stats'
     }
   ]
 
