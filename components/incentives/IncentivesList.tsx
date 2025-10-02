@@ -57,8 +57,12 @@ export default function IncentivesList({
 
       {/* Incentives Grid */}
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {Array.from({ length: 4 }).map((_, idx) => (
+            <div key={idx}
+        className="rounded-[3px] relative h-full min-h-[600px] overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 skeleton">
+                  </div>
+          ))}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
