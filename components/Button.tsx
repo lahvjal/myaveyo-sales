@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface ButtonProps {
-  children: React.ReactNode
+  children?: React.ReactNode
   variant?: 'primary' | 'secondary'
   onClick?: () => void
   className?: string
@@ -9,6 +9,8 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
   theme?: 'light' | 'dark'
+  iconOnly?: boolean
+  ariaLabel?: string
 }
 
 const imgVector116 = "http://localhost:3845/assets/5fe2a32dc067120eb3a1b0499801e0069a379f4e.svg"
@@ -21,14 +23,18 @@ export default function Button({
   icon,
   type = 'button',
   disabled = false,
-  theme = 'light'
+  theme = 'light',
+  iconOnly = false,
+  ariaLabel
 }: ButtonProps) {
-  const baseStyles = "box-border content-stretch flex gap-2.5 items-center justify-center p-[20px] relative rounded-[3px] font-extrabold text-[14px] transition-colors cursor-pointer"
+  const baseStyles = iconOnly
+    ? "inline-flex items-center justify-center rounded-[8px] p-2 size-[45px]"
+    : "box-border content-stretch flex gap-2.5 items-center justify-center p-[20px] relative rounded-[3px] font-extrabold text-[14px] transition-colors cursor-pointer"
   
   const getVariantStyles = () => {
     if (theme === 'dark') {
       return {
-        primary: "bg-[#0d0d0d] text-[#ffffff] hover:bg-[#1a1a1a]",
+        primary: "bg-[#1d1d1d] text-[#ffffff] hover:bg-[#1a1a1a]",
         secondary: "bg-[#222222] text-[#0d0d0d] hover:bg-[#444444] hover:text-[#ffffff]"
       }
     }
@@ -48,17 +54,20 @@ export default function Button({
       className={`${baseStyles} ${variantStyles[variant]} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       onClick={onClick}
       data-name="button"
+      aria-label={ariaLabel}
     >
-      <span className="font-inter font-extrabold leading-[0] not-italic text-nowrap">
-        {children}
-      </span>
-      {(variant === 'primary' || icon) && (
-        <div className="h-0 relative shrink-0 w-[22.195px]">
-          <div className="absolute bottom-[-3.68px] left-0 right-[-2.25%] top-[-3.68px]">
+      {!iconOnly && (
+        <span className="font-inter font-extrabold leading-[0] not-italic text-nowrap">
+          {children}
+        </span>
+      )}
+      {(variant === 'primary' || iconOnly || icon) && (
+        <div className={iconOnly ? "w-5 h-5" : "h-0 relative shrink-0 w-[22.195px]"}>
+          <div className={iconOnly ? "" : "absolute bottom-[-3.68px] left-0 right-[-2.25%] top-[-3.68px]"}>
             <img 
               alt="Arrow" 
-              className="block max-w-none size-full" 
-              src={theme === 'dark' ? "/images/arrow-white.svg" : "/images/arrow.svg"}
+              className={iconOnly ? "block size-full" : "block max-w-none size-full"}
+              src={icon || (theme === 'dark' ? "/images/arrow-white.svg" : "/images/arrow.svg")}
             />
           </div>
         </div>

@@ -79,9 +79,9 @@ export default async function IncentiveDetailPage({ params }: PageProps) {
     <div className="bg-[#0d0d0d] min-h-screen text-white">
       <div className="">
         {/* Full-bleed, full-height 2-col layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 w-full h-[100vh]">
+        <div className="flex flex-col xl:grid xl:grid-cols-2 w-full xl:h-[100vh]">
           {/* Left: Poster / Video */}
-          <div className="relative w-full h-full bg-black">
+          <div className="relative w-full h-[30vh] bg-black xl:h-full">
             {incentive.background_video_url ? (
               <video
                 src={incentive.background_video_url}
@@ -111,10 +111,10 @@ export default async function IncentiveDetailPage({ params }: PageProps) {
           </div>
 
           {/* Right: Description / Details */}
-          <div className="w-full h-full bg-[#0d0d0d] flex flex-col pt-[100px]">
+          <div className="w-full h-[auto] bg-[#0d0d0d] flex flex-col">
 
             {/* Scrollable content */}
-            <div className="flex-1 overflow-auto p-[300px]">
+            <div className="flex-1 overflow-auto p-[10vw]">
               <div className="space-y-8">
                 {/* Dates and summary */}
                 <div className="space-y-8">
@@ -173,11 +173,6 @@ export default async function IncentiveDetailPage({ params }: PageProps) {
                 {/* Actions */}
                 <div className="flex flex-wrap gap-3 pt-2">
                   <Link href={`/user/incentives`} className="px-4 py-2 bg-white text-black rounded-[3px] font-semibold hover:bg-white/90">Back to incentives</Link>
-                  {/* {Boolean(incentive.background_image_url || incentive.background_video_url) && (
-                    <Link href={incentive.background_video_url || incentive.background_image_url || '#'} target="_blank" className="px-4 py-2 bg-gradient-to-b from-[#232323] to-[#171717] text-white rounded-[3px] font-semibold hover:from-[#2a2a2a] hover:to-[#1e1e1e]">
-                      Open Media
-                    </Link>
-                  )} */}
                 </div>
               </div>
             </div>
