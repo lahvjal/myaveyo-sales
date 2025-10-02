@@ -276,23 +276,6 @@ export default function StatsPage() {
                           data={lineChartData}
                           margin={{ top: 30, right: 10, left: 0, bottom: 50 }}
                         >
-                          {/* <XAxis 
-                            dataKey="name" 
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ 
-                              fontSize: 12, 
-                              fill: '#888d95', 
-                              fontFamily: 'PP Telegraf, sans-serif',
-                              fontWeight: 'bold'
-                            }}
-                            interval={0}
-                            padding={{ left: 20, right: 20 }}
-                            angle={-35}
-                            textAnchor="end"
-                            height={60}
-                            tickMargin={8}
-                          /> */}
                           <YAxis 
                             domain={[0, 200]}
                             axisLine={false}

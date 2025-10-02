@@ -1,4 +1,5 @@
 import React from 'react'
+import { pillClass } from '@/lib/ui/badges'
 
 export type ProjectCardProps = {
   imageUrl: string
@@ -10,11 +11,7 @@ export type ProjectCardProps = {
 }
 
 function Pill({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center justify-center rounded-full bg-gradient-to-b from-[#35393c] to-[#272a2e] px-2.5 py-2 text-[14px] text-white">
-      {children}
-    </span>
-  )
+  return <span className={pillClass}>{children}</span>
 }
 
 /**

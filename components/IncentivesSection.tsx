@@ -20,7 +20,7 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
-  const filters = ['All', 'Yearly', 'Summer', 'Monthly', 'Live', 'Coming Up', 'Done']
+  const filters = ['All', 'Live', 'Coming Up', 'Yearly', 'Summer', 'Monthly', 'Done']
 
   // Fetch incentives from Supabase
   useEffect(() => {
@@ -142,15 +142,23 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
               }`}
             >
               {filteredIncentives
-                .sort((a, b) => {
-                  // Prioritize live status first
+                .sort((a, b ) => {
+                  // Prioritize incentives that are starting within the next 30 days
+                  const now = new Date()
+                  const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+                  const aStartDate = new Date(a.start_date)
+                  const bStartDate = new Date(b.start_date)
+                  if (aStartDate <= thirtyDaysFromNow && bStartDate > thirtyDaysFromNow) return -1
+                  if (bStartDate <= thirtyDaysFromNow && aStartDate > thirtyDaysFromNow) return 1
+
+                  // Prioritize live incentives
                   if (a.live_status === 'live' && b.live_status !== 'live') return -1
                   if (b.live_status === 'live' && a.live_status !== 'live') return 1
-                  
-                  // Then prioritize yearly category
-                  if (a.category === 'Yearly' && b.category !== 'Yearly') return -1
-                  if (b.category === 'Yearly' && a.category !== 'Yearly') return 1
-                  
+
+                  // Then prioritize coming up status
+                  if (a.live_status === 'coming_up' && b.live_status !== 'coming_up') return -1
+                  if (b.live_status === 'coming_up' && a.live_status !== 'coming_up') return 1
+
                   // Fall back to sort_order
                   return a.sort_order - b.sort_order
                 })

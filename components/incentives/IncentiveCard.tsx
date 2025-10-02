@@ -1,5 +1,6 @@
 import React from 'react'
 import Button from '@/components/Button'
+import { getStatusBadgeClasses, getCategoryBadgeStyle } from '@/lib/ui/badges'
 
 export interface IncentiveCardProps {
   backgroundImage?: string
@@ -105,27 +106,20 @@ export default function IncentiveCard({
       <div className="absolute inset-0 flex flex-col justify-end h-[600px] relative z-20">
         <div className="flex items-center justify-between p-[20px]">
           {/* Status Badge */}
-          <div
-            className={`flex items-center gap-2.5 px-[15px] py-[7px] rounded-[60px] shadow-lg ${
-              liveStatus === 'live' ? 'bg-black' : liveStatus === 'coming_up' ? 'bg-blue-600' : 'bg-[#959595]'
-            }`}
-          >
-            <div
-              className={`w-[7px] h-[7px] rounded-full ${
-                liveStatus === 'live' ? 'bg-red-500' : liveStatus === 'coming_up' ? 'bg-white' : 'bg-[#535353]'
-              }`}
-            ></div>
-            <span
-              className={`text-[14px] font-semibold flex flex-row gap-5 ${
-                liveStatus === 'live' ? 'text-white' : liveStatus === 'coming_up' ? 'text-white' : 'text-white'
-              }`}
-            >
-              {liveStatus === 'live' ? 'Live' : liveStatus === 'coming_up' ? 'Coming Up' : 'Done'}
-            </span>
-          </div>
+          {(() => {
+            const classes = getStatusBadgeClasses(liveStatus)
+            return (
+              <div className={`flex items-center gap-2.5 px-[15px] py-[7px] rounded-[60px] shadow-lg ${classes.container}`}>
+                <div className={`w-[7px] h-[7px] rounded-full ${classes.dot}`} />
+                <span className={`text-[14px] font-semibold flex flex-row gap-5 ${classes.text}`}>
+                  {liveStatus === 'live' ? 'Live' : liveStatus === 'coming_up' ? 'Coming Up' : 'Done'}
+                </span>
+              </div>
+            )
+          })()}
           {variant === 'simple' && <span className="font-normal">{daysText}</span>}
           {/* Category Badge */}
-          <div className="flex items-center gap-2.5 px-[15px] py-[7px] rounded-[60px] shadow-lg" style={{ backgroundColor: categoryColor || '#ffffff' }}>
+          <div className="flex items-center gap-2.5 px-[15px] py-[7px] rounded-[60px] shadow-lg" style={getCategoryBadgeStyle(category, categoryColor)}>
             <span className="text-[14px] font-semibold text-black">{category || 'Category'}</span>
           </div>
         </div>
