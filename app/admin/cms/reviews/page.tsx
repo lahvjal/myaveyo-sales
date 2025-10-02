@@ -190,6 +190,10 @@ export default function AdminReviewsPage() {
     description: 'Hear from real customers and reps about their experiences with our solar solutions.',
     is_published: false,
   })
+  // Dirty helpers for header cards
+  const isTitleDirty = () =>
+    copy.section_number !== baselineCopy.section_number || copy.section_title !== baselineCopy.section_title
+  const isDescriptionDirty = () => copy.description !== baselineCopy.description
   const [copyLoading, setCopyLoading] = useState(true)
   const [copySaving, setCopySaving] = useState(false)
 
