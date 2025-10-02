@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 import { supabase } from '@/lib/supabase'
 
 export async function GET() {
@@ -14,16 +16,43 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch home stats' }, { status: 500 })
     }
 
-    // Support both shapes:
-    // - New: content.stats = [{ value, prefix, suffix, title, order }]
+    // Support all shapes:
+    // - Standard CMS: content.grid.cards = [{ title, value, subtitle, position }]
     // - Legacy CMS: content.cards = [{ title, value, subtitle, position }]
+    // - Direct stats: content.stats = [{ value, prefix, suffix, title, order }]
     const content: any = data?.content || {}
     let stats = Array.isArray(content?.stats) ? content.stats : []
 
-    if (!stats.length && Array.isArray(content?.cards)) {
+    // Prefer standardized grid.cards if stats not present; if grid has named keys ("card 1"), convert them
+    let gridCards = content?.grid?.cards
+    if (!Array.isArray(gridCards) && content?.grid && typeof content.grid === 'object' && !Array.isArray(content.grid)) {
+      try {
+        const gridObj = content.grid as Record<string, any>
+        // Case A: keys like "card 1"
+        const cardEntries = Object.entries(gridObj)
+          .filter(([k, v]) => /^card\s*\d+/i.test(k) && v && typeof v === 'object')
+        const cardKeyCards = cardEntries.map(([, v]) => v)
+        // Case B: new named keys SectionHeader/decorText/stat1..stat4
+        const namedKeys = ['SectionHeader', 'decorText', 'stat1', 'stat2', 'stat3', 'stat4']
+        const namedCards = namedKeys.map(k => gridObj[k]).filter(Boolean)
+        const combined = [...cardKeyCards, ...namedCards]
+        const allCards = combined
+          .filter(v => v && typeof v === 'object')
+          .sort((a: any, b: any) => Number(a?.position ?? a?.id ?? 0) - Number(b?.position ?? b?.id ?? 0))
+        if (allCards.length) {
+          gridCards = allCards
+        }
+      } catch {}
+    }
+    const legacyCards = content?.cards
+    const cardsSource = Array.isArray(gridCards) ? gridCards : (Array.isArray(legacyCards) ? legacyCards : [])
+    // Debug: length insight
+    // console.log('[home-stats][GET] cardsSource length:', cardsSource.length)
+
+    if (!stats.length && cardsSource.length) {
       // Filter to cards with id 3..6 and order by id ascending
       const wantedIds = new Set(['3', '4', '5', '6', 3, 4, 5, 6])
-      const filtered = content.cards
+      const filtered = cardsSource
         .filter((c: any) => wantedIds.has(c?.id))
         .sort((a: any, b: any) => Number(a.id) - Number(b.id))
 

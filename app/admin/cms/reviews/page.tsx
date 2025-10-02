@@ -184,6 +184,12 @@ export default function AdminReviewsPage() {
     description: 'Hear from real customers and reps about their experiences with our solar solutions.',
     is_published: false,
   })
+  const [baselineCopy, setBaselineCopy] = useState<ReviewsCopy>({
+    section_number: '(3)',
+    section_title: 'Reviews.',
+    description: 'Hear from real customers and reps about their experiences with our solar solutions.',
+    is_published: false,
+  })
   const [copyLoading, setCopyLoading] = useState(true)
   const [copySaving, setCopySaving] = useState(false)
 
@@ -217,12 +223,14 @@ export default function AdminReviewsPage() {
       const res = await fetch('/api/cms/home-reviews')
       if (res.ok) {
         const data = await res.json()
-        setCopy({
+        const next = {
           section_number: data.section_number ?? '(3)',
           section_title: data.section_title ?? 'Reviews.',
           description: data.description ?? '',
           is_published: data.is_published ?? false,
-        })
+        }
+        setCopy(next)
+        setBaselineCopy(next)
       }
     } catch (e) {
       console.error('Error fetching reviews copy:', e)
@@ -254,6 +262,13 @@ export default function AdminReviewsPage() {
       })
       if (!res.ok) {
         console.error('Failed to save reviews copy')
+      } else {
+        setBaselineCopy({
+          section_number: (override ?? copy).section_number!,
+          section_title: (override ?? copy).section_title!,
+          description: (override ?? copy).description!,
+          is_published: (override ?? copy).is_published ?? false,
+        })
       }
     } catch (e) {
       console.error('Error saving reviews copy:', e)
@@ -392,6 +407,7 @@ export default function AdminReviewsPage() {
                       setCopyForm(copy)
                       setIsCopyModalOpen(true)
                     }}
+                    dirty={isTitleDirty()}
                   />
 
                   {/* Description Card */}
@@ -404,6 +420,7 @@ export default function AdminReviewsPage() {
                       setCopyForm(copy)
                       setIsCopyModalOpen(true)
                     }}
+                    dirty={isDescriptionDirty()}
                   />
                 </div>
               )}

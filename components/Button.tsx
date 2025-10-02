@@ -29,13 +29,13 @@ export default function Button({
     if (theme === 'dark') {
       return {
         primary: "bg-[#0d0d0d] text-[#ffffff] hover:bg-[#1a1a1a]",
-        secondary: "border border-[#0d0d0d] text-[#0d0d0d] hover:bg-[#0d0d0d] hover:text-[#ffffff]"
+        secondary: "bg-[#222222] text-[#0d0d0d] hover:bg-[#444444] hover:text-[#ffffff]"
       }
     }
     
     return {
-      primary: "bg-[#ffffff] text-[#121212] hover:bg-gray-100",
-      secondary: "border border-[#ffffff] text-[#ffffff] hover:bg-[#ffffff] hover:text-[#121212]"
+      primary: "bg-[#ffffff] text-[#121212] hover:bg-[#aaaaaa] hover:text-[#ffffff]",
+      secondary: "bg-[#222222] text-[#ffffff] hover:bg-[#444444] hover:text-[#ffffff]"
     }
   }
 

@@ -5,19 +5,26 @@ interface CMSgridCardPillsProps {
   className?: string
   style?: React.CSSProperties
   onClick?: () => void
+  dirty?: boolean
 }
 
 /**
  * Variation of CMSgridCard that displays a set of non-interactive pills.
  * Used for previewing filter chips in CMS cards while keeping consistent styling.
  */
-export default function CMSgridCardPills({ pills, className = '', style, onClick }: CMSgridCardPillsProps) {
+export default function CMSgridCardPills({ pills, className = '', style, onClick, dirty = false }: CMSgridCardPillsProps) {
   return (
     <div
-      className={`bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-5 flex flex-col justify-between cursor-pointer hover:from-[#1a1a1a] hover:to-[#141414] min-h-[210px] ${className}`}
+      className={`relative bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-5 flex flex-col justify-between cursor-pointer hover:from-[#1a1a1a] hover:to-[#141414] min-h-[210px] ${className}`}
       style={style}
       onClick={onClick}
     >
+      {dirty && (
+        <span
+          className="absolute top-2 right-2 inline-block size-2.5 rounded-full bg-orange-400 ring-2 ring-black"
+          title="Unsaved changes"
+        />
+      )}
       <div className="flex flex-wrap items-center gap-2.5">
         {pills.map((label, idx) => (
           <span

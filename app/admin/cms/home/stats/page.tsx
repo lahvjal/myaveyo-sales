@@ -13,12 +13,13 @@ interface StatCard {
   position: number
 }
 
-interface StatsData {
-  cards: StatCard[]
+interface StatsDataGrid {
+  grid: { cards: StatCard[] }
 }
 
 export default function HomeStatsPage() {
-  const [statsData, setStatsData] = useState<StatsData>({ cards: [] })
+  const [statsData, setStatsData] = useState<StatsDataGrid>({ grid: { cards: [] } })
+  const [baseline, setBaseline] = useState<StatsDataGrid>({ grid: { cards: [] } })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [editingCard, setEditingCard] = useState<string | null>(null)
@@ -27,10 +28,13 @@ export default function HomeStatsPage() {
   // Fetch stats data
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/cms/home-stats')
+      const response = await fetch('/api/cms/home-stats', { cache: 'no-store' })
       if (response.ok) {
         const data = await response.json()
-        setStatsData(data.content || { cards: [] })
+        // Expect standardized { grid: { cards: [] } }
+        const content = data.content && data.content.grid ? data.content : { grid: { cards: [] } }
+        setStatsData(content)
+        setBaseline(content)
       }
     } catch (error) {
       console.error('Error fetching stats:', error)
@@ -47,25 +51,30 @@ export default function HomeStatsPage() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      const response = await fetch('/api/cms/home-stats', {
+      const payload = { section_key: 'home_stats', content: statsData, is_published: true }
+      console.log('[CMS][home-stats][SAVE] sending payload:', payload)
+      const response = await fetch('/api/cms/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          content: statsData,
-          is_published: true
-        }),
+        body: JSON.stringify(payload),
       })
 
+      let bodyText = ''
+      try { bodyText = await response.clone().text() } catch {}
+      console.log('[CMS][home-stats][SAVE] response status:', response.status, response.statusText)
+      console.log('[CMS][home-stats][SAVE] response body:', bodyText)
+
       if (response.ok) {
-        alert('Stats updated successfully!')
+        console.log('[CMS][home-stats][SAVE] success')
+        setBaseline(statsData)
+        await fetchStats()
       } else {
-        alert('Error saving stats')
+        console.error('[CMS][home-stats][SAVE] failed with status', response.status)
       }
     } catch (error) {
       console.error('Error saving stats:', error)
-      alert('Error saving stats')
     } finally {
       setSaving(false)
     }
@@ -85,16 +94,25 @@ export default function HomeStatsPage() {
   const saveCard = () => {
     if (!editingCard || !formData.title) return
 
-    const currentCards = statsData?.cards || defaultCards
+    const currentCards = statsData?.grid?.cards || defaultCards
     const updatedCards = currentCards.map(card =>
       card.id === editingCard
         ? { ...card, ...formData }
         : card
     )
 
-    setStatsData({ cards: updatedCards })
+    setStatsData({ grid: { cards: updatedCards } })
     setEditingCard(null)
     setFormData({})
+  }
+
+  const isCardDirty = (card: StatCard) => {
+    try {
+      const base = (baseline.grid.cards || []).find(c => c.id === card.id)
+      return JSON.stringify(base) !== JSON.stringify(card)
+    } catch {
+      return false
+    }
   }
 
   // Default cards if none exist
@@ -107,7 +125,7 @@ export default function HomeStatsPage() {
     { id: '6', title: '$679k', subtitle: 'Revenue Generated', value: '', position: 6 }
   ]
 
-  const cards = statsData?.cards?.length > 0 ? statsData.cards : defaultCards
+  const cards = statsData?.grid?.cards?.length > 0 ? statsData.grid.cards : defaultCards
 
   if (loading) {
     return (
@@ -189,6 +207,7 @@ export default function HomeStatsPage() {
                       description={card.subtitle}
                       className={placement}
                       onClick={() => startEditing(card)}
+                      dirty={isCardDirty(card)}
                     />
                   )
                 })}

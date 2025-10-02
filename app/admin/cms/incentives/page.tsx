@@ -25,7 +25,37 @@ export default function AdminIncentivesPage() {
     is_published?: boolean
     filters?: string[]
   }
+
+  const isCopyDirty = () => {
+    try {
+      return JSON.stringify({
+        section_number: copy.section_number,
+        section_title: copy.section_title,
+        description: copy.description,
+        filters: copy.filters,
+      }) !== JSON.stringify({
+        section_number: baselineCopy.section_number,
+        section_title: baselineCopy.section_title,
+        description: baselineCopy.description,
+        filters: baselineCopy.filters,
+      })
+    } catch {
+      return false
+    }
+  }
+
+  const isTitleDirty = () => copy.section_number !== baselineCopy.section_number || copy.section_title !== baselineCopy.section_title
+  const isDescriptionDirty = () => copy.description !== baselineCopy.description
+  const isFiltersDirty = () => JSON.stringify(copy.filters) !== JSON.stringify(baselineCopy.filters)
   const [copy, setCopy] = useState<IncentivesCopy>({
+    section_number: '(2)',
+    section_title: 'Incentives.',
+    description:
+      'Great commissions are nice, but incredible incentives can be even cooler. Check out what we have cooking.',
+    is_published: false,
+    filters: ['All', 'Live', 'Coming Soon', 'Done'],
+  })
+  const [baselineCopy, setBaselineCopy] = useState<IncentivesCopy>({
     section_number: '(2)',
     section_title: 'Incentives.',
     description:
@@ -68,13 +98,15 @@ export default function AdminIncentivesPage() {
       const res = await fetch('/api/cms/home-incentives')
       if (res.ok) {
         const data = await res.json()
-        setCopy({
+        const next = {
           section_number: data.section_number ?? '(2)',
           section_title: data.section_title ?? 'Incentives.',
           description: data.description ?? '',
           is_published: data.is_published ?? false,
           filters: Array.isArray(data.filters) ? data.filters : ['All', 'Live', 'Coming Soon', 'Done'],
-        })
+        }
+        setCopy(next)
+        setBaselineCopy(next)
       }
     } catch (e) {
       console.error('Error fetching incentives copy:', e)
@@ -106,6 +138,9 @@ export default function AdminIncentivesPage() {
       })
       if (!res.ok) {
         console.error('Failed to save incentives copy')
+      } else {
+        // Update baseline so dirty indicators clear
+        setBaselineCopy(override ?? copy)
       }
     } catch (e) {
       console.error('Error saving incentives copy:', e)
@@ -241,6 +276,7 @@ export default function AdminIncentivesPage() {
                       setCopyForm(copy)
                       setIsCopyModalOpen(true)
                     }}
+                    dirty={isTitleDirty()}
                   />
 
                   {/* Description Card */}
@@ -253,6 +289,7 @@ export default function AdminIncentivesPage() {
                       setCopyForm(copy)
                       setIsCopyModalOpen(true)
                     }}
+                    dirty={isDescriptionDirty()}
                   />
 
                   {/* Filters Preview Card - row 2 center column */}
@@ -264,6 +301,7 @@ export default function AdminIncentivesPage() {
                       setCopyForm(copy)
                       setIsCopyModalOpen(true)
                     }}
+                    dirty={isFiltersDirty()}
                   />
                 </div>
               )}

@@ -80,7 +80,7 @@ export default function AdminLayout({
         )}
         
         {/* Main Content */}
-        <main className={`md:flex-1 flex flex-col w-[100vw] max-w-[100vw] md:max-w-[1480px] lg:max-w-[1920px] ${className}`}>
+        <main className={`md:flex-1 flex flex-col w-[100vw] max-w-[100vw] ${className}`}>
           {/* Top Bar */}
           {showTopBar && (
             <TopBar 

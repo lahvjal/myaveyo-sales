@@ -36,11 +36,21 @@ const defaultContent: SalesGridContent = {
 
 export default function SalesSectionCMS() {
   const [content, setContent] = useState<SalesGridContent>(defaultContent)
+  const [baseline, setBaseline] = useState<SalesGridContent>(defaultContent)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [editingKey, setEditingKey] = useState<string | null>(null)
   const [formData, setFormData] = useState<any>({})
   const [activeTab, setActiveTab] = useState<'preview' | 'actions'>('preview')
+
+  // Dirty helper in scope of state
+  const isDirty = (key: keyof SalesGridContent['grid']) => {
+    try {
+      return JSON.stringify((content.grid as any)[key]) !== JSON.stringify((baseline.grid as any)[key])
+    } catch {
+      return false
+    }
+  }
 
   useEffect(() => {
     fetchSalesData()
@@ -52,12 +62,15 @@ export default function SalesSectionCMS() {
       if (response.ok) {
         const data = await response.json()
         setContent(data as SalesGridContent)
+        setBaseline(data as SalesGridContent)
       } else {
         setContent(defaultContent)
+        setBaseline(defaultContent)
       }
     } catch (error) {
       console.error('Error fetching sales data:', error)
       setContent(defaultContent)
+      setBaseline(defaultContent)
     } finally {
       setLoading(false)
     }
@@ -66,25 +79,34 @@ export default function SalesSectionCMS() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      const response = await fetch('/api/cms/home-sales', {
+      const payload = {
+        content: (content as any).grid ? (content as any) : { grid: content.grid },
+        is_published: false
+      }
+      console.log('[CMS][home-sales][SAVE] sending payload:', payload)
+      const response = await fetch('/api/cms/content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          content: (content as any).grid ? (content as any) : { grid: content.grid },
-          is_published: false
-        }),
+        body: JSON.stringify({ section_key: 'home_sales', ...payload }),
       })
 
+      let bodyText = ''
+      try { bodyText = await response.clone().text() } catch {}
+      console.log('[CMS][home-sales][SAVE] response status:', response.status, response.statusText)
+      console.log('[CMS][home-sales][SAVE] response body:', bodyText)
+
       if (response.ok) {
-        console.log('Sales data saved successfully')
+        console.log('[CMS][home-sales][SAVE] success')
+        // Update baseline to current content immediately for dirty tracking
+        setBaseline(prev => ({ ...content }))
         await fetchSalesData()
       } else {
-        console.error('Failed to save sales data')
+        console.error('[CMS][home-sales][SAVE] failed with status', response.status)
       }
     } catch (error) {
-      console.error('Error saving sales data:', error)
+      console.error('[CMS][home-sales][SAVE] exception:', error)
     } finally {
       setSaving(false)
     }
@@ -176,14 +198,14 @@ export default function SalesSectionCMS() {
               <Button
                 variant="secondary"
                 onClick={() => window.open('/', '_blank')}
-                className="bg-gray-700 hover:bg-gray-600 text-white w-full sm:w-auto"
+                className=""
               >
                 View Homepage →
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={saving}
-                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                className=""
               >
                 {saving ? 'Saving...' : 'Save Changes'}
               </Button>
@@ -225,6 +247,7 @@ export default function SalesSectionCMS() {
                   className=""
                   style={{ gridColumn: '1', gridRow: '1' }}
                   onClick={() => startEditing('grid.section_title', g.section_title)}
+                  dirty={isDirty('section_title')}
                 />
 
                 {/* 2: Copyright */}
@@ -235,6 +258,7 @@ export default function SalesSectionCMS() {
                   className=""
                   style={{ gridColumn: '1', gridRow: '2' }}
                   onClick={() => startEditing('grid.copyright', g.copyright)}
+                  dirty={isDirty('copyright')}
                 />
 
                 {/* 3: H3 text (right) */}
@@ -245,6 +269,7 @@ export default function SalesSectionCMS() {
                   className=""
                   style={{ gridColumn: '3', gridRow: '1' }}
                   onClick={() => startEditing('grid.h3_text', g.h3_text)}
+                  dirty={isDirty('h3_text')}
                 />
 
                 {/* 4: Large image spanning 2 rows */}
@@ -255,6 +280,7 @@ export default function SalesSectionCMS() {
                   className=""
                   style={{ gridColumn: '1', gridRow: '3 / span 2' }}
                   onClick={() => startEditing('grid.large_image', g.large_image)}
+                  dirty={isDirty('large_image')}
                 />
 
                 {/* 5: Text block */}
@@ -265,6 +291,7 @@ export default function SalesSectionCMS() {
                   className=""
                   style={{ gridColumn: '2', gridRow: '3' }}
                   onClick={() => startEditing('grid.text_block', g.text_block)}
+                  dirty={isDirty('text_block')}
                 />
 
                 {/* 6: CTA button */}
@@ -275,6 +302,7 @@ export default function SalesSectionCMS() {
                   className=""
                   style={{ gridColumn: '3', gridRow: '3' }}
                   onClick={() => startEditing('grid.button_block', g.button_block)}
+                  dirty={isDirty('button_block')}
                 />
 
                 {/* 7: Stat 1 */}
@@ -286,6 +314,7 @@ export default function SalesSectionCMS() {
                   className=""
                   style={{ gridColumn: '2', gridRow: '4' }}
                   onClick={() => startEditing('grid.stat_card_1', g.stat_card_1)}
+                  dirty={isDirty('stat_card_1')}
                 />
 
                 {/* 8: Stat 2 */}
@@ -297,6 +326,7 @@ export default function SalesSectionCMS() {
                   className=""
                   style={{ gridColumn: '3', gridRow: '4' }}
                   onClick={() => startEditing('grid.stat_card_2', g.stat_card_2)}
+                  dirty={isDirty('stat_card_2')}
                 />
 
                 {/* 9: Bottom wide image spanning all 3 cols */}
@@ -307,6 +337,7 @@ export default function SalesSectionCMS() {
                   className=""
                   style={{ gridColumn: '1 / span 3', gridRow: '5 / span 2' }}
                   onClick={() => startEditing('grid.bottom_image', g.bottom_image)}
+                  dirty={isDirty('bottom_image')}
                 />
               </div>
             </div>

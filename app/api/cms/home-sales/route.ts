@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -7,24 +7,55 @@ const supabase = createClient(
 )
 
 const defaultSalesData = {
-  cards: [
-    { id: '1', type: 'text', title: 'Not your average sales gig.', gridArea: '1 / 1', position: 1 },
-    { id: '2', type: 'stat', title: '$100K+', subtitle: 'Average First Year Earnings', gridArea: '1 / 2', position: 2 },
-    { id: '3', type: 'text', title: 'Apply Now', gridArea: '1 / 3', position: 3 },
-    { id: '4', type: 'image', title: 'Sales Team Image', imageUrl: '/images/2980e3438b2a66112f1488048f70f451e7596fe1.png', gridArea: '3 / 1 / span 2', position: 4 },
-    { id: '5', type: 'stat', title: '50+', subtitle: 'Sales Reps Nationwide', gridArea: '2 / 2', position: 5 },
-    { id: '6', type: 'stat', title: '95%', subtitle: 'Customer Satisfaction', gridArea: '3 / 2', position: 6 },
-    { id: '7', type: 'description', title: 'Join Our Team', description: 'We are looking for motivated individuals to join our growing sales team. Competitive compensation and comprehensive training provided.', gridArea: '2 / 3 / span 2', position: 7 },
-    { id: '8', type: 'text', title: 'Remote Opportunities', gridArea: '4 / 2', position: 8 },
-    { id: '9', type: 'text', title: 'Flexible Schedule', gridArea: '5 / 1', position: 9 },
-    { id: '10', type: 'stat', title: '24/7', subtitle: 'Support Available', gridArea: '5 / 2', position: 10 },
-    { id: '11', type: 'text', title: 'Career Growth', gridArea: '5 / 3', position: 11 }
-  ],
-  is_published: false
+  grid: {
+    h3_text: {
+      text: 'UNLIMITED POTENTIAL. PROVEN METHODS. MASSIVE EARNINGS. REAL FREEDOM. AND A CULTURE THAT CARES. HERE, YOUR HARD WORK SPEAKS FOR ITSELF.'
+    },
+    copyright: {
+      icon: '/images/world.svg',
+      text: '2025 aveyo_sales'
+    },
+    text_block: {
+      title: 'A COMPLETELY KITTED TOOL KIT.',
+      content: 'No limits, just wins. From your first deal to your biggest bonus, we set you up with the tools, training, and support you need to crush goals and climb fast. When you win, the whole team wins—and we celebrate every step of the way.'
+    },
+    large_image: {
+      alt: 'Sales representative',
+      url: '/images/donny-hammond.jpeg'
+    },
+    stat_card_1: {
+      title: 'Sales Reps Nationwide',
+      value: '150',
+      prefix: '',
+      suffix: '+',
+      description: 'We are a growing team across the country'
+    },
+    stat_card_2: {
+      title: 'Industry leading leadership',
+      value: '3',
+      prefix: 'TOP',
+      suffix: '',
+      description: 'And Sales Support'
+    },
+    bottom_image: {
+      alt: 'Team photo',
+      url: '/images/Alpha Aveyo-4.jpeg'
+    },
+    button_block: {
+      text: 'JOIN THE TEAM',
+      variant: 'primary'
+    },
+    section_title: {
+      title: 'Not your average sales gig.',
+      prefix: '(3)',
+      content: ''
+    }
+  }
 }
 
 export async function GET() {
   try {
+    console.log('[CMS][home-sales][GET] fetching content for section_key=home_sales')
     const { data, error } = await supabase
       .from('cms_content')
       .select('*')
@@ -37,9 +68,11 @@ export async function GET() {
     }
 
     if (!data) {
+      console.log('[CMS][home-sales][GET] no row found, returning defaultSalesData')
       return NextResponse.json(defaultSalesData)
     }
 
+    console.log('[CMS][home-sales][GET] found row, returning content')
     return NextResponse.json(data.content)
   } catch (error) {
     console.error('Error in GET /api/cms/home-sales:', error)
@@ -47,28 +80,4 @@ export async function GET() {
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const { content, is_published } = await request.json()
-
-    const { data, error } = await supabase
-      .from('cms_content')
-      .upsert({
-        section_key: 'home_sales',
-        content,
-        is_published: is_published || false,
-        updated_at: new Date().toISOString()
-      })
-      .select()
-
-    if (error) {
-      console.error('Error saving sales data:', error)
-      return NextResponse.json({ error: 'Failed to save sales data' }, { status: 500 })
-    }
-
-    return NextResponse.json({ success: true, data })
-  } catch (error) {
-    console.error('Error in POST /api/cms/home-sales:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
+// Writes for this section are centralized in POST /api/cms/content

@@ -63,7 +63,7 @@ export default function StatsSection({ className = '', pageReady = true }: Stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/home-stats')
+        const response = await fetch('/api/home-stats', { cache: 'no-store' })
         if (response.ok) {
           const data = await response.json()
           const formattedStats = data.map((stat: any) => ({

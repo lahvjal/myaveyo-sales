@@ -11,6 +11,7 @@ export interface CMSGridCardProps {
   className?: string
   style?: React.CSSProperties
   onClick?: () => void
+  dirty?: boolean
 }
 
 /**
@@ -26,13 +27,20 @@ export default function CMSgridCard({
   className = '',
   style,
   onClick,
+  dirty = false,
 }: CMSGridCardProps) {
   return (
     <div
-      className={`bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-5 flex flex-col justify-between cursor-pointer hover:from-[#1a1a1a] hover:to-[#141414] ${className}`}
+      className={`relative bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-5 flex flex-col justify-between cursor-pointer hover:from-[#1a1a1a] hover:to-[#141414] ${className}`}
       style={style}
       onClick={onClick}
     >
+      {dirty && (
+        <span
+          className="absolute top-2 right-2 inline-block size-2.5 rounded-full bg-orange-400 ring-2 ring-black"
+          title="Unsaved changes"
+        />
+      )}
       <div className="flex flex-col justify-between h-full">
         {type === 'image' ? (
           <>
