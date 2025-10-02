@@ -294,7 +294,7 @@ export default function DashboardPage() {
                       startDate={inc.start_date}
                       endDate={inc.end_date}
                       variant="detailed"
-                      onViewClick={() => (window.location.href = `/incentives/${inc.id}`)}
+                      onViewClick={() => (window.location.href = `/user/incentives/${inc.id}`)}
                     />
                   ))}
               </div>

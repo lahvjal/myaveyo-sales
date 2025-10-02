@@ -85,7 +85,7 @@ export default function TopBar({
             <button
               type="button"
               onClick={() => onMenuToggle?.()}
-              className="bg-[#1d1d1d] p-[10px] rounded-[8px] h-[45px] w-[45px] relative shrink-0 sm:pointer-events-none"
+              className="bg-[#1d1d1d] p-[10px] rounded-[3px] h-[45px] w-[45px] relative shrink-0 sm:pointer-events-none"
               aria-label="Toggle menu"
             >
               <Image 
@@ -189,24 +189,15 @@ export default function TopBar({
         {/* Right side - Profile / Actions */}
         {showProfile && (
           <div className="flex items-center gap-3">
-            {/* <div className="relative shrink-0 size-[30px]">
-              <Image 
-                src="/images/c75767911e539a98cf3080c76af0df77e6a62117.png"
-                alt="Profile"
-                width={30}
-                height={30}
-                className="size-full rounded-full"
-              />
-            </div> */}
             <button
               onClick={() => setChatOpen(!chatOpen)}
               aria-pressed={chatOpen}
               title={chatOpen ? 'Hide chat' : 'Show chat'}
               className={`
-                relative bg-[#1d1d1d] shrink-0 size-[45px] rounded-[8px] flex items-center justify-center
+                relative bg-[#1d1d1d] shrink-0 size-[45px] rounded-[3px] flex items-center justify-center
                 transition-all duration-200 ease-in-out group
                 ${chatOpen 
-                  ? 'bg-white/10 shadow-lg' 
+                  ? 'bg-[radial-gradient(112.65%_95.85%_at_120.72%_50%,_#455062_0%,_#1A1B1C_100%)]' 
                   : 'hover:bg-white/5 hover:scale-105'
                 }
               `}
@@ -228,12 +219,12 @@ export default function TopBar({
                 <span className="absolute -top-1 -right-1 inline-block w-2.5 h-2.5 rounded-full bg-red-500" />
               )}
               {chatOpen && (
-                <div className="absolute -right-[3px] top-1/2 -translate-y-1/2 w-[3px] h-[20px] bg-white rounded-l-full" />
+                <div className="absolute h-[80%] -right-[3px] top-1/2 -translate-y-1/2 w-[3px] bg-white rounded-l-full" />
               )}
             </button>
             {/* Desktop: full Logout button */}
             <div className="hidden md:block">
-              <Button onClick={handleLogout}>Logout</Button>
+              <Button onClick={handleLogout} theme="dark" icon='/images/logout-icon.svg'>Logout</Button>
             </div>
             {/* Mobile: icon-only Logout button */}
             <div className="md:hidden">

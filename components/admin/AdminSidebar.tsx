@@ -164,10 +164,10 @@ export default function AdminSidebar({ className = '', expanded = false }: Admin
               key={item.id}
               href={item.href}
               className={`
-                relative shrink-0 rounded-[8px] flex ${expanded ? 'gap-3 items-center justify-start px-3 py-2' : 'items-center justify-center size-[45px]'}
+                relative shrink-0 rounded-[3px] flex ${expanded ? 'gap-3 items-center justify-start px-3 py-2' : 'items-center justify-center size-[45px]'}
                 transition-all duration-200 ease-in-out group
                 ${active 
-                  ? 'bg-white/10 shadow-lg' 
+                  ? 'bg-[radial-gradient(112.65%_95.85%_at_120.72%_50%,_#455062_0%,_#1A1B1C_100%)]' 
                   : 'hover:bg-white/5 hover:scale-105'
                 }
               `}
@@ -187,14 +187,14 @@ export default function AdminSidebar({ className = '', expanded = false }: Admin
                 `}
               />
               {expanded && (
-                <span className={`text-sm font-telegraf ${active ? 'text-white' : 'text-white/80'}`}>
+                <span className={`h-[100%] text-sm font-telegraf ${active ? 'text-white' : 'text-white/80'}`}>
                   {item.label}
                 </span>
               )}
               
               {/* Active indicator */}
               {!expanded && active && (
-                <div className="absolute -right-[3px] top-1/2 -translate-y-1/2 w-[3px] h-[20px] bg-white rounded-l-full" />
+                <div className="absolute -right-[3px] top-1/2 -translate-y-1/2 w-[3px] h-[80%] bg-white rounded-l-full" />
               )}
             </Link>
           )
@@ -205,7 +205,7 @@ export default function AdminSidebar({ className = '', expanded = false }: Admin
         key="profile"
         href="/user/profile"
         className={`
-          absolute bottom-[20px] shrink-0 rounded-[8px] flex ${expanded ? 'gap-3 items-center justify-start px-3 py-2' : 'items-center justify-center size-[45px]'}
+          absolute bottom-[20px] shrink-0 rounded-[3px] flex ${expanded ? 'gap-3 items-center justify-start px-3 py-2' : 'items-center justify-center size-[45px]'}
           transition-all duration-200 ease-in-out group
           ${isActive(profile) 
             ? 'bg-white/10 shadow-lg' 

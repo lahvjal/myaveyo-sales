@@ -28,8 +28,8 @@ export default function Button({
   ariaLabel
 }: ButtonProps) {
   const baseStyles = iconOnly
-    ? "inline-flex items-center justify-center rounded-[8px] p-2 size-[45px]"
-    : "box-border content-stretch flex gap-2.5 items-center justify-center p-[20px] relative rounded-[3px] font-extrabold text-[14px] transition-colors cursor-pointer"
+    ? "inline-flex items-center justify-center rounded-[3px] p-2 size-[45px]"
+    : "box-border content-stretch flex gap-2.5 items-center justify-center min-h-[45px] py-[10px] px-[20px] relative rounded-[3px] font-extrabold text-[14px] transition-colors cursor-pointer"
   
   const getVariantStyles = () => {
     if (theme === 'dark') {
@@ -62,8 +62,8 @@ export default function Button({
         </span>
       )}
       {(variant === 'primary' || iconOnly || icon) && (
-        <div className={iconOnly ? "w-5 h-5" : "h-0 relative shrink-0 w-[22.195px]"}>
-          <div className={iconOnly ? "" : "absolute bottom-[-3.68px] left-0 right-[-2.25%] top-[-3.68px]"}>
+        <div className="flex justify-center items-center w-5 h-5">
+          <div className={iconOnly ? "" : "w-4 h-4"}>
             <img 
               alt="Arrow" 
               className={iconOnly ? "block size-full" : "block max-w-none size-full"}
