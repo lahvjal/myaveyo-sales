@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import Navbar from '@/components/Navbar'
-import IncentiveCard from '@/components/incentives/IncentiveCard'
+import IncentivesList from '@/components/incentives/IncentivesList'
+import type { Incentive as IncentiveModel } from '@/lib/types/incentive'
 
 interface Incentive {
   id: string
@@ -125,128 +126,22 @@ export default function IncentivesPage() {
     if (filter === 'all') return true
     return incentive.live_status === filter
   })
-
-  const getStatusBadge = (status: string) => {
-    const badges = {
-      live: 'bg-green-500 text-white',
-      coming_up: 'bg-yellow-500 text-black',
-      done: 'bg-gray-500 text-white'
-    }
-    const labels = {
-      live: 'Live Now',
-      coming_up: 'Coming Soon',
-      done: 'Completed'
-    }
-    return { class: badges[status as keyof typeof badges], label: labels[status as keyof typeof labels] }
-  }
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
-  }
-
+  // (Note) Badge helpers and date formatters removed here since rendering moved into IncentivesList/IncentiveCard
   return (
     <div className="bg-[#0d0d0d] min-h-screen pt-[100px]">
       <Navbar />
-      
       <div className="px-6 sm:px-8 md:px-10 lg:px-[50px] py-16 sm:py-20 lg:py-[130px]">
-        <div className="max-w-[1480px] mx-auto">
-          {/* Header (from CMS) */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-8 sm:pb-10 mb-10 sm:mb-16 lg:mb-20">
-            <div className="flex items-start gap-2.5 text-white opacity-100 translate-y-0">
-              <span className="text-[14px] sm:text-[16px] font-telegraf">{incentivesCopy.section_number}</span>
-              <h1 className="text-[32px] sm:text-[40px] md:text-[52px] lg:text-[60px] font-telegraf font-extrabold uppercase leading-[36px] sm:leading-[44px] md:leading-[56px] lg:leading-[63px]">
-                {incentivesCopy.section_title}
-              </h1>
-            </div>
-            <div className="text-white text-[14px] sm:text-[16px] font-telegraf max-w-[400px] opacity-100 translate-y-0">
-              <p>
-                {incentivesCopy.description}
-              </p>
-            </div>
-          </div>
-
-          {/* Filter Buttons */}
-          <div className="flex justify-center mb-8 sm:mb-12">
-            <div className="flex flex-wrap justify-center bg-gradient-to-b from-[#232323] to-[#171717] rounded-[60px] p-1 gap-1">
-              {['all', 'live', 'coming_up', 'done'].map((filterOption) => (
-                <button
-                  key={filterOption}
-                  onClick={() => setFilter(filterOption as any)}
-                  className={`px-[12px] sm:px-[15px] py-[6px] sm:py-[7px] rounded-[60px] text-[12px] sm:text-[14px] font-inter font-semibold transition-colors capitalize ${
-                    filter === filterOption 
-                      ? 'bg-white text-black' 
-                      : 'bg-transparent text-white hover:bg-white/10'
-                  }`}
-                >
-                  {filterOption === 'coming_up' ? 'Coming Soon' : filterOption}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Incentives Grid */}
-          {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {[...filteredIncentives]
-                .sort((a, b) => {
-                  const rank = (s: Incentive['live_status']) => (s === 'live' ? 0 : s === 'coming_up' ? 1 : 2)
-                  return rank(a.live_status) - rank(b.live_status)
-                })
-                .map((incentive) => (
-                <a key={incentive.id} href={`/incentives/${incentive.id}`} className="block rounded-[3px] overflow-hidden focus:outline-none focus:ring-2 focus:ring-white/50">
-                  <IncentiveCard
-                    title={incentive.title}
-                    backgroundImage={incentive.background_image_url}
-                    backgroundVideo={incentive.background_video_url}
-                    liveStatus={incentive.live_status}
-                    category={incentive.category}
-                    categoryColor={incentive.category_color}
-                    startDate={incentive.start_date}
-                    endDate={incentive.end_date}
-                    variant="detailed"
-                  />
-                </a>
-              ))}
-            </div>
-          )}
-
-          {filteredIncentives.length === 0 && !loading && (
-            <div className="text-center py-12">
-              <p className="text-[rgba(255,255,255,0.6)] font-telegraf text-lg">No incentives found for the selected filter.</p>
-            </div>
-          )}
-
-          {/* CTA Section */}
-          {/* <div className="mt-10 sm:mt-12 text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-telegraf font-bold mb-4 sm:mb-6 text-white">Ready to Maximize Your Earnings?</h2>
-            <p className="text-base sm:text-lg md:text-xl text-[rgba(255,255,255,0.6)] font-telegraf mb-6 sm:mb-8">
-              Join our top performers and start earning more with every sale. 
-              Check the leaderboard to see where you stand.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="/leaderboard"
-                className="px-8 py-4 bg-white text-black hover:bg-white/90 rounded-[3px] font-telegraf font-semibold transition-colors"
-              >
-                View Leaderboard
-              </a>
-              <a 
-                href="/dashboard"
-                className="px-8 py-4 bg-gradient-to-b from-[#232323] to-[#171717] text-white hover:from-[#2a2a2a] hover:to-[#1e1e1e] rounded-[3px] font-telegraf font-semibold transition-colors"
-              >
-                My Dashboard
-              </a>
-            </div>
-          </div> */}
-        </div>
+        <IncentivesList
+          incentivesCopy={incentivesCopy}
+          filter={filter}
+          onFilterChange={(next) => setFilter(next)}
+          loading={loading}
+          filteredIncentives={([...filteredIncentives]
+            .sort((a, b) => {
+              const rank = (s: Incentive['live_status']) => (s === 'live' ? 0 : s === 'coming_up' ? 1 : 2)
+              return rank(a.live_status) - rank(b.live_status)
+            }) as IncentiveModel[])}
+        />
       </div>
     </div>
   )

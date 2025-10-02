@@ -1,6 +1,8 @@
-import AdminLayout from '@/components/admin/AdminLayout'
+import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import AdminLayout from '@/components/admin/AdminLayout'
+import { getCategoryBadgeStyle, getStatusBadgeClasses } from '@/lib/ui/badges'
 
 interface PageProps {
   params: { id: string }
@@ -42,7 +44,7 @@ function getDaysText(incentive: Incentive) {
   return ''
 }
 
-export default async function AdminIncentiveAboutPage({ params }: PageProps) {
+export default async function IncentiveDetailPage({ params }: PageProps) {
   const { id } = params
 
   const { data: incentive, error } = await supabase
@@ -52,28 +54,30 @@ export default async function AdminIncentiveAboutPage({ params }: PageProps) {
     .single()
 
   if (error || !incentive) {
-    const tabs = [
-      { id: 'about', name: 'About', href: `/admin/incentives/${id}/about` },
-      { id: 'leaderboard', name: 'Leaderboard', href: `/admin/incentives/${id}/leaderboard` }
-    ]
     return (
-      <AdminLayout pageKey="incentives" topBarTabs={tabs} activeTab="about">
-        <div className="bg-[#0d0d0d] min-h-screen text-white flex items-center justify-center">
+      <div className="bg-[#0d0d0d] min-h-screen text-white">
+        <Navbar />
+        <div className="max-w-[1200px] mx-auto px-[24px] md:px-[50px] py-16">
           <div className="text-white/70">Failed to load incentive.</div>
+          <div className="mt-6">
+            <Link href="/incentives" className="px-4 py-2 bg-white text-black rounded-[3px] font-semibold hover:bg-white/90">Back to incentives</Link>
+          </div>
         </div>
-      </AdminLayout>
+      </div>
     )
   }
 
   const daysText = getDaysText(incentive as Incentive)
-  const tabs = [
-    { id: 'about', name: 'About', href: `/admin/incentives/${id}/about` },
-    { id: 'leaderboard', name: 'Leaderboard', href: `/admin/incentives/${id}/leaderboard` }
-  ]
-
   return (
-    <AdminLayout pageKey="incentives" topBarTabs={tabs} activeTab="about">
-      <div className="bg-[#0d0d0d] min-h-screen text-white">
+    <AdminLayout 
+      pageKey="incentives"
+      breadcrumbs={[
+        { name: 'Incentives', href: '/user/incentives' },
+        { name: incentive.title }
+      ]}
+    >  
+    <div className="bg-[#0d0d0d] min-h-screen text-white">
+      <div className="">
         {/* Full-bleed, full-height 2-col layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 w-full h-[100vh]">
           {/* Left: Poster / Video */}
@@ -107,37 +111,40 @@ export default async function AdminIncentiveAboutPage({ params }: PageProps) {
           </div>
 
           {/* Right: Description / Details */}
-          <div className="w-full h-full bg-[#0d0d0d] flex flex-col">
+          <div className="w-full h-full bg-[#0d0d0d] flex flex-col pt-[100px]">
 
             {/* Scrollable content */}
-            <div className="flex-1 overflow-auto p-[50px]">
+            <div className="flex-1 overflow-auto p-[300px]">
               <div className="space-y-8">
                 {/* Dates and summary */}
-                <div className="space-y-2">
+                <div className="space-y-8">
+                  <h2 className="font-telegraf text-6xl font-bold">{incentive.title}</h2>
                   <div className="flex flex-row items-center justify-start gap-[12px]">
                     {/* Overlay badges */}
                     <div className="flex items-start justify-start gap-[12px]">
-                      <div className="flex items-center gap-2.5 px-[12px] py-[6px] rounded-[60px] shadow-lg"
-                          style={{ backgroundColor: incentive.category_color || '#ffffff' }}>
+                      {/* Category badge (centralized) */}
+                      <div className="flex items-center gap-2.5 px-[12px] py-[6px] rounded-[60px] shadow-lg" style={getCategoryBadgeStyle(incentive.category, incentive.category_color)}>
                         <span className="text-[13px] font-semibold text-black">{incentive.category}</span>
                       </div>
-                      <div className={`flex items-center gap-2.5 px-[12px] py-[6px] rounded-[60px] shadow-lg ${
-                        incentive.live_status === 'live' ? 'bg-white' : incentive.live_status === 'coming_up' ? 'bg-[#E7BF21]' : 'bg-[#959595]'
-                      }`}>
-                        <div className={`w-[7px] h-[7px] rounded-full ${
-                          incentive.live_status === 'live' ? 'bg-red-500' : incentive.live_status === 'coming_up' ? 'bg-white' : 'bg-[#535353]'
-                        }`} />
-                        <span className="text-[13px] font-semibold text-black">
-                          {incentive.live_status === 'live' ? 'Live' : incentive.live_status === 'coming_up' ? 'Coming Up' : 'Done'}
-                        </span>
-                      </div>
+                      {/* Status badge (centralized) */}
+                      {(() => {
+                        const s = getStatusBadgeClasses(incentive.live_status)
+                        return (
+                          <div className={`flex items-center gap-2.5 px-[12px] py-[6px] rounded-[60px] shadow-lg ${s.container}`}>
+                            <div className={`w-[7px] h-[7px] rounded-full ${s.dot}`} />
+                            <span className={`text-[13px] font-semibold ${s.text}`}>
+                              {incentive.live_status === 'live' ? 'Live' : incentive.live_status === 'coming_up' ? 'Coming Up' : 'Done'}
+                            </span>
+                          </div>
+                        )
+                      })()}
                     </div>
                     <div className="text-white/70 text-sm">
                       {formatDate(incentive.start_date)} – {formatDate(incentive.end_date)}
                       {daysText ? <span className="ml-2 text-white/50">({daysText})</span> : null}
                     </div>
                   </div>
-                  <h2 className="font-telegraf text-2xl font-bold">{incentive.title}</h2>
+                  
                   <p className="mt-1 text-white/85 leading-relaxed">
                     {incentive.description || 'No description provided.'}
                   </p>
@@ -165,20 +172,19 @@ export default async function AdminIncentiveAboutPage({ params }: PageProps) {
 
                 {/* Actions */}
                 <div className="flex flex-wrap gap-3 pt-2">
-                  <Link href={`/admin/incentives`} className="px-4 py-2 bg-white text-black rounded-[3px] font-semibold hover:bg-white/90">
-                    Back to Incentives
-                  </Link>
-                  {Boolean(incentive.background_image_url || incentive.background_video_url) && (
+                  <Link href={`/user/incentives`} className="px-4 py-2 bg-white text-black rounded-[3px] font-semibold hover:bg-white/90">Back to incentives</Link>
+                  {/* {Boolean(incentive.background_image_url || incentive.background_video_url) && (
                     <Link href={incentive.background_video_url || incentive.background_image_url || '#'} target="_blank" className="px-4 py-2 bg-gradient-to-b from-[#232323] to-[#171717] text-white rounded-[3px] font-semibold hover:from-[#2a2a2a] hover:to-[#1e1e1e]">
                       Open Media
                     </Link>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
     </AdminLayout>
   )
 }

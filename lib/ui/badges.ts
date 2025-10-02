@@ -11,7 +11,7 @@ export const getStatusBadgeClasses = (status: LiveStatus): BadgeClasses => {
   switch (status) {
     case 'live':
       return {
-        container: 'bg-black',
+        container: 'bg-[#222222]',
         dot: 'bg-red-500',
         text: 'text-white',
       }

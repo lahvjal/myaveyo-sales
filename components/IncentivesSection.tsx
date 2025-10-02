@@ -175,7 +175,7 @@ export default function IncentivesSection({ className = '', pageReady = true, ca
                     }`}
                   >
                     <a
-                      href={`/incentives/${incentive.id}`}
+                      href={`/user/incentives/${incentive.id}`}
                       className="block rounded-[3px] overflow-hidden focus:outline-none focus:ring-2 focus:ring-white/50"
                     >
                       <IncentiveCard
