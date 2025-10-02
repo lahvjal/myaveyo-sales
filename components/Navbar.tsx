@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { supabase } from '@/lib/supabase-browser'
+import { style } from 'framer-motion/client'
+import { profile } from 'console'
+import Image from 'next/image'
 
 interface NavbarProps {
   className?: string
@@ -101,13 +104,15 @@ export default function Navbar({ className = '' }: NavbarProps) {
             {/* Right: Profile link */}
           <a
             href={isLoggedIn ? '/user' : '/login'}
-            className="ml-auto mr-3 hidden md:flex items-center justify-center rounded-full overflow-hidden size-8"
+            className='ml-auto mr-3 hidden md:flex items-center justify-center rounded-full overflow-hidden h-[28px] w-[28px] bg-gradient-to-b from-[#5C5C5C] to-[#1F1F1F]'
             title={isLoggedIn ? 'Profile' : 'Sign in'}
           >
-            <img
+            <Image 
+              src="/images/user-icon.png"
               alt="Profile"
-              src={avatarUrl || '/images/user-icon.png'}
-              className="block max-w-none size-full object-cover"
+              width={28}
+              height={28}
+              className='transition-all duration-200 bg-gradient-to-b from-[#5C5C5C] to-[#1F1F1F] rounded-full overflow-hidden'
             />
           </a>
           </div>

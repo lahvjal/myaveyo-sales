@@ -29,7 +29,7 @@ export default function CMSgridCard({
 }: CMSGridCardProps) {
   return (
     <div
-      className={`bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-5 flex flex-col justify-between cursor-pointer hover:from-[#1a1a1a] hover:to-[#141414] min-h-[210px] ${className}`}
+      className={`bg-gradient-to-b from-[#171717] to-[#111111] rounded-[3px] p-5 flex flex-col justify-between cursor-pointer hover:from-[#1a1a1a] hover:to-[#141414] ${className}`}
       style={style}
       onClick={onClick}
     >

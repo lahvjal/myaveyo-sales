@@ -11,82 +11,96 @@ interface SalesSectionProps {
 }
 
 interface SalesContent {
-  section_number: string
-  section_title: string
-  main_heading: string
-  description: string
-  copyright: string
-  background_logo: string
   grid: {
+    section_title: {
+      prefix: string
+      title: string
+      content: string
+    }
+    copyright: {
+      icon: string
+      text: string
+    }
+    h3_text: {
+      text: string
+    }
     large_image: {
-      url: string
       alt: string
+      url: string
     }
     text_block: {
       title: string
       content: string
     }
-    button: {
+    button_block: {
       text: string
       variant: string
     }
     stat_card_1: {
-      value: string
-      prefix?: string
-      suffix?: string
       title: string
+      value: string
+      prefix: string
+      suffix: string
       description: string
     }
     stat_card_2: {
-      value: string
-      prefix?: string
-      suffix?: string
       title: string
+      value: string
+      prefix: string
+      suffix: string
       description: string
     }
     bottom_image: {
-      url: string
       alt: string
+      url: string
     }
   }
 }
 
 export default function SalesSection({ className = '', pageReady = true, onJoinClick }: SalesSectionProps) {
   const [content, setContent] = useState<SalesContent>({
-    section_number: '(3)',
-    section_title: 'Sales.',
-    main_heading: 'Not Your Average Sales Gig.',
-    description: 'UNLIMITED POTENTIAL. PROVEN METHODS. MASSIVE EARNINGS. REAL FREEDOM. AND A CULTURE THAT CARES. HERE, YOUR HARD WORK SPEAKS FOR ITSELF.',
-    copyright: '© 2025 myaveyo',
-    background_logo: '/aveyoSalesLogo.svg',
     grid: {
+      section_title: {
+        prefix: '(3)',
+        title: 'Not your average sales gig.',
+        content: ''
+      },
+      copyright: {
+        icon: '/images/world.svg',
+        text: '2025 aveyo_sales'
+      },
+      h3_text: {
+        text: 'UNLIMITED POTENTIAL. PROVEN METHODS. MASSIVE EARNINGS. REAL FREEDOM. AND A CULTURE THAT CARES. HERE, YOUR HARD WORK SPEAKS FOR ITSELF.'
+      },
       large_image: {
-        url: '/images/donny-hammond.jpeg',
-        alt: 'Sales representative'
+        alt: 'Sales representative',
+        url: '/images/donny-hammond.jpeg'
       },
       text_block: {
         title: 'A COMPLETELY KITTED TOOL KIT.',
         content: 'No limits, just wins. From your first deal to your biggest bonus, we set you up with the tools, training, and support you need to crush goals and climb fast. When you win, the whole team wins—and we celebrate every step of the way.'
       },
-      button: {
+      button_block: {
         text: 'JOIN THE TEAM',
         variant: 'primary'
       },
       stat_card_1: {
-        value: '540',
-        title: 'Milestones Achieved',
-        description: 'Career milestones achieved by Aveyo reps last year'
+        title: 'Sales Reps Nationwide',
+        value: '150',
+        prefix: '',
+        suffix: '+',
+        description: 'We are a growing team across the country'
       },
       stat_card_2: {
-        value: '850',
-        prefix: '$',
-        suffix: 'K',
-        title: 'Total Earned',
-        description: 'By our reps in commissions and bonuses'
+        title: 'Industry leading leadership',
+        value: '3',
+        prefix: 'TOP',
+        suffix: '',
+        description: 'And Sales Support'
       },
       bottom_image: {
-        url: '/images/Alpha Aveyo-4.jpeg',
-        alt: 'Team photo'
+        alt: 'Team photo',
+        url: '/images/Alpha Aveyo-4.jpeg'
       }
     }
   })
@@ -97,7 +111,7 @@ export default function SalesSection({ className = '', pageReady = true, onJoinC
         const response = await fetch('/api/sales')
         if (response.ok) {
           const data = await response.json()
-          setContent(data)
+          setContent(data as SalesContent)
         }
       } catch (error) {
         console.error('Failed to fetch sales content:', error)
@@ -137,9 +151,9 @@ export default function SalesSection({ className = '', pageReady = true, onJoinC
               headerAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <span className="text-[14px] sm:text-[16px] font-telegraf">{content.section_number}</span>
+            <span className="text-[14px] sm:text-[16px] font-telegraf">{content.grid.section_title.prefix}</span>
             <h2 className="text-[28px] sm:text-[36px] md:text-[48px] lg:text-[60px] font-telegraf font-extrabold uppercase leading-[32px] sm:leading-[42px] md:leading-[52px] lg:leading-[63px] max-w-[900px]">
-              {content.main_heading}
+              {content.grid.section_title.title}
             </h2>
           </div>
         </div>
@@ -159,7 +173,7 @@ export default function SalesSection({ className = '', pageReady = true, onJoinC
                   <img alt="" className="block max-w-none size-full" src="/images/world-icon.svg" />
                 </div>
                 <div className="font-telegraf font-extrabold text-white text-[15px] uppercase text-nowrap">
-                  {content.copyright}
+                  {content.grid.copyright.text}
                 </div>
               </div>
             </div>
@@ -173,7 +187,7 @@ export default function SalesSection({ className = '', pageReady = true, onJoinC
             }`}
           >
             <span className="font-telegraf font-black">
-              {content.description}
+              {content.grid.h3_text.text}
             </span>
           </div>
         </div>
@@ -242,8 +256,8 @@ export default function SalesSection({ className = '', pageReady = true, onJoinC
               buttonAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
             }`}
           >
-            <Button variant={content.grid.button.variant as any} className="w-full" onClick={onJoinClick}>
-              {content.grid.button.text}
+            <Button variant={content.grid.button_block.variant as any} className="w-full" onClick={onJoinClick}>
+              {content.grid.button_block.text}
             </Button>
           </div>
 

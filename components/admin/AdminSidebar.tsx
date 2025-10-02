@@ -220,7 +220,7 @@ export default function AdminSidebar({ className = '', expanded = false }: Admin
           width={25}
           height={25}
           className={`
-            transition-all duration-200 bg-[#121212] rounded-full border-solid border-[1px] border-[#ffffff]
+            transition-all duration-200 bg-gradient-to-b from-[#5C5C5C] to-[#1F1F1F] rounded-full overflow-hidden
             ${isActive(profile) 
               ? 'opacity-100 scale-110' 
               : 'opacity-70 group-hover:opacity-100 group-hover:scale-105'

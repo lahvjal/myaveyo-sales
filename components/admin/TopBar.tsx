@@ -198,7 +198,6 @@ export default function TopBar({
                   window.location.replace(url)
                 }
               }}
-              
             >
               Logout
             </Button>
