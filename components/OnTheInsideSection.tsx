@@ -131,9 +131,10 @@ export default function OnTheInsideSection({ className = '', pageReady = true, o
   return (
     <motion.section ref={sectionRef} className={`flex flex-col items-center pt-[130px] w-[100vw] ${className}`}>
       <motion.div 
-        className={`bg-[#e6e6e6] py-[160px] px-[30px] mx-auto overflow-visible md:w-[${containerWidth}px] w-[100%]`}
+        className={`bg-[#e6e6e6] py-[160px] px-[30px] mx-auto overflow-visible w-[100%]`}
         style={{ 
-          borderRadius: borderRadius
+          borderRadius: borderRadius,
+          width: containerWidth as any
         }}
       >
         <div className="max-w-[1480px] mx-auto">

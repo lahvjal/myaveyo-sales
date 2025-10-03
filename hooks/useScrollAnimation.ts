@@ -20,8 +20,9 @@ export function useScrollAnimation<T extends HTMLElement = HTMLElement>({
 
   useEffect(() => {
     if (disabled) {
-      // When disabled, show immediately (no animation), ensuring content isn't hidden.
-      setIsVisible(true)
+      // When disabled (e.g., during page loader), keep content hidden so it can animate-in later
+      // once animations are enabled and the element enters the viewport.
+      setIsVisible(false)
       return
     }
 
