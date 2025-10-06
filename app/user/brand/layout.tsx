@@ -31,10 +31,5 @@ export default async function BrandSectionLayout({ children }: { children: React
     redirect('/login')
   }
 
-  const isAdmin = Boolean(session.user.user_metadata?.isAdmin)
-  if (!isAdmin) {
-    redirect('/user')
-  }
-
   return <>{children}</>
 }
