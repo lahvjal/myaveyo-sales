@@ -4,7 +4,7 @@ import { Analytics } from '@vercel/analytics/react'
 
 // app/layout.tsx
 export const metadata = {
-  metadataBase: new URL('https://your-domain.com'),
+  metadataBase: new URL('https://aveyosales.com'),
   title: {
     default: 'Aveyo Sales',
     template: '%s | Aveyo Sales',

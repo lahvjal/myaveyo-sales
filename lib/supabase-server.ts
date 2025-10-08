@@ -13,12 +13,20 @@ export function createSupabaseServer() {
         return cookieStore.get(name)?.value
       },
       set(name: string, value: string, options: any) {
-        // Next 14: cookies() can be set during Server Actions/Routes; here it's mostly read-only path.
-        // We still provide setters for SSR helper compatibility.
-        cookieStore.set({ name, value, ...options })
+        // In Server Components or Client runtime, Next.js disallows cookie mutation.
+        // Wrap in try/catch so usage outside Route Handlers does not crash.
+        try {
+          cookieStore.set({ name, value, ...options })
+        } catch {
+          /* no-op in non-mutable contexts */
+        }
       },
       remove(name: string, options: any) {
-        cookieStore.set({ name, value: '', ...options, maxAge: 0 })
+        try {
+          cookieStore.set({ name, value: '', ...options, maxAge: 0 })
+        } catch {
+          /* no-op in non-mutable contexts */
+        }
       },
     },
   })
