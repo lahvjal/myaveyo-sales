@@ -34,14 +34,25 @@ export async function GET(req: NextRequest) {
       .order("updated_at", { ascending: false })
     const { data: locs, error: locErr } = limitNum ? await q.limit(limitNum) : await q
     if (locErr) return NextResponse.json({ error: locErr.message }, { status: 500 })
-    console.log("[api/projects] project_locations count", locs?.length || 0)
+    // Filter to USA (CONUS + Alaska + Hawaii) via coarse bounding boxes
+    const inUSA = (lat: number, lng: number) => {
+      // CONUS
+      const conus = lng >= -125 && lng <= -66.5 && lat >= 24 && lat <= 49.5
+      // Alaska
+      const alaska = lng >= -170 && lng <= -130 && lat >= 50 && lat <= 72
+      // Hawaii
+      const hawaii = lng >= -161 && lng <= -154 && lat >= 18.8 && lat <= 22.8
+      return conus || alaska || hawaii
+    }
+    const locsUSA = (locs || []).filter(r => typeof r.lat === 'number' && typeof r.lng === 'number' && inUSA(r.lat, r.lng))
+    console.log("[api/projects] project_locations count", locs?.length || 0, "usa", locsUSA.length)
 
-    const ids = (locs || []).map((r) => r.project_id)
+    const ids = (locsUSA || []).map((r) => r.project_id)
     if (ids.length === 0) return NextResponse.json({ pins: [] })
 
     // Raw diagnostic mode: return pins straight from cache without joining podio_data
     if (raw) {
-      const pins = (locs || []).map((r) => ({
+      const pins = (locsUSA || []).map((r) => ({
         id: r.project_id,
         lngLat: [r.lng, r.lat] as [number, number],
         isComplete: true,
@@ -61,7 +72,7 @@ export async function GET(req: NextRequest) {
     console.log("[api/projects] podio_data joined rows", rows.length)
 
     const locMap = new Map<string, { lat: number; lng: number }>()
-    for (const r of locs || []) locMap.set(r.project_id, { lat: r.lat, lng: r.lng })
+    for (const r of locsUSA || []) locMap.set(r.project_id, { lat: r.lat, lng: r.lng })
 
     const out: Array<{ id: string; lngLat: [number, number]; isComplete: boolean; label: string }> = []
     for (const rec of rows) {

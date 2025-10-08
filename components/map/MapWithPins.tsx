@@ -25,7 +25,7 @@ export default function MapWithPins({
   className,
   styleUrl = "mapbox://styles/mapbox/dark-v11",
   center = [-98.5795, 39.8283],
-  zoom = 4,
+  zoom = 5.2,
   pins = [],
   hideLabels = true,
   darkGrayscale = true,
@@ -73,10 +73,20 @@ export default function MapWithPins({
         map.addControl(new (mapboxgl as any).NavigationControl(), "top-right")
 
         const restyle = () => {
-          if (!map || !(hideLabels || darkGrayscale)) return
+          if (!map) return
           try {
             const style = map.getStyle()
             const layers = style?.layers || []
+            // Hide all roads/bridges/tunnels explicitly across zoom classes
+            layers.forEach((layer: any) => {
+              const id = String(layer?.id || '')
+              const isRoad = id.startsWith('road-') || id.includes('road-')
+              const isBridge = id.startsWith('bridge-') || id.includes('bridge-')
+              const isTunnel = id.startsWith('tunnel-') || id.includes('tunnel-')
+              if (isRoad || isBridge || isTunnel) {
+                try { map.setLayoutProperty(id, 'visibility', 'none') } catch {}
+              }
+            })
             if (hideLabels) {
               layers.forEach((layer: any) => {
                 if (layer.type === "symbol") {
