@@ -98,8 +98,7 @@ export default function DashboardPage() {
         const res = await fetch('/api/me', { cache: 'no-store' })
         if (!res.ok) return
         const me = await res.json()
-        const repName: string | undefined = me?.rep_name || undefined
-        const first = repName ? String(repName).trim().split(/\s+/)[0] : ''
+        const first: string = me?.firstName || ''
         if (mounted) setFirstName(first)
       } catch {}
     }

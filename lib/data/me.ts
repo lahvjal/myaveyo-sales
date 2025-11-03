@@ -41,8 +41,17 @@ export async function getMe(supabase: SupabaseClient<any, any, any>): Promise<Me
     rep_name = (srep as any)?.rep_name || null
   }
 
-  const firstName = rep_name ? String(rep_name).trim().split(/\s+/)[0] : null
-  const isAdmin = (user.user_metadata as any)?.isAdmin === true || urow?.role === 'admin'
+  // Prefer explicit user metadata first name, then derive from full name, then fall back to sales rep name
+  const meta = (user.user_metadata as any) || {}
+  const metaFirst: string | null =
+    (meta.first_name as string) ||
+    (meta.given_name as string) ||
+    (meta.full_name ? String(meta.full_name).trim().split(/\s+/)[0] : null) ||
+    (meta.name ? String(meta.name).trim().split(/\s+/)[0] : null) ||
+    null
+  const derivedFromRep = rep_name ? String(rep_name).trim().split(/\s+/)[0] : null
+  const firstName = metaFirst || derivedFromRep
+  const isAdmin = meta?.isAdmin === true || urow?.role === 'admin'
 
   return {
     id: user.id,
