@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { calculateIncentiveStatus } from '@/lib/data/incentives'
 
 // Admin endpoint to get ALL incentives (including unpublished)
 export async function GET() {
@@ -14,7 +15,12 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch incentives' }, { status: 500 })
     }
 
-    return NextResponse.json(incentives)
+    const withStatus = (incentives || []).map((inc: any) => ({
+      ...inc,
+      live_status: calculateIncentiveStatus(inc.start_date, inc.end_date),
+    }))
+
+    return NextResponse.json(withStatus)
   } catch (error) {
     console.error('Unexpected error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -32,5 +32,10 @@ export async function getIncentives(supabase: SupabaseClient<any, any, any>): Pr
     .order('sort_order', { ascending: true })
 
   if (error) throw error
-  return (data || []) as Incentive[]
+  const items = (data || []) as Incentive[]
+  // Recompute live_status dynamically from dates
+  return items.map((inc) => ({
+    ...inc,
+    live_status: calculateIncentiveStatus(inc.start_date, inc.end_date),
+  }))
 }

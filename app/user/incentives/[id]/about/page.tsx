@@ -1,6 +1,7 @@
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { calculateIncentiveStatus } from '@/lib/types/incentive'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { getCategoryBadgeStyle, getStatusBadgeClasses } from '@/lib/ui/badges'
 
@@ -67,13 +68,16 @@ export default async function IncentiveDetailPage({ params }: PageProps) {
     )
   }
 
-  const daysText = getDaysText(incentive as Incentive)
+  // Dynamically recompute status from dates to ensure tag is current
+  const status = calculateIncentiveStatus((incentive as Incentive).start_date, (incentive as Incentive).end_date)
+  const effective = { ...(incentive as Incentive), live_status: status }
+  const daysText = getDaysText(effective)
   return (
     <AdminLayout 
       pageKey="incentives"
       breadcrumbs={[
         { name: 'Incentives', href: '/user/incentives' },
-        { name: incentive.title }
+        { name: effective.title }
       ]}
     >  
     <div className="bg-[#0d0d0d] min-h-screen text-white">
@@ -106,7 +110,7 @@ export default async function IncentiveDetailPage({ params }: PageProps) {
             
             {/* Title bottom overlay */}
             <div className="absolute left-0 right-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-6">
-              <h1 className="font-telegraf text-3xl md:text-4xl font-extrabold uppercase">{incentive.title}</h1>
+              <h1 className="font-telegraf text-3xl md:text-4xl font-extrabold uppercase">{effective.title}</h1>
             </div>
           </div>
 
@@ -118,35 +122,35 @@ export default async function IncentiveDetailPage({ params }: PageProps) {
               <div className="space-y-8">
                 {/* Dates and summary */}
                 <div className="space-y-8">
-                  <h2 className="font-telegraf text-6xl font-bold">{incentive.title}</h2>
+                  <h2 className="font-telegraf text-6xl font-bold">{effective.title}</h2>
                   <div className="flex flex-row items-center justify-start gap-[12px]">
                     {/* Overlay badges */}
                     <div className="flex items-start justify-start gap-[12px]">
                       {/* Category badge (centralized) */}
-                      <div className="flex items-center gap-2.5 px-[12px] py-[6px] rounded-[60px] shadow-lg" style={getCategoryBadgeStyle(incentive.category, incentive.category_color)}>
-                        <span className="text-[13px] font-semibold text-black">{incentive.category}</span>
+                      <div className="flex items-center gap-2.5 px-[12px] py-[6px] rounded-[60px] shadow-lg" style={getCategoryBadgeStyle(effective.category, effective.category_color)}>
+                        <span className="text-[13px] font-semibold text-black">{effective.category}</span>
                       </div>
                       {/* Status badge (centralized) */}
                       {(() => {
-                        const s = getStatusBadgeClasses(incentive.live_status)
+                        const s = getStatusBadgeClasses(effective.live_status)
                         return (
                           <div className={`flex items-center gap-2.5 px-[12px] py-[6px] rounded-[60px] shadow-lg ${s.container}`}>
                             <div className={`w-[7px] h-[7px] rounded-full ${s.dot}`} />
                             <span className={`text-[13px] font-semibold ${s.text}`}>
-                              {incentive.live_status === 'live' ? 'Live' : incentive.live_status === 'coming_up' ? 'Coming Up' : 'Done'}
+                              {effective.live_status === 'live' ? 'Live' : effective.live_status === 'coming_up' ? 'Coming Up' : 'Done'}
                             </span>
                           </div>
                         )
                       })()}
                     </div>
                     <div className="text-white/70 text-sm">
-                      {formatDate(incentive.start_date)} – {formatDate(incentive.end_date)}
+                      {formatDate(effective.start_date)} – {formatDate(effective.end_date)}
                       {daysText ? <span className="ml-2 text-white/50">({daysText})</span> : null}
                     </div>
                   </div>
                   
                   <p className="mt-1 text-white/85 leading-relaxed">
-                    {incentive.description || 'No description provided.'}
+                    {effective.description || 'No description provided.'}
                   </p>
                 </div>
 
@@ -154,19 +158,19 @@ export default async function IncentiveDetailPage({ params }: PageProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="rounded-[3px] bg-[#121212] border border-[#1d1d1d] p-4">
                     <div className="text-white/60 text-xs">Status</div>
-                    <div className="text-white font-semibold mt-1 capitalize">{incentive.live_status.replace('_', ' ')}</div>
+                    <div className="text-white font-semibold mt-1 capitalize">{effective.live_status.replace('_', ' ')}</div>
                   </div>
                   <div className="rounded-[3px] bg-[#121212] border border-[#1d1d1d] p-4">
                     <div className="text-white/60 text-xs">Category</div>
-                    <div className="text-white font-semibold mt-1">{incentive.category}</div>
+                    <div className="text-white font-semibold mt-1">{effective.category}</div>
                   </div>
                   <div className="rounded-[3px] bg-[#121212] border border-[#1d1d1d] p-4">
                     <div className="text-white/60 text-xs">Start</div>
-                    <div className="text-white font-semibold mt-1">{formatDate(incentive.start_date)}</div>
+                    <div className="text-white font-semibold mt-1">{formatDate(effective.start_date)}</div>
                   </div>
                   <div className="rounded-[3px] bg-[#121212] border border-[#1d1d1d] p-4">
                     <div className="text-white/60 text-xs">End</div>
-                    <div className="text-white font-semibold mt-1">{formatDate(incentive.end_date)}</div>
+                    <div className="text-white font-semibold mt-1">{formatDate(effective.end_date)}</div>
                   </div>
                 </div>
 

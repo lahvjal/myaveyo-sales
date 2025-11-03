@@ -17,8 +17,12 @@ export async function GET(
       console.error('Error fetching incentive:', error)
       return NextResponse.json({ error: 'Incentive not found' }, { status: 404 })
     }
+    // Recompute live_status dynamically from dates
+    const withStatus = incentive
+      ? { ...incentive, live_status: calculateIncentiveStatus(incentive.start_date, incentive.end_date) }
+      : incentive
 
-    return NextResponse.json(incentive)
+    return NextResponse.json(withStatus)
   } catch (error) {
     console.error('Unexpected error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
