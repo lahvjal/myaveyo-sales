@@ -103,6 +103,15 @@ export const ADMIN_PAGE_CONFIGS: Record<string, AdminPageConfig> = {
     title: 'Projects',
     icon: '/images/projects-icon.png',
     tabs: []
+  },
+
+  // EDU Platform
+  'edu': {
+    title: 'EDU',
+    icon: '/images/edu-icon.png',
+    tabs: [
+      { id: 'courses', name: 'Courses', href: '/admin/edu' }
+    ]
   }
 }
 
