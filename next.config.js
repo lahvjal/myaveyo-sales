@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -22,13 +19,6 @@ const nextConfig = {
   },
   images: {
     domains: ['localhost'],
-  },
-  // Configure for better Vercel deployment
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb',
-    },
-    responseLimit: false,
   },
 }
 

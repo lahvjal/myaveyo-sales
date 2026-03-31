@@ -18,9 +18,16 @@ interface CreateIncentiveData {
 }
 
 // Service-role client for admin writes (retain for POST)
+const _supabaseAdminUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const _supabaseAdminKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!_supabaseAdminUrl || !_supabaseAdminKey) {
+  console.warn('Supabase environment variables missing in incentives API')
+}
+
 const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  _supabaseAdminUrl || 'https://placeholder.supabase.co',
+  _supabaseAdminKey || 'placeholder-key'
 )
 
 export async function GET() {
