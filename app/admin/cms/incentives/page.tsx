@@ -14,6 +14,8 @@ export default function AdminIncentivesPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingIncentive, setEditingIncentive] = useState<Incentive | null>(null)
+  const [deletingIncentive, setDeletingIncentive] = useState<Incentive | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
   const [formLoading, setFormLoading] = useState(false)
   // Use CMS top bar tabs and set the active one to 'incentives'
   const [activeTab, setActiveTab] = useState('incentives')
@@ -190,19 +192,22 @@ export default function AdminIncentivesPage() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this incentive?')) return
-
+  const handleDelete = async () => {
+    if (!deletingIncentive) return
+    setDeleteLoading(true)
     try {
-      const response = await fetch(`/api/incentives/${id}`, {
+      const response = await fetch(`/api/incentives/${deletingIncentive.id}`, {
         method: 'DELETE'
       })
 
       if (response.ok) {
         await fetchIncentives()
+        setDeletingIncentive(null)
       }
     } catch (error) {
       console.error('Error deleting incentive:', error)
+    } finally {
+      setDeleteLoading(false)
     }
   }
 
@@ -553,18 +558,11 @@ export default function AdminIncentivesPage() {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(incentive.id)}
+                    onClick={() => setDeletingIncentive(incentive)}
                     className="px-5 py-2 rounded bg-[#8b2231] hover:bg-[#9a2737] text-white text-sm font-medium"
                   >
                     Delete
                   </button>
-                  <div className="opacity-60">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      <span className="block w-4 h-0.5 bg-gray-400 rounded mb-1" />
-                      <span className="block w-4 h-0.5 bg-gray-400 rounded mb-1" />
-                      <span className="block w-4 h-0.5 bg-gray-400 rounded" />
-                    </div>
-                  </div>
                 </div>
               </div>
             )
@@ -582,6 +580,37 @@ export default function AdminIncentivesPage() {
             >
               Create Your First Incentive
             </Button>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deletingIncentive && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-900 p-6 rounded-lg w-full max-w-md border border-[#333]">
+              <h3 className="text-white text-lg font-semibold mb-2">Delete incentive?</h3>
+              <p className="text-gray-300 text-sm mb-6">
+                Are you sure you want to delete
+                {' '}
+                <span className="text-white font-medium">{deletingIncentive.title}</span>
+                ? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => setDeletingIncentive(null)}
+                  className="bg-gray-700 hover:bg-gray-600 flex-1"
+                  disabled={deleteLoading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  className="bg-[#8b2231] hover:bg-[#9a2737] flex-1"
+                  disabled={deleteLoading}
+                >
+                  {deleteLoading ? 'Deleting...' : 'Delete'}
+                </Button>
+              </div>
+            </div>
           </div>
         )}
         </div>

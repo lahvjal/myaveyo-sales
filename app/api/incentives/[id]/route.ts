@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 import { UpdateIncentiveData, calculateIncentiveStatus } from '@/lib/types/incentive'
 
 export async function GET(
@@ -42,7 +42,7 @@ export async function PUT(
       updateData.live_status = calculateIncentiveStatus(body.start_date, body.end_date)
     }
     
-    const { data: incentive, error } = await supabase
+    const { data: incentive, error } = await supabaseAdmin
       .from('public_incentives')
       .update({
         ...updateData,
@@ -69,7 +69,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('public_incentives')
       .delete()
       .eq('id', params.id)
