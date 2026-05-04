@@ -83,7 +83,7 @@ export default function AdminIncentivesPage() {
   // Fetch all incentives (including unpublished for admin view)
   const fetchIncentives = async () => {
     try {
-      const response = await fetch('/api/incentives/admin')
+      const response = await fetch(`/api/incentives/admin?t=${Date.now()}`, { cache: 'no-store' })
       if (response.ok) {
         const data = await response.json()
         setIncentives(data)

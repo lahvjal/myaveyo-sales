@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { calculateIncentiveStatus } from '@/lib/data/incentives'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // Admin endpoint to get ALL incentives (including unpublished)
 export async function GET() {
   try {
@@ -20,7 +23,11 @@ export async function GET() {
       live_status: calculateIncentiveStatus(inc.start_date, inc.end_date),
     }))
 
-    return NextResponse.json(withStatus)
+    return NextResponse.json(withStatus, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      },
+    })
   } catch (error) {
     console.error('Unexpected error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
