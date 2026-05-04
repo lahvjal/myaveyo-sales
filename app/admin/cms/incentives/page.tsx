@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { Incentive, CreateIncentiveData, UpdateIncentiveData } from '@/lib/types/incentive'
 import IncentiveForm from '@/components/admin/IncentiveForm'
 import Button from '@/components/Button'
@@ -10,6 +10,7 @@ import CMSgridCardPills from '@/components/admin/CMSgridCardPills'
 
 export default function AdminIncentivesPage() {
   const [incentives, setIncentives] = useState<Incentive[]>([])
+  const [statusFilter, setStatusFilter] = useState<'all' | 'live' | 'coming_up' | 'done'>('all')
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingIncentive, setEditingIncentive] = useState<Incentive | null>(null)
@@ -214,6 +215,23 @@ export default function AdminIncentivesPage() {
     setShowForm(false)
     setEditingIncentive(null)
   }
+
+  const statusRank = (status: Incentive['live_status']) => {
+    if (status === 'live') return 0
+    if (status === 'coming_up') return 1
+    return 2
+  }
+
+  const filteredAndSortedIncentives = useMemo(() => {
+    const next = [...incentives].sort((a, b) => {
+      const byStatus = statusRank(a.live_status) - statusRank(b.live_status)
+      if (byStatus !== 0) return byStatus
+      return new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+    })
+
+    if (statusFilter === 'all') return next
+    return next.filter((incentive) => incentive.live_status === statusFilter)
+  }, [incentives, statusFilter])
 
   if (loading) {
     return (
@@ -445,9 +463,33 @@ export default function AdminIncentivesPage() {
           Add New Incentive
         </Button>
 
+        {/* Filter control */}
+        <div className="mb-6">
+          <div className="flex flex-wrap bg-gradient-to-b from-[#232323] to-[#171717] rounded-[60px] p-1 gap-1 w-fit">
+            {([
+              { value: 'all', label: 'All' },
+              { value: 'live', label: 'Live' },
+              { value: 'coming_up', label: 'Coming Soon' },
+              { value: 'done', label: 'Done' },
+            ] as const).map((option) => (
+              <button
+                key={option.value}
+                onClick={() => setStatusFilter(option.value)}
+                className={`px-[15px] py-[7px] rounded-[60px] text-[14px] font-inter font-semibold transition-colors ${
+                  statusFilter === option.value
+                    ? 'bg-white text-black'
+                    : 'bg-transparent text-white hover:bg-white/10'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Incentives List - Figma row design */}
         <div className="space-y-6">
-          {incentives.map((incentive) => {
+          {filteredAndSortedIncentives.map((incentive) => {
             const start = new Date(incentive.start_date)
             const end = new Date(incentive.end_date)
             const now = new Date()
@@ -525,10 +567,10 @@ export default function AdminIncentivesPage() {
           })}
         </div>
 
-        {incentives.length === 0 && !showForm && !editingIncentive && (
+        {filteredAndSortedIncentives.length === 0 && !showForm && !editingIncentive && (
           <div className="text-center py-12">
             <div className="text-gray-400 text-lg mb-4">
-              No incentives found
+              {statusFilter === 'all' ? 'No incentives found' : 'No incentives found for this filter'}
             </div>
             <Button
               variant="primary"
