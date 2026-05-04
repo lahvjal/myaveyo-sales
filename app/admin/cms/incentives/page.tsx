@@ -528,7 +528,11 @@ export default function AdminIncentivesPage() {
                   {/* Status + days left */}
                   <div className="flex items-center gap-3 mb-2">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                      incentive.live_status === 'live' ? 'bg-green-500 text-white' : 'bg-gray-600 text-white'
+                      incentive.live_status === 'live'
+                        ? 'bg-green-500 text-white'
+                        : incentive.live_status === 'coming_up'
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-600 text-white'
                     }`}>{statusLabel}</span>
                     <span className="text-gray-300 text-sm">{daysLeft} days left</span>
                   </div>
