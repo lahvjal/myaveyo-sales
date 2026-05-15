@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '@/lib/email'
-import { getRepById } from '@/lib/db/mysql'
+import { getRepById, RepRow } from '@/lib/db/mysql'
 
 // POST /api/auth/signup
 // body: { email: string, password: string, rep_id: string }
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const admin = createClient(supabaseUrl, serviceKey)
 
     // 1) Validate rep_id exists in MySQL (source of truth — Supabase sales_reps is no longer kept in sync)
-    let repRow: { rep_id: string; rep_name: string; status: string } | null = null
+    let repRow: RepRow | null = null
     try {
       repRow = await getRepById(rep_id)
     } catch (dbErr: any) {
