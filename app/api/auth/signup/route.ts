@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const admin = createClient(supabaseUrl, serviceKey)
 
     // 1) Validate rep_id exists in MySQL (source of truth — Supabase sales_reps is no longer kept in sync)
-    let repRow: { rep_id: string; rep_name: string } | null = null
+    let repRow: { rep_id: string; rep_name: string; status: string } | null = null
     try {
       repRow = await getRepById(rep_id)
     } catch (dbErr: any) {
