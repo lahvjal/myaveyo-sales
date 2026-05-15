@@ -1,4 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js'
+import { getRepById } from '@/lib/db/mysql'
 
 export type Me = {
   id: string
@@ -22,23 +23,26 @@ export async function getMe(supabase: SupabaseClient<any, any, any>): Promise<Me
 
   const { data: urow, error: uerr } = await supabase
     .from('users')
-    .select('id, email, role')
+    .select('id, email, role, rep_id')
     .eq('id', user.id)
     .limit(1)
     .single()
   if (uerr) throw uerr
 
-  let rep_id: string | null = null
+  // rep_id is stored on public.users at signup; use it to look up the current name from MySQL
+  const storedRepId: string | null = (urow as any)?.rep_id || null
+  let rep_id: string | null = storedRepId
   let rep_name: string | null = null
-  if (urow?.email) {
-    const { data: srep } = await supabase
-      .from('sales_reps')
-      .select('rep_id, rep_name, rep_email')
-      .eq('rep_email', urow.email)
-      .limit(1)
-      .maybeSingle()
-    rep_id = (srep as any)?.rep_id || null
-    rep_name = (srep as any)?.rep_name || null
+  if (storedRepId) {
+    try {
+      const mysqlRep = await getRepById(storedRepId)
+      if (mysqlRep) {
+        rep_id = mysqlRep.rep_id
+        rep_name = mysqlRep.rep_name
+      }
+    } catch {
+      // MySQL unavailable — degrade gracefully, rep_id still set from users table
+    }
   }
 
   // Prefer explicit user metadata first name, then derive from full name, then fall back to sales rep name

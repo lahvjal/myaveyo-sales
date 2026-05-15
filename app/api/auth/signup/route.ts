@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '@/lib/email'
+import { getRepById } from '@/lib/db/mysql'
 
 // POST /api/auth/signup
 // body: { email: string, password: string, rep_id: string }
@@ -19,18 +20,18 @@ export async function POST(req: NextRequest) {
 
     const admin = createClient(supabaseUrl, serviceKey)
 
-    // 1) Validate rep_id exists in sales_reps
-    const { data: repRow, error: repErr } = await admin
-      .from('sales_reps')
-      .select('rep_id, rep_name')
-      .eq('rep_id', rep_id)
-      .maybeSingle()
-
-    if (repErr) {
-      return NextResponse.json({ error: repErr.message }, { status: 400 })
+    // 1) Validate rep_id exists in MySQL (source of truth — Supabase sales_reps is no longer kept in sync)
+    let repRow: { rep_id: string; rep_name: string } | null = null
+    try {
+      repRow = await getRepById(rep_id)
+    } catch (dbErr: any) {
+      return NextResponse.json({ error: 'Unable to verify Rep ID at this time. Please try again.' }, { status: 503 })
     }
     if (!repRow) {
       return NextResponse.json({ error: 'Rep ID not found. Please contact your admin to verify your Rep ID.' }, { status: 404 })
+    }
+    if (repRow.status === 'Inactive') {
+      return NextResponse.json({ error: 'This Rep ID is marked inactive. Please contact your admin.' }, { status: 403 })
     }
 
     // 2) Prevent duplicate or conflicting mappings
