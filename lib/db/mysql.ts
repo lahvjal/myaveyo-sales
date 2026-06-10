@@ -25,14 +25,14 @@ export type RepRow = {
 }
 
 /**
- * Look up a rep by their Podio Id (the numeric Id column, e.g. 2927336804)
- * from PodioTables.SalesReps — the canonical source of truth for all reps.
+ * Look up a rep by their Podio item_id (e.g. 2927336804)
+ * from avyomkng.sales-reps — the canonical source of truth for all reps.
  * Returns the rep record if found, null otherwise.
  */
 export async function getRepById(repId: string): Promise<RepRow | null> {
   const db = getPool()
   const [rows] = await db.execute<mysql.RowDataPacket[]>(
-    'SELECT `Id` AS rep_id, `Sales_Rep_Full_Name` AS rep_name, `Status` AS status FROM `PodioTables`.`SalesReps` WHERE `Id` = ? LIMIT 1',
+    'SELECT `item_id` AS rep_id, `title` AS rep_name, `status` FROM `avyomkng`.`sales-reps` WHERE `item_id` = ? LIMIT 1',
     [repId]
   )
   if (!rows.length) return null
